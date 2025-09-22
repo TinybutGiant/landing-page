@@ -1,0 +1,49 @@
+{
+  "name": "ahhh-yaotu-landing",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Ahhh Yaotu Landing Page - Independent landing page for guide applications",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "framer-motion": "^11.13.1",
+    "lucide-react": "^0.453.0",
+    "wouter": "^3.3.5",
+    "@radix-ui/react-slot": "^1.1.0",
+    "@radix-ui/react-checkbox": "^1.1.2",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^2.5.4"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.1",
+    "@typescript-eslint/eslint-plugin": "^8.15.0",
+    "@typescript-eslint/parser": "^8.15.0",
+    "@vitejs/plugin-react": "^4.3.2",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^9.15.0",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-react-refresh": "^0.4.14",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.14",
+    "tailwindcss-animate": "^1.0.7",
+    "typescript": "^5.6.3",
+    "vite": "^6.3.3"
+  },
+  "keywords": [
+    "landing-page",
+    "react",
+    "vite",
+    "tailwindcss",
+    "framer-motion"
+  ],
+  "author": "Ahhh Yaotu Team",
+  "license": "MIT"
+}
