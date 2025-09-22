@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence, useMotionValue, useMotionValueEvent } from "framer-motion"
+import { DynamicImageScanner } from "@/lib/dynamicImageScanner"
 
 interface Trail {
   id: number
@@ -13,11 +14,15 @@ interface Trail {
 interface CursorFollowProps {
   images?: string[];
   containerSelector?: string; // 指定只在特定容器内显示
+  cycleMode?: 'sequential' | 'random' | 'reverse'; // 循环模式
+  showDebugInfo?: boolean; // 是否显示调试信息
 }
 
 const CursorFollow = ({ 
   images = [], 
-  containerSelector = ''
+  containerSelector = '',
+  cycleMode = 'sequential',
+  showDebugInfo = false
 }: CursorFollowProps) => {
   const [trails, setTrails] = useState<Trail[]>([])
   const [isMobile, setIsMobile] = useState(false)
@@ -27,17 +32,21 @@ const CursorFollow = ({
   const pointerX = useMotionValue(0)
   const pointerY = useMotionValue(0)
 
-  // 你的图片池uploads/avatars，可以放任意数量的图片
-  const avatarImages = [
-    '/1.jpg',
-    '/2.jpg',
-    '/3.png',
-    '/4.jpg',
-    '/5.jpg',
-    '/test.jpg' // 添加测试图片
-  ];
+  // 动态获取图片
+  const [availableImages, setAvailableImages] = useState<string[]>([]);
 
-  const finalImages = images.length > 0 ? images : avatarImages;
+  // 在组件挂载时动态扫描图片
+  useEffect(() => {
+    const scanImages = async () => {
+      const scanner = DynamicImageScanner.getInstance();
+      const scannedImages = await scanner.scanPublicImages();
+      setAvailableImages(scannedImages);
+    };
+
+    scanImages();
+  }, []);
+
+  const finalImages = images.length > 0 ? images : availableImages;
 
   // 检测移动设备
   useEffect(() => {
@@ -58,10 +67,35 @@ const CursorFollow = ({
 
     const prev = trails[trails.length - 1]
     if (!prev || Math.hypot(latestX - prev.x, latestY - prev.y) > 170) { // 256px * 2/3 ≈ 170px
-      const currentImg = finalImages[currentImageIndex]
+      // 根据循环模式获取当前图片
+      let currentImg: string;
+      let nextIndex: number;
       
-      // 更新索引，使用模运算循环
-      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % finalImages.length)
+      switch (cycleMode) {
+        case 'sequential':
+          currentImg = finalImages[currentImageIndex];
+          nextIndex = (currentImageIndex + 1) % finalImages.length;
+          break;
+        case 'random':
+          currentImg = finalImages[currentImageIndex];
+          nextIndex = Math.floor(Math.random() * finalImages.length);
+          break;
+        case 'reverse':
+          currentImg = finalImages[currentImageIndex];
+          nextIndex = currentImageIndex === 0 ? finalImages.length - 1 : currentImageIndex - 1;
+          break;
+        default:
+          currentImg = finalImages[currentImageIndex];
+          nextIndex = (currentImageIndex + 1) % finalImages.length;
+      }
+      
+      // 更新索引
+      setCurrentImageIndex(nextIndex);
+      
+      // 调试信息：显示当前图片索引和总数
+      if (showDebugInfo) {
+        console.log(`[${cycleMode.toUpperCase()}] 显示图片 ${currentImageIndex + 1}/${finalImages.length}: ${currentImg}`);
+      }
 
       const newTrail = {
         id: Date.now() + Math.random(), // 避免重复

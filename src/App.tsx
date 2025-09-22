@@ -15,7 +15,6 @@ import {
   Eye,
   EyeOff
 } from "lucide-react";
-import AnimationDemo from "@/components/AnimationDemo";
 import CursorFollow from "@/components/CursorFollow";
 
 const LandingPage = () => {
@@ -372,7 +371,11 @@ const LandingPage = () => {
 
         {/* 顶层：Cursor Follow 效果 */}
         <div className="absolute inset-0 z-10 pointer-events-none">
-          <CursorFollow containerSelector="#hero-section" />
+          <CursorFollow 
+            containerSelector="#hero-section" 
+            cycleMode="sequential"
+            showDebugInfo={true}
+          />
         </div>
       </motion.div>
   
@@ -1077,9 +1080,6 @@ const LandingPage = () => {
           </motion.div>
         </div>
       </motion.div>
-      
-      {/* Animation Demo Component */}
-      <AnimationDemo />
     </div>
   );
 };
