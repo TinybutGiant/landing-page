@@ -16,6 +16,7 @@ import {
   EyeOff
 } from "lucide-react";
 import CursorFollow from "@/components/CursorFollow";
+import BecomeGuideForm from "@/components/become-guide/BecomeGuideForm";
 
 const LandingPage = () => {
   // Refs for scroll-based animations
@@ -50,6 +51,7 @@ const LandingPage = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showBecomeGuideForm, setShowBecomeGuideForm] = useState(false);
   
   // const [location, setLocation] = useLocation();
   
@@ -397,10 +399,10 @@ const LandingPage = () => {
             className="text-center mb-12"
           >
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-              Join the Community
+              Become a LocalGuide
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300">
-              Create your account and start exploring Japan with local guides
+              Share your local expertise and earn money by guiding travelers through your city
             </p>
           </motion.div>
 
@@ -430,10 +432,10 @@ const LandingPage = () => {
                     <Users className="w-8 h-8 text-white" />
                   </motion.div>
                   <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                    Welcome to LocalGuide
+                    Become a LocalGuide
                   </h3>
                   <p className="text-gray-600 dark:text-gray-400 mb-8">
-                    Join thousands of travelers discovering Japan with local experts
+                    Share your local expertise and earn money by guiding travelers through your city
                   </p>
                   <Button
                     size="lg"
@@ -442,10 +444,10 @@ const LandingPage = () => {
                       background: 'linear-gradient(to right, #FFD511, #FFA500)',
                       color: '#1A1A1A'
                     }}
-                    onClick={() => setCurrentStep(1)}
+                    onClick={() => setShowBecomeGuideForm(true)}
                     data-cursor-hover
                   >
-                    Create Your Account
+                    Apply to Become a Guide
                     <ArrowRight className="ml-2 w-5 h-5" />
                   </Button>
                 </motion.div>
@@ -995,7 +997,7 @@ const LandingPage = () => {
               transition: { duration: 0.3 }
             }}
           >
-            Ready to Explore Japan?
+            Ready to Become a Guide?
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -1006,7 +1008,7 @@ const LandingPage = () => {
             style={{ color: '#1A1A1A' }}
             whileHover={{ scale: 1.02 }}
           >
-            Join thousands of travelers discovering authentic Japanese experiences with local guides.
+            Share your local expertise and earn money by guiding travelers through your city.
           </motion.p>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -1024,7 +1026,7 @@ const LandingPage = () => {
                 size="lg"
                 className="bg-white hover:bg-gray-100 px-8 py-3 rounded-full font-semibold shadow-lg hover:shadow-2xl transition-all duration-300 relative overflow-hidden group"
                 style={{ color: '#FFD511' }}
-                onClick={() => setCurrentStep(1)}
+                onClick={() => setShowBecomeGuideForm(true)}
                 data-cursor-hover
               >
                 <motion.span
@@ -1032,7 +1034,7 @@ const LandingPage = () => {
                   whileHover={{ x: 2 }}
                   transition={{ duration: 0.2 }}
                 >
-                  Get Started Free
+                  Apply to Become a Guide
                   <motion.div
                     whileHover={{ x: 3 }}
                     transition={{ duration: 0.2 }}
@@ -1080,6 +1082,11 @@ const LandingPage = () => {
           </motion.div>
         </div>
       </motion.div>
+
+      {/* Become Guide Form Modal */}
+      {showBecomeGuideForm && (
+        <BecomeGuideForm onClose={() => setShowBecomeGuideForm(false)} />
+      )}
     </div>
   );
 };

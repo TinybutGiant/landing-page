@@ -21,18 +21,13 @@ export class DynamicImageScanner {
       const images: string[] = [];
       const imageExtensions = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg'];
       
-      // 更广泛的文件名模式
+      // 更精确的文件名模式，只检查实际可能存在的文件
       const namePatterns = [
-        // 数字模式
+        // 数字模式（只检查1-10）
         '1', '2', '3', '4', '5', '6', '7', '8', '9', '10',
-        '01', '02', '03', '04', '05', '06', '07', '08', '09', '10',
         // 常见名称
-        'test', 'avatar', 'profile', 'user', 'person', 'people',
-        'img', 'image', 'photo', 'pic', 'picture', 'portrait',
-        'headshot', 'face', 'head', 'mugshot',
-        // 更多变体
-        'avatar1', 'avatar2', 'user1', 'user2', 'person1', 'person2',
-        'profile1', 'profile2', 'headshot1', 'headshot2'
+        'test', 'avatar', 'profile', 'user', 'person',
+        'img', 'image', 'photo', 'pic', 'picture'
       ];
 
       // 检查所有可能的组合
@@ -46,7 +41,7 @@ export class DynamicImageScanner {
               console.log(`Found image: ${imagePath}`);
             }
           } catch (error) {
-            // 图片不存在，继续检查下一个
+            // 图片不存在，静默跳过，不输出错误信息
           }
         }
       }

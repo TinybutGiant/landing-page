@@ -64,27 +64,38 @@ public/
 
 ### 🔧 技术实现
 
-#### 智能扫描算法
-1. **预定义模式匹配** - 扫描常见的文件名模式
-2. **HTTP HEAD 请求** - 快速检查文件是否存在
-3. **缓存机制** - 避免重复扫描
-4. **降级策略** - 本地图片 → 默认图片
+#### Vite import.meta.glob 方案
+1. **构建时扫描** - 使用 Vite 的 `import.meta.glob` 在构建时自动收集所有图片
+2. **零运行时开销** - 不需要运行时的 fetch 请求
+3. **类型安全** - 完整的 TypeScript 支持
+4. **自动优化** - Vite 自动处理图片优化和缓存
 
-#### 性能优化
-- **单例模式** - 避免重复创建扫描器
-- **缓存机制** - 扫描结果会被缓存
-- **异步加载** - 不阻塞页面渲染
-- **错误处理** - 优雅的降级处理
+#### 性能优势
+- **构建时处理** - 图片路径在构建时就确定，无需运行时检查
+- **零网络请求** - 不需要 fetch 请求检查文件是否存在
+- **自动优化** - Vite 自动处理图片压缩和缓存
+- **类型安全** - 完整的 TypeScript 类型支持
 
-### 📊 扫描日志
+### 📊 构建日志
 
-在浏览器控制台中可以看到扫描日志：
+在构建时可以看到 Vite 自动处理的图片：
 
 ```
-Found image: /1.jpg
-Found image: /2.jpg
-Found image: /avatar.png
-Scanned 3 local images
+dist/assets/1-Bt0jpDm4.jpg       269.11 kB
+dist/assets/2-xcE9I6mf.jpg       64.30 kB
+dist/assets/3-DHadNc04.jpg      275.28 kB
+dist/assets/4-NKoAPM62.jpg       400.56 kB
+dist/assets/5-B7iv4eX5.jpg        97.89 kB
+```
+
+### 🎯 运行时日志
+
+在浏览器控制台中可以看到：
+
+```
+使用 Vite glob 找到 5 张本地图片: ["/1.jpg", "/2.jpg", "/3.jpg", "/4.jpg", "/5.jpg"]
+[SEQUENTIAL] 显示图片 1/5: /1.jpg
+[SEQUENTIAL] 显示图片 2/5: /2.jpg
 ```
 
 ### 🎨 默认图片

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence, useMotionValue, useMotionValueEvent } from "framer-motion"
-import { DynamicImageScanner } from "@/lib/dynamicImageScanner"
+import { ImagePreloader } from "@/lib/imagePreloader"
 
 interface Trail {
   id: number
@@ -35,15 +35,15 @@ const CursorFollow = ({
   // 动态获取图片
   const [availableImages, setAvailableImages] = useState<string[]>([]);
 
-  // 在组件挂载时动态扫描图片
+  // 在组件挂载时预加载图片
   useEffect(() => {
-    const scanImages = async () => {
-      const scanner = DynamicImageScanner.getInstance();
-      const scannedImages = await scanner.scanPublicImages();
-      setAvailableImages(scannedImages);
+    const preloadImages = async () => {
+      const preloader = ImagePreloader.getInstance();
+      const preloadedImages = await preloader.preloadImages();
+      setAvailableImages(preloadedImages);
     };
 
-    scanImages();
+    preloadImages();
   }, []);
 
   const finalImages = images.length > 0 ? images : availableImages;
@@ -187,12 +187,16 @@ const CursorFollow = ({
               warmth(1.05)      /* 可选，部分浏览器不支持 */
               `,
             }}
-            onLoad={() => console.log('图片加载成功:', t.src)}
+            onLoad={() => {
+              if (showDebugInfo) {
+                console.log('图片加载成功:', t.src);
+              }
+            }}
             onError={(e) => {
-              console.error('图片加载失败:', t.src, e);
-              // 如果图片加载失败，可以设置一个默认图片
+              // 静默处理图片加载失败，不输出错误信息
               const target = e.target as HTMLImageElement;
-              target.src = '/test.jpg'; // 使用测试图片作为后备
+              // 如果图片加载失败，隐藏该图片
+              target.style.display = 'none';
             }}
           />
         ))}
