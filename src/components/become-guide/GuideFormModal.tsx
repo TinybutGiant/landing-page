@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { GuideForm, GuideFormConfig, UIComponents } from '@replit/guide-form';
 import { Button } from '@/components/ui/button';
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -34,42 +35,44 @@ interface GuideFormModalProps {
 }
 
 const GuideFormModal: React.FC<GuideFormModalProps> = ({ onClose }) => {
-  // 配置表单 - 直接提交到主项目 API
+  // 配置表单 - 统一使用环境变量指定后端地址
+  const apiBase = import.meta.env.VITE_API_URL as string | undefined;
   const config: GuideFormConfig = {
     apiEndpoints: {
-      saveDraft: 'https://your-main-project-domain.com/api/v2/guide-applications/draft',
-      submitApplication: 'https://your-main-project-domain.com/api/v2/guide-applications'
+      saveDraft: `${apiBase}/api/v2/guide-applications/draft`,
+      submitApplication: `${apiBase}/api/v2/guide-applications`
     },
     auth: {
-      getToken: () => null, // 不需要认证
-      getUserId: () => null // 不需要认证
+      getToken: () => localStorage.getItem("yaotu_token"),
+      getUserId: () => {
+        const userId = localStorage.getItem("yaotu_user_id");
+        return userId ? parseInt(userId) : null;
+      }
     },
     callbacks: {
-      onSuccess: (data) => {
-        // 成功后跳转到主项目
+      onSuccess: (_data) => {
         alert('申请提交成功！请登录主项目查看状态。');
-        window.location.href = 'https://your-main-project-domain.com/login?redirect=/become-guide';
+        window.location.href = '/login?redirect=/become-guide';
       },
+      // 统一降级为非阻塞提示，避免“下一步”时误报“提交失败”
       onError: (error) => {
-        console.error('提交失败:', error);
-        alert('提交失败，请重试');
+        console.warn('表单保存/提交出现问题:', error);
       },
       onSaveDraft: (data) => {
-        console.log('草稿已保存');
-        alert('草稿已保存，请登录主项目继续填写。');
+        console.log('草稿已保存', data);
       }
     }
   };
 
   // 使用现有的 UI 组件
   const uiComponents: UIComponents = {
-    // 基础表单组件
-    Form: ({ children, ...props }: any) => <form {...props}>{children}</form>,
-    FormField: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    FormItem: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    FormLabel: ({ children, ...props }: any) => <label {...props}>{children}</label>,
-    FormControl: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    FormMessage: ({ children, ...props }: any) => <div {...props}>{children}</div>,
+    // 基础表单组件（shadcn 规范）
+    Form,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormControl,
+    FormMessage,
     
     // 输入组件
     Input, 

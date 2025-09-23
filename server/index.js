@@ -11,6 +11,69 @@ app.use(express.json());
 let applications = [];
 let applicationIdCounter = 1;
 
+// 兼容包内使用的 v2 路径
+// 兼容任何动词保存草稿（PUT/POST from client libs）
+app.all('/api/v2/guide-applications/draft', (req, res) => {
+  try {
+    console.log('[draft] method=%s body=%j', req.method, req.body);
+    const payload = (req.body && Object.keys(req.body).length ? req.body : {}) || {};
+    // 如果有 id 则更新，否则创建
+    if (payload.id) {
+      const idx = applications.findIndex(a => a.id === Number(payload.id));
+      if (idx >= 0) {
+        applications[idx] = { ...applications[idx], ...payload };
+        return res.json({ application: applications[idx] });
+      }
+    }
+
+    const application = {
+      id: applicationIdCounter++,
+      status: 'draft',
+      savedAt: new Date().toISOString(),
+      ...payload,
+    };
+    applications.push(application);
+    return res.json({ application });
+  } catch (e) {
+    console.error('Draft save error', e);
+    return res.status(500).json({ message: 'Draft save failed' });
+  }
+});
+
+// v2 提交创建
+app.post('/api/v2/guide-applications', (req, res) => {
+  try {
+    console.log('[submit:create] body=%j', req.body);
+    const payload = req.body || {};
+    const application = {
+      id: applicationIdCounter++,
+      status: 'pending',
+      submittedAt: new Date().toISOString(),
+      ...payload,
+    };
+    applications.push(application);
+    return res.status(201).json({ success: true, application });
+  } catch (e) {
+    console.error('Submit v2 error', e);
+    return res.status(500).json({ message: 'Submit failed' });
+  }
+});
+
+// v2 更新提交
+app.put('/api/v2/guide-applications/:id', (req, res) => {
+  try {
+    console.log('[submit:update] id=%s body=%j', req.params.id, req.body);
+    const id = Number(req.params.id);
+    const idx = applications.findIndex(a => a.id === id);
+    if (idx < 0) return res.status(404).json({ message: 'Application not found' });
+    applications[idx] = { ...applications[idx], ...req.body, status: 'pending' };
+    return res.json({ success: true, application: applications[idx] });
+  } catch (e) {
+    console.error('Update v2 error', e);
+    return res.status(500).json({ message: 'Update failed' });
+  }
+});
+
 // 申请成为导游的 API 端点
 app.post('/api/guide-applications', (req, res) => {
   try {

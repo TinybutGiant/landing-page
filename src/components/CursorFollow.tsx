@@ -62,6 +62,8 @@ const CursorFollow = ({
   // 监听鼠标位置
   useMotionValueEvent(pointerX, "change", (latestX) => {
     if (isMobile) return;
+    // 如果图片尚未准备好，不创建轨迹
+    if (!finalImages || finalImages.length === 0) return;
     
     const latestY = pointerY.get()
 

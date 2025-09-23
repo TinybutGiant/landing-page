@@ -175,15 +175,14 @@ const LandingPage = () => {
           </motion.h1>
         </div>
 
-        {/* 顶层：Cursor Follow 效果 */}
-        <div className="absolute inset-0 z-10 pointer-events-none">
-          <CursorFollow 
-            containerSelector="#hero-section" 
-            cycleMode="sequential"
-            showDebugInfo={true}
-          />
-        </div>
+        {/* 仅在 Hero 区域启用的 Cursor Follow 效果 */}
+        <CursorFollow 
+          containerSelector="#hero-section"
+          cycleMode="sequential"
+          showDebugInfo={false}
+        />
       </motion.div>
+      
   
 
 
