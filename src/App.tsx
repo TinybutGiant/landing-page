@@ -10,7 +10,7 @@ import {
   Shield
 } from "lucide-react";
 import CursorFollow from "@/components/CursorFollow";
-import BecomeGuideForm from "@/components/become-guide/BecomeGuideForm";
+import GuideFormModal from "@/components/become-guide/GuideFormModal";
 
 const LandingPage = () => {
   // Refs for scroll-based animations
@@ -465,7 +465,7 @@ const LandingPage = () => {
 
       {/* Become Guide Form Modal */}
       {showBecomeGuideForm && (
-        <BecomeGuideForm onClose={() => setShowBecomeGuideForm(false)} />
+        <GuideFormModal onClose={() => setShowBecomeGuideForm(false)} />
       )}
     </div>
   );
