@@ -50,15 +50,15 @@ const GuideFormModal: React.FC<GuideFormModalProps> = ({ onClose }) => {
       }
     },
     callbacks: {
-      onSuccess: (_data) => {
+      onSuccess: (_data: any) => {
         alert('申请提交成功！请登录主项目查看状态。');
         window.location.href = '/login?redirect=/become-guide';
       },
       // 统一降级为非阻塞提示，避免“下一步”时误报“提交失败”
-      onError: (error) => {
+      onError: (error: any) => {
         console.warn('表单保存/提交出现问题:', error);
       },
-      onSaveDraft: (data) => {
+      onSaveDraft: (data: any) => {
         console.log('草稿已保存', data);
       }
     }
