@@ -49,6 +49,7 @@ export const formSchema = z.object({
     .object({
       certifications: z
         .record(
+          z.string(),  // ✅ 明确 key 类型
           z.object({
             description: z.string().optional(),
             proof: z.string().optional(),
