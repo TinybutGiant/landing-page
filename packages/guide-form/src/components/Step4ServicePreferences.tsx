@@ -79,11 +79,17 @@ export const Step4ServicePreferences = ({
   } = ui;
 
   const [serviceCategories, setServiceCategories] = useState<ServiceCategory[]>(propServiceCategories || []);
+  
+  // 监听serviceCategories状态变化
+  useEffect(() => {
+    console.log('Step4ServicePreferences: serviceCategories状态已更新:', serviceCategories);
+  }, [serviceCategories]);
   const [loading, setLoading] = useState(false);
 
   // 加载服务类别数据
   useEffect(() => {
     if (propServiceCategories) {
+      console.log('Step4ServicePreferences: 从props设置serviceCategories:', propServiceCategories);
       setServiceCategories(propServiceCategories);
       return;
     }
@@ -93,6 +99,7 @@ export const Step4ServicePreferences = ({
         try {
           setLoading(true);
           const data = await onLoadServiceCategories();
+          console.log('Step4ServicePreferences: 从API加载serviceCategories成功:', data);
           setServiceCategories(data);
         } catch (error) {
           console.error("Failed to fetch service categories:", error);

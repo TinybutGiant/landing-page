@@ -289,12 +289,31 @@ const BecomeGuidePage: React.FC = () => {
     }
   };
 
+  // 加载服务类别数据的函数
+  const loadServiceCategories = async () => {
+    try {
+      console.log('BecomeGuidePage: 开始加载服务类别数据...');
+      const response = await fetch('/api/v2/service-categories/with-subcategories');
+      if (response.ok) {
+        const data = await response.json();
+        console.log('BecomeGuidePage: 服务类别数据加载成功:', data);
+        return data;
+      } else {
+        console.error('BecomeGuidePage: 服务类别API响应失败:', response.status, response.statusText);
+        throw new Error(`API响应失败: ${response.status}`);
+      }
+    } catch (error) {
+      console.error('BecomeGuidePage: 服务类别数据加载失败:', error);
+      throw error;
+    }
+  };
+
   // 配置表单
   const config: GuideFormConfig = {
     apiEndpoints: {
       saveDraft: '', // 不使用数据库保存草稿
-      submitApplication: 'http://localhost:5000/api/v2/guide-applications', // 数据库提交端点
-      serviceCategories: 'http://localhost:5000/api/v2/service-categories/with-subcategories' // 服务类别端点
+      submitApplication: '/api/v2/guide-applications', // 数据库提交端点
+      serviceCategories: '/api/v2/service-categories/with-subcategories' // 服务类别端点
     },
     auth: {
       getToken: () => localStorage.getItem("yaotu_token"),
@@ -508,7 +527,7 @@ const BecomeGuidePage: React.FC = () => {
     const testServiceCategoriesAPI = async () => {
       try {
         console.log('BecomeGuidePage: 测试服务类别API端点...');
-        const response = await fetch('http://localhost:5000/api/v2/service-categories/with-subcategories');
+        const response = await fetch('/api/v2/service-categories/with-subcategories');
         if (response.ok) {
           const data = await response.json();
           console.log('BecomeGuidePage: 服务类别API响应成功:', data);
@@ -594,6 +613,7 @@ const BecomeGuidePage: React.FC = () => {
             ui={uiComponents}
             cities={cities}
             targetGroups={targetGroups}
+            onLoadServiceCategories={loadServiceCategories}
             customTitle="成为我们的地陪"
             customDescription="加入我们，分享你的当地知识，帮助旅行者发现真正的日本。"
             showProgressBar={true}
