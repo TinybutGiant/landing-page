@@ -153,13 +153,11 @@ const BecomeGuidePage: React.FC = () => {
     try {
       const token = localStorage.getItem("yaotu_token");
       
-      // 使用正确的API端点 - 指向主项目服务器
-      const API_BASE_URL = process.env.NODE_ENV === 'production' 
-        ? 'https://your-production-api.com' 
-        : 'http://localhost:5000';
+      // 使用相对路径，通过vite代理访问API
+      const API_BASE_URL = '';
       
       console.log('=== 🚀 开始提交申请到数据库 ===');
-      console.log('📡 API端点:', `${API_BASE_URL}/api/v2/guide-applications`);
+      console.log('📡 API端点:', `/api/v2/guide-applications`);
       console.log('🔑 认证Token:', token ? `${token.substring(0, 20)}...` : '未找到Token');
       console.log('📊 原始提交数据:', data);
       console.log('📊 提交数据类型:', typeof data);
@@ -246,7 +244,7 @@ const BecomeGuidePage: React.FC = () => {
       ));
       
       console.log('🌐 发送HTTP请求到API...');
-      const response = await fetch(`${API_BASE_URL}/api/v2/guide-applications`, {
+      const response = await fetch('/api/v2/guide-applications', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -268,6 +266,12 @@ const BecomeGuidePage: React.FC = () => {
           url: response.url,
           headers: Object.fromEntries(response.headers.entries())
         });
+        
+        // 特殊处理401认证错误
+        if (response.status === 401) {
+          throw new Error(`401: 认证失败，请重新登录`);
+        }
+        
         throw new Error(`提交失败: ${response.status} - ${errorText}`);
       }
 
@@ -372,6 +376,14 @@ const BecomeGuidePage: React.FC = () => {
           console.error('💥 错误堆栈:', error instanceof Error ? error.stack : 'No stack trace');
           console.error('💥 完整错误对象:', error);
           console.error('💥 当前localStorage数据:', getAllLocalStorageData());
+          
+          // 检查是否是401认证错误
+          if (error instanceof Error && error.message.includes('401')) {
+            console.log('🔐 检测到401认证错误，跳转到登录页面');
+            alert('登录已过期，请重新登录');
+            window.location.href = '/login?redirect=/become-guide';
+            return;
+          }
           
           // 提交失败时不清除localStorage，保留用户数据
           const errorMessage = error instanceof Error ? error.message : '请重试';

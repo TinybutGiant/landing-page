@@ -88,18 +88,16 @@ export function getUserData(): AuthUser | null {
 }
 
 /**
- * API base URL - should point to the main project's server
+ * API base URL - use relative paths with vite proxy
  */
-const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? 'https://your-production-api.com' 
-  : 'http://localhost:5000';
+const API_BASE_URL = '';
 
 /**
  * Sign up a new user
  */
 export async function signUp(userData: SignupData): Promise<{ success: boolean; user?: AuthUser; error?: string }> {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/auth/signup`, {
+    const response = await fetch('/api/auth/signup', {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(userData),
@@ -130,7 +128,7 @@ export async function signUp(userData: SignupData): Promise<{ success: boolean; 
  */
 export async function login(username: string, password: string): Promise<{ success: boolean; user?: AuthUser; error?: string }> {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+    const response = await fetch('/api/auth/login', {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password }),
@@ -169,7 +167,7 @@ export function logout(): void {
  */
 export async function checkUsernameAvailability(username: string): Promise<{ available: boolean; error?: string }> {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/auth/check-username?username=${encodeURIComponent(username)}`);
+    const response = await fetch(`/api/auth/check-username?username=${encodeURIComponent(username)}`);
     
     if (!response.ok) {
       return { available: false, error: "Failed to check username availability" };
