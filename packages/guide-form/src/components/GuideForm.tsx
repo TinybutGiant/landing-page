@@ -8,6 +8,7 @@ import { Step4ServicePreferences } from "./Step4ServicePreferences";
 import { FormNavigation } from "./FormNavigation";
 import { validateFormCompleteness } from "../utils/validation";
 import { PAGE_TITLES, TOTAL_PAGES } from "../constants";
+import { usePDFGeneration } from "../hooks/usePDFGeneration";
 
 // 统一的 UI 组件接口
 export interface UIComponents {
@@ -112,6 +113,7 @@ export const GuideForm: React.FC<GuideFormProps> = ({
     form,
     isLoading,
     isSaving,
+    isSubmitting,
     saveCurrentPageData,
     handleQualificationFilesChange,
     nextPage,
@@ -124,8 +126,25 @@ export const GuideForm: React.FC<GuideFormProps> = ({
 
   const { Form } = ui;
 
+  // PDF生成功能 - 必须在组件顶层调用
+  const { downloadPDF, isProcessing } = usePDFGeneration({
+    onSuccess: () => {
+      console.log("PDF generated successfully!");
+    },
+    onError: (error: Error) => {
+      console.error("PDF generation failed:", error);
+    },
+  });
+
+  const handleDownloadPDF = () => {
+    downloadPDF("preview-content", {
+      filename: `guide-application-${Date.now()}.pdf`,
+    });
+  };
+
   // 如果显示预览页面，渲染预览内容
   if (showPreview) {
+
     return (
       <div className="min-h-screen bg-yellow-50 py-12">
         <div className="max-w-4xl mx-auto px-4">
@@ -134,9 +153,18 @@ export const GuideForm: React.FC<GuideFormProps> = ({
             <p className="text-gray-600 mb-4">
               请仔细检查您的申请信息，确认无误后提交。
             </p>
+            <div className="mb-4">
+              <ui.Button
+                onClick={handleDownloadPDF}
+                disabled={isProcessing}
+                className="bg-blue-500 hover:bg-blue-600 text-white mr-2"
+              >
+                {isProcessing ? "生成中..." : "下载PDF"}
+              </ui.Button>
+            </div>
           </div>
 
-          <ui.Card className="shadow-lg">
+          <ui.Card className="shadow-lg" id="preview-content">
             <ui.CardContent className="p-6 space-y-8">
               {/* 基本信息 */}
               <div>
@@ -476,10 +504,10 @@ export const GuideForm: React.FC<GuideFormProps> = ({
                 <ui.Button
                   type="button"
                   onClick={onSubmit}
-                  disabled={isLoading}
+                  disabled={isLoading || isSubmitting}
                   className="bg-green-600 hover:bg-green-700"
                 >
-                  {isLoading ? "提交中..." : "确认提交申请"}
+                  {isLoading || isSubmitting ? "提交中..." : "确认提交申请"}
                 </ui.Button>
               </div>
             </ui.CardContent>

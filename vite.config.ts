@@ -33,6 +33,18 @@ export default defineConfig({
         target: "https://ahhh-yaotu.onrender.com",
         changeOrigin: true,
         secure: true,
+        rewrite: (path) => path,
+        configure: (proxy, _options) => {
+          proxy.on('error', (err, _req, _res) => {
+            console.log('❌ Proxy error:', err);
+          });
+          proxy.on('proxyReq', (proxyReq, req, _res) => {
+            console.log('📤 Sending Request to Target:', req.method, req.url, '→', proxyReq.getHeader('host'));
+          });
+          proxy.on('proxyRes', (proxyRes, req, _res) => {
+            console.log('📥 Received Response from Target:', proxyRes.statusCode, req.url);
+          });
+        },
       },
     },
   }

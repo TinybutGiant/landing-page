@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { GuideForm, GuideFormConfig, UIComponents } from '@replit/guide-form';
-import { usePDFGeneration } from '@replit/guide-form';
+import { usePDFGeneration, generatePDFBlob } from '@replit/guide-form';
 import { Button } from '@/components/ui/button';
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -40,15 +40,14 @@ const BecomeGuidePage: React.FC = () => {
   // 状态管理localStorage数据（用于调试）
   const [, setInitialDraft] = React.useState<any>(null);
   
-  // PDF功能状态
-  const [showPDFPreview, setShowPDFPreview] = React.useState(false);
+  // 状态管理
   const [applicationId] = React.useState<string>('');
   const [formData, setFormData] = React.useState<any>(null);
   
-  // PDF生成hook
-  const { downloadPDF, isProcessing } = usePDFGeneration({
-    onSuccess: () => {
-      console.log("PDF generated successfully!");
+  // PDF生成hook - 仅用于提交时的上传
+  const { uploadPDF } = usePDFGeneration({
+    onSuccess: (fileKey) => {
+      console.log("PDF generated successfully!", fileKey);
     },
     onError: (error: Error) => {
       console.error("PDF generation failed:", error);
@@ -104,25 +103,6 @@ const BecomeGuidePage: React.FC = () => {
     }
   };
 
-  // PDF相关处理函数
-  const handleDownloadPDF = () => {
-    if (!formData) {
-      console.error('No form data available for PDF generation');
-      return;
-    }
-    
-    downloadPDF("print-root", {
-      filename: `guide-application-${applicationId || 'draft'}.pdf`,
-    });
-  };
-
-  const handleShowPDFPreview = () => {
-    setShowPDFPreview(true);
-  };
-
-  const handleClosePDFPreview = () => {
-    setShowPDFPreview(false);
-  };
 
 
   // 检查用户是否已登录
@@ -130,6 +110,25 @@ const BecomeGuidePage: React.FC = () => {
     const token = localStorage.getItem("yaotu_token");
     const userId = localStorage.getItem("yaotu_user_id");
     return !!(token && userId);
+  };
+
+  // 测试代理连接
+  const testProxyConnection = async () => {
+    try {
+      console.log('🧪 测试代理连接...');
+      const response = await fetch('/api/v2/guide-applications/test');
+      if (response.ok) {
+        const data = await response.json();
+        console.log('✅ 代理连接正常:', data);
+        return true;
+      } else {
+        console.error('❌ 代理连接失败:', response.status, response.statusText);
+        return false;
+      }
+    } catch (error) {
+      console.error('❌ 代理连接测试失败:', error);
+      return false;
+    }
   };
 
   // 获取localStorage中的所有数据
@@ -148,31 +147,154 @@ const BecomeGuidePage: React.FC = () => {
     return allData;
   };
 
-  // 数据库提交申请
+  // 上传资质文件到R2
+  const uploadQualificationFiles = async (qualifications: any) => {
+    if (!qualifications || !qualifications.certifications) {
+      return qualifications;
+    }
+    
+    const token = localStorage.getItem("yaotu_token");
+    if (!token) {
+      throw new Error('用户未登录');
+    }
+    
+    const certifications = qualifications.certifications;
+    const uploadedCertifications: any = {};
+    
+    for (const [key, fileData] of Object.entries(certifications)) {
+      const file = fileData as any;
+      if (file.uploaded && file.publicUrl) {
+        // 已经上传过的文件，直接使用URL
+        uploadedCertifications[key] = {
+          description: file.description || '',
+          proof: file.publicUrl,
+          visible: file.visible !== false
+        };
+      } else if (file.data) {
+        // 需要上传的文件
+        try {
+          console.log(`开始上传文件: ${file.name}`);
+          
+          // 将base64转换为Blob
+          const response = await fetch(file.data);
+          const blob = await response.blob();
+          
+          // 创建FormData
+          const formData = new FormData();
+          formData.append('file', blob, file.name);
+          
+          // 上传到R2
+          const uploadResponse = await fetch('/api/v2/guide-applications/qualification-upload', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`
+            },
+            body: formData
+          });
+          
+          if (!uploadResponse.ok) {
+            throw new Error(`文件上传失败: ${uploadResponse.status}`);
+          }
+          
+          const result = await uploadResponse.json();
+          console.log(`文件上传成功: ${file.name}`, result);
+          
+          uploadedCertifications[key] = {
+            description: file.description || '',
+            proof: result.publicUrl,
+            visible: file.visible !== false
+          };
+        } catch (error) {
+          console.error(`文件上传失败: ${file.name}`, error);
+          throw error;
+        }
+      }
+    }
+    
+    return {
+      ...qualifications,
+      certifications: uploadedCertifications
+    };
+  };
+
+  // 上传PDF到R2并获取URL
+  const uploadPDFToR2 = async (formData: any, applicationId: number) => {
+    try {
+      const token = localStorage.getItem("yaotu_token");
+      const userId = localStorage.getItem("yaotu_user_id");
+      
+      if (!token || !userId) {
+        throw new Error('用户未登录');
+      }
+      
+      console.log('📄 开始生成并上传PDF到R2...');
+      
+      // 生成PDF Blob
+      const pdfBlob = await generatePDFBlob("preview-content", {
+        filename: `guide-application-${applicationId}-${Date.now()}.pdf`
+      });
+      
+      // 使用主项目的PDF上传API（相对路径，vite代理处理）
+      const pdfArrayBuffer = await pdfBlob.arrayBuffer();
+      
+      const uploadResponse = await fetch(`/api/v2/guide-applications/${applicationId}/archive-pdf`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/pdf',
+          'Content-Length': pdfArrayBuffer.byteLength.toString(),
+        },
+        body: pdfArrayBuffer
+      });
+      
+      if (!uploadResponse.ok) {
+        const errorText = await uploadResponse.text();
+        console.error('PDF上传失败:', uploadResponse.status, errorText);
+        throw new Error(`PDF上传失败: ${uploadResponse.status} - ${errorText}`);
+      }
+      
+      const uploadResult = await uploadResponse.json();
+      console.log('✅ PDF上传成功，文件URL:', uploadResult.publicUrl);
+      return uploadResult.publicUrl;
+    } catch (error) {
+      console.error('❌ PDF上传失败:', error);
+      throw error;
+    }
+  };
+
+  // 数据库提交申请 - 实现三个步骤的完整流程
   const submitToDatabase = async (data: any) => {
     try {
       const token = localStorage.getItem("yaotu_token");
       
-      // 使用相对路径，通过vite代理访问API
-      const API_BASE_URL = '';
-      
-      console.log('=== 🚀 开始提交申请到数据库 ===');
+      console.log('=== 🚀 开始申请提交流程 ===');
       console.log('📡 API端点:', `/api/v2/guide-applications`);
       console.log('🔑 认证Token:', token ? `${token.substring(0, 20)}...` : '未找到Token');
-      console.log('📊 原始提交数据:', data);
-      console.log('📊 提交数据类型:', typeof data);
-      console.log('📊 提交数据键:', Object.keys(data));
-      console.log('📊 提交数据完整详情:', JSON.stringify(data, null, 2));
       
       // 提取实际的表单数据
       const formData = data.data || data;
-      console.log('🔍 提取的表单数据:', formData);
-      console.log('🔍 表单数据类型:', typeof formData);
-      console.log('🔍 表单数据键:', Object.keys(formData));
-      console.log('🔍 表单数据完整详情:', JSON.stringify(formData, null, 2));
+      console.log('🔍 表单数据:', formData);
+      
+      // ========== 步骤1: 上传资质文件，更新guideApplicationData ==========
+      console.log('📁 步骤1: 开始处理资质文件上传...');
+      let processedQualifications = formData.qualifications || {};
+      
+      if (processedQualifications && Object.keys(processedQualifications).length > 0) {
+        try {
+          processedQualifications = await uploadQualificationFiles(processedQualifications);
+          console.log('✅ 步骤1完成: 资质文件上传成功');
+        } catch (error) {
+          console.error('❌ 步骤1失败: 资质文件上传失败', error);
+          throw new Error(`资质文件上传失败: ${error instanceof Error ? error.message : String(error)}`);
+        }
+      } else {
+        console.log('ℹ️ 步骤1跳过: 无资质文件需要上传');
+      }
+      
+      // ========== 步骤2: 写入数据库 ==========
+      console.log('💾 步骤2: 开始写入数据库...');
       
       // 构建最终发送给API的数据
-      console.log('⚙️ 开始构建最终API数据...');
       const finalData = {
         // 数据转换：将前端表单数据转换为后端API期望的格式
         ...formData,
@@ -189,7 +311,9 @@ const BecomeGuidePage: React.FC = () => {
         minDuration: formData.minDuration || formData.minDurationHours || 1,
         maxDuration: formData.maxDuration || formData.maxDurationHours || 8,
         // 转换价格设置
-        basePrice: formData.basePrice || formData.hourlyRate || 0,
+        basicPricePerHourCents: formData.basicPricePerHourCents || (formData.basePrice || formData.hourlyRate || 0) * 100,
+        additionalPricePerPersonCents: formData.additionalPricePerPersonCents || 0,
+        currency: formData.currency || 'JPY',
         // 转换其他字段
         bio: formData.bio || formData.description || '',
         languages: formData.languages || formData.languageSkills || [],
@@ -214,8 +338,8 @@ const BecomeGuidePage: React.FC = () => {
         q3BoundaryResponse: formData.q3BoundaryResponse || formData.q3 || '',
         q4EmotionalHandling: formData.q4EmotionalHandling || formData.q4 || '',
         q5SelfSymbol: formData.q5SelfSymbol || formData.q5 || '',
-        // 转换资质信息
-        qualifications: formData.qualifications || {},
+        // 使用处理后的资质信息
+        qualifications: processedQualifications,
         // 转换其他可选字段
         age: formData.age || null,
         mbti: formData.mbti || null,
@@ -224,26 +348,42 @@ const BecomeGuidePage: React.FC = () => {
         applicationStatus: 'pending'
       };
       
-      console.log('✅ 最终发送给API的数据:', finalData);
-      console.log('✅ 最终数据详情:', JSON.stringify(finalData, null, 2));
-      console.log('✅ 最终数据字段统计:');
-      console.log('  - 基本信息字段:', Object.keys(finalData).filter(key => 
-        ['name', 'age', 'sex', 'mbti', 'socialProfile'].includes(key)
-      ));
-      console.log('  - 服务信息字段:', Object.keys(finalData).filter(key => 
-        ['serviceCity', 'residenceInfo', 'residenceStartDate', 'occupation', 'bio'].includes(key)
-      ));
-      console.log('  - 评估字段:', Object.keys(finalData).filter(key => 
-        ['ethicsScore', 'ethicsDescription', 'boundaryScore', 'boundaryDescription', 'supportiveScore', 'supportiveDescription'].includes(key)
-      ));
-      console.log('  - 问题字段:', Object.keys(finalData).filter(key => 
-        ['q1Interaction', 'q2FavSpot', 'q3BoundaryResponse', 'q4EmotionalHandling', 'q5SelfSymbol'].includes(key)
-      ));
-      console.log('  - 服务设置字段:', Object.keys(finalData).filter(key => 
-        ['serviceSelections', 'targetGroup', 'minPeople', 'maxPeople', 'minDuration', 'maxDuration', 'basePrice'].includes(key)
-      ));
+      // 先检查用户是否真的有申请
+      console.log('🔍 检查用户是否已有申请...');
+      try {
+        if (!token) {
+          throw new Error('用户未登录');
+        }
+        
+        const checkResponse = await fetch('/api/v2/guide-applications/my-application', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        if (checkResponse.ok) {
+          const existingApp = await checkResponse.json();
+          console.log('⚠️ 发现用户已有申请:', existingApp);
+          throw new Error('用户已有申请，请更新现有申请而不是创建新申请');
+        } else if (checkResponse.status === 404) {
+          console.log('✅ 用户没有现有申请，可以创建新申请');
+        } else {
+          console.log('⚠️ 检查申请状态时出现错误:', checkResponse.status);
+        }
+      } catch (error) {
+        console.log('⚠️ 检查申请状态失败:', error);
+        // 继续执行，让后端API处理
+      }
+
+      console.log('🌐 发送HTTP请求到数据库API...');
+      console.log('🌐 请求URL:', '/api/v2/guide-applications');
+      console.log('🌐 请求方法: POST');
+      console.log('🌐 请求头:', {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token ? token.substring(0, 20) + '...' : 'null'}`
+      });
       
-      console.log('🌐 发送HTTP请求到API...');
       const response = await fetch('/api/v2/guide-applications', {
         method: 'POST',
         headers: {
@@ -254,41 +394,43 @@ const BecomeGuidePage: React.FC = () => {
       });
 
       console.log('📡 HTTP响应状态:', response.status, response.statusText);
-      console.log('📡 HTTP响应头:', Object.fromEntries(response.headers.entries()));
       
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('❌ API响应错误:', response.status, errorText);
-        console.error('❌ 错误详情:', {
-          status: response.status,
-          statusText: response.statusText,
-          errorText: errorText,
-          url: response.url,
-          headers: Object.fromEntries(response.headers.entries())
-        });
+        console.error('❌ 步骤2失败: 数据库写入失败', response.status, errorText);
         
         // 特殊处理401认证错误
         if (response.status === 401) {
           throw new Error(`401: 认证失败，请重新登录`);
         }
         
-        throw new Error(`提交失败: ${response.status} - ${errorText}`);
+        throw new Error(`数据库写入失败: ${response.status} - ${errorText}`);
       }
 
       const result = await response.json();
-      console.log('🎉 申请成功提交到数据库!');
-      console.log('🎉 服务器响应:', result);
-      console.log('🎉 响应数据类型:', typeof result);
-      console.log('🎉 响应数据键:', Object.keys(result));
-      console.log('🎉 响应数据详情:', JSON.stringify(result, null, 2));
+      console.log('✅ 步骤2完成: 数据库写入成功');
+      console.log('🎉 申请ID:', result.id || result.applicationId);
+      
+      // ========== 步骤3: 上传PDF，并更新对应的application的internal tags ==========
+      console.log('📄 步骤3: 开始生成并上传PDF...');
+      try {
+        const applicationId = result.id || result.applicationId;
+        if (applicationId) {
+          await uploadPDFToR2(formData, applicationId);
+          console.log('✅ 步骤3完成: PDF上传成功，internal tags已更新');
+        } else {
+          console.warn('⚠️ 步骤3跳过: 未找到申请ID');
+        }
+      } catch (error) {
+        console.error('❌ 步骤3失败: PDF上传失败', error);
+        // PDF上传失败不影响申请提交，但记录错误
+        console.warn('⚠️ PDF上传失败，但申请已成功提交到数据库');
+      }
+      
+      console.log('🎊 申请提交流程全部完成!');
       return result;
     } catch (error) {
-      console.error('💥 数据库提交错误:', error);
-      console.error('💥 错误类型:', typeof error);
-      console.error('💥 错误名称:', error instanceof Error ? error.name : 'Unknown');
-      console.error('💥 错误消息:', error instanceof Error ? error.message : String(error));
-      console.error('💥 错误堆栈:', error instanceof Error ? error.stack : 'No stack trace');
-      console.error('💥 完整错误对象:', error);
+      console.error('💥 申请提交流程失败:', error);
       throw error;
     }
   };
@@ -336,28 +478,18 @@ const BecomeGuidePage: React.FC = () => {
             const userId = localStorage.getItem("yaotu_user_id");
             const allLocalStorageData = getAllLocalStorageData();
             
-            console.log('=== 用户已登录，准备提交申请 ===');
+            console.log('=== 用户已登录，申请提交成功 ===');
             console.log('当前Token:', token);
             console.log('用户ID:', userId);
             console.log('localStorage中的所有数据:', allLocalStorageData);
-            
-            // 先提交到数据库，等待成功响应
-            console.log('BecomeGuidePage: 开始提交申请到数据库...');
-            
-            // 显示加载状态
-            const loadingMessage = '正在提交申请，请稍候...';
-            console.log(loadingMessage);
-            
-            const result = await submitToDatabase(data);
             console.log('🎊 申请数据已成功写入数据库!');
-            console.log('🎊 数据库返回结果:', result);
-            console.log('🎊 数据库返回结果类型:', typeof result);
-            console.log('🎊 数据库返回结果键:', Object.keys(result));
-            console.log('🎊 数据库返回结果详情:', JSON.stringify(result, null, 2));
+            console.log('🎊 提交的数据:', data);
             
             // 只有在数据库提交成功后才清除localStorage
             console.log('🧹 数据库提交成功，现在清除localStorage');
             clearLocalStorage();
+            // 清除资质文件缓存
+            localStorage.removeItem('yaotu_qualification_files');
             
             // 显示成功消息并跳转
             alert('申请提交成功！请登录主项目查看状态。');
@@ -369,7 +501,7 @@ const BecomeGuidePage: React.FC = () => {
             window.location.href = '/login?redirect=/become-guide';
           }
         } catch (error) {
-          console.error('💥 BecomeGuidePage: 提交失败:', error);
+          console.error('💥 BecomeGuidePage: 处理成功回调失败:', error);
           console.error('💥 错误类型:', typeof error);
           console.error('💥 错误名称:', error instanceof Error ? error.name : 'Unknown');
           console.error('💥 错误消息:', error instanceof Error ? error.message : String(error));
@@ -385,9 +517,9 @@ const BecomeGuidePage: React.FC = () => {
             return;
           }
           
-          // 提交失败时不清除localStorage，保留用户数据
+          // 处理失败时不清除localStorage，保留用户数据
           const errorMessage = error instanceof Error ? error.message : '请重试';
-          alert(`提交失败: ${errorMessage}`);
+          alert(`处理失败: ${errorMessage}`);
         }
       },
       onError: (error: any) => {
@@ -404,29 +536,182 @@ const BecomeGuidePage: React.FC = () => {
     }
   };
 
-  // 简化的资质上传组件
+  // 资质上传组件 - 支持localStorage缓存和R2上传
   const QualificationUploader = ({ onChange }: { onChange: (data: any) => void }) => {
     const [files, setFiles] = React.useState<File[]>([]);
+    const [uploadedFiles, setUploadedFiles] = React.useState<any[]>([]);
+    const [uploading, setUploading] = React.useState(false);
     
-    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    // 从localStorage加载已缓存的文件
+    React.useEffect(() => {
+      const loadCachedFiles = () => {
+        try {
+          const cached = localStorage.getItem('yaotu_qualification_files');
+          if (cached) {
+            const cachedFiles = JSON.parse(cached);
+            setUploadedFiles(cachedFiles);
+            console.log('从localStorage加载资质文件:', cachedFiles);
+          }
+        } catch (error) {
+          console.warn('加载缓存文件失败:', error);
+        }
+      };
+      loadCachedFiles();
+    }, []);
+    
+    const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
       const selectedFiles = Array.from(event.target.files || []);
       setFiles(selectedFiles);
-      onChange({ certifications: selectedFiles.reduce((acc: any, file: File, index: number) => {
+      
+      // 将文件转换为base64并缓存到localStorage
+      const filePromises = selectedFiles.map(async (file: File) => {
+        return new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            resolve({
+              name: file.name,
+              type: file.type,
+              size: file.size,
+              data: reader.result,
+              description: '',
+              visible: true,
+              uploaded: false
+            });
+          };
+          reader.readAsDataURL(file);
+        });
+      });
+      
+      const fileData = await Promise.all(filePromises);
+      const newUploadedFiles = [...uploadedFiles, ...fileData];
+      setUploadedFiles(newUploadedFiles);
+      
+      // 保存到localStorage
+      try {
+        localStorage.setItem('yaotu_qualification_files', JSON.stringify(newUploadedFiles));
+        console.log('资质文件已缓存到localStorage');
+      } catch (error) {
+        console.warn('保存到localStorage失败:', error);
+      }
+      
+      // 更新表单数据
+      onChange({ certifications: newUploadedFiles.reduce((acc: any, file: any, index: number) => {
         acc[`file_${index}`] = {
           name: file.name,
           type: file.type,
           size: file.size,
-          description: '',
-          visible: true
+          description: file.description,
+          visible: file.visible,
+          data: file.data,
+          uploaded: file.uploaded
         };
         return acc;
       }, {} as any) });
     };
 
+    // 上传文件到R2
+    const uploadFilesToR2 = async (files: any[]) => {
+      const token = localStorage.getItem("yaotu_token");
+      const userId = localStorage.getItem("yaotu_user_id");
+      
+      if (!token || !userId) {
+        throw new Error('用户未登录');
+      }
+      
+      const uploadPromises = files.map(async (file: any) => {
+        if (file.uploaded) {
+          return file; // 已经上传过的文件
+        }
+        
+        try {
+          // 将base64转换为Blob
+          const response = await fetch(file.data);
+          const blob = await response.blob();
+          
+          // 创建FormData
+          const formData = new FormData();
+          formData.append('file', blob, file.name);
+          
+          // 上传到R2
+          const uploadResponse = await fetch('/api/v2/guide-applications/qualification-upload', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`
+            },
+            body: formData
+          });
+          
+          if (!uploadResponse.ok) {
+            throw new Error(`上传失败: ${uploadResponse.status}`);
+          }
+          
+          const result = await uploadResponse.json();
+          console.log('文件上传成功:', result);
+          
+          return {
+            ...file,
+            uploaded: true,
+            r2Key: result.r2Key,
+            publicUrl: result.publicUrl,
+            fileId: result.fileId
+          };
+        } catch (error) {
+          console.error('文件上传失败:', error);
+          throw error;
+        }
+      });
+      
+      return await Promise.all(uploadPromises);
+    };
+
+    // 移除文件
+    const removeFile = (index: number) => {
+      const newFiles = uploadedFiles.filter((_, i) => i !== index);
+      setUploadedFiles(newFiles);
+      
+      // 更新localStorage
+      try {
+        localStorage.setItem('yaotu_qualification_files', JSON.stringify(newFiles));
+      } catch (error) {
+        console.warn('更新localStorage失败:', error);
+      }
+      
+      // 更新表单数据
+      onChange({ certifications: newFiles.reduce((acc: any, file: any, index: number) => {
+        acc[`file_${index}`] = {
+          name: file.name,
+          type: file.type,
+          size: file.size,
+          description: file.description,
+          visible: file.visible,
+          data: file.data,
+          uploaded: file.uploaded
+        };
+        return acc;
+      }, {} as any) });
+    };
+
+    // 更新文件描述
+    const updateFileDescription = (index: number, description: string) => {
+      const newFiles = [...uploadedFiles];
+      newFiles[index] = { ...newFiles[index], description };
+      setUploadedFiles(newFiles);
+      
+      // 更新localStorage
+      try {
+        localStorage.setItem('yaotu_qualification_files', JSON.stringify(newFiles));
+      } catch (error) {
+        console.warn('更新localStorage失败:', error);
+      }
+    };
+
     return (
       <div className="space-y-4">
         <div>
-          <label htmlFor="qualification-files" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">资质文件上传</label>
+          <label htmlFor="qualification-files" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+            资质文件上传
+            <span className="text-xs text-gray-500 ml-2">(支持图片、PDF，最大10MB)</span>
+          </label>
           <Input
             id="qualification-files"
             type="file"
@@ -434,15 +719,38 @@ const BecomeGuidePage: React.FC = () => {
             accept="image/*,.pdf"
             onChange={handleFileChange}
             className="mt-2"
+            disabled={uploading}
           />
         </div>
-        {files.length > 0 && (
+        
+        {uploadedFiles.length > 0 && (
           <div className="space-y-2">
             <p className="text-sm text-gray-600">已选择的文件:</p>
-            {files.map((file: File, index: number) => (
-              <div key={index} className="flex items-center space-x-2 p-2 bg-gray-50 rounded">
-                <span className="text-sm">{file.name}</span>
-                <span className="text-xs text-gray-500">({(file.size / 1024 / 1024).toFixed(2)} MB)</span>
+            {uploadedFiles.map((file: any, index: number) => (
+              <div key={index} className="flex items-center space-x-2 p-3 bg-gray-50 rounded border">
+                <div className="flex-1">
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm font-medium">{file.name}</span>
+                    <span className="text-xs text-gray-500">({(file.size / 1024 / 1024).toFixed(2)} MB)</span>
+                    {file.uploaded && (
+                      <span className="text-xs text-green-600">✓ 已上传</span>
+                    )}
+                  </div>
+                  <Input
+                    placeholder="文件描述（可选）"
+                    value={file.description}
+                    onChange={(e) => updateFileDescription(index, e.target.value)}
+                    className="mt-1 text-xs"
+                  />
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => removeFile(index)}
+                  className="text-red-500 hover:text-red-700"
+                >
+                  ×
+                </Button>
               </div>
             ))}
           </div>
@@ -535,8 +843,14 @@ const BecomeGuidePage: React.FC = () => {
     }
     console.log('BecomeGuidePage: 当前localStorage中的所有数据:', allLocalStorageData);
     
-    // 测试服务类别API端点
-    const testServiceCategoriesAPI = async () => {
+    // 测试代理连接
+    const testConnections = async () => {
+      console.log('🧪 开始测试连接...');
+      
+      // 测试代理连接
+      const proxyOk = await testProxyConnection();
+      
+      // 测试服务类别API端点
       try {
         console.log('BecomeGuidePage: 测试服务类别API端点...');
         const response = await fetch('/api/v2/service-categories/with-subcategories');
@@ -549,9 +863,13 @@ const BecomeGuidePage: React.FC = () => {
       } catch (error) {
         console.error('BecomeGuidePage: 服务类别API请求失败:', error);
       }
+      
+      if (!proxyOk) {
+        console.warn('⚠️ 代理连接可能有问题，请检查vite开发服务器是否正在运行');
+      }
     };
     
-    testServiceCategoriesAPI();
+    testConnections();
     
     const savedData = loadFromLocalStorage();
     if (savedData) {
@@ -592,33 +910,6 @@ const BecomeGuidePage: React.FC = () => {
 
         {/* Form Content */}
         <div className="max-w-4xl mx-auto p-6">
-          {/* PDF功能按钮 */}
-          {formData && (
-            <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-lg font-semibold text-yellow-800">PDF功能</h3>
-                  <p className="text-sm text-yellow-700">您可以预览和下载申请表的PDF版本</p>
-                </div>
-                <div className="flex space-x-3">
-                  <Button
-                    onClick={handleShowPDFPreview}
-                    variant="outline"
-                    className="border-yellow-300 text-yellow-700 hover:bg-yellow-100"
-                  >
-                    预览PDF
-                  </Button>
-                  <Button
-                    onClick={handleDownloadPDF}
-                    disabled={isProcessing}
-                    className="bg-yellow-500 hover:bg-yellow-600 text-black"
-                  >
-                    {isProcessing ? "生成中..." : "下载PDF"}
-                  </Button>
-                </div>
-              </div>
-            </div>
-          )}
 
           <GuideForm
             config={config}
@@ -635,138 +926,6 @@ const BecomeGuidePage: React.FC = () => {
           />
         </div>
 
-        {/* PDF预览模态框 */}
-        {showPDFPreview && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold">申请表预览</h2>
-                <div className="flex space-x-2">
-                  <Button
-                    onClick={handleDownloadPDF}
-                    disabled={isProcessing}
-                    className="bg-yellow-500 hover:bg-yellow-600 text-black"
-                  >
-                    {isProcessing ? "生成中..." : "下载PDF"}
-                  </Button>
-                  <Button
-                    onClick={handleClosePDFPreview}
-                    variant="outline"
-                  >
-                    关闭
-                  </Button>
-                </div>
-              </div>
-              
-              {/* 打印预览内容 */}
-              <div id="print-root" className="p-8 bg-white">
-                <div className="max-w-4xl mx-auto">
-                  <h1 className="text-3xl font-bold text-center mb-8 text-gray-800">向导申请表</h1>
-                  
-                  {formData && (
-                    <div className="space-y-6">
-                      {/* 基本信息 */}
-                      <div className="border-b pb-4">
-                        <h2 className="text-xl font-semibold mb-4 text-gray-700">基本信息</h2>
-                        <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <strong className="text-gray-600">姓名:</strong> 
-                            <span className="ml-2">{formData.name || formData.fullName || "未填写"}</span>
-                          </div>
-                          <div>
-                            <strong className="text-gray-600">性别:</strong> 
-                            <span className="ml-2">{formData.sex || "未填写"}</span>
-                          </div>
-                          <div>
-                            <strong className="text-gray-600">年龄:</strong> 
-                            <span className="ml-2">{formData.age || "未填写"}</span>
-                          </div>
-                          <div>
-                            <strong className="text-gray-600">MBTI:</strong> 
-                            <span className="ml-2">{formData.mbti || "未填写"}</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* 服务信息 */}
-                      <div className="border-b pb-4">
-                        <h2 className="text-xl font-semibold mb-4 text-gray-700">服务信息</h2>
-                        <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <strong className="text-gray-600">服务城市:</strong> 
-                            <span className="ml-2">{formData.serviceCity || formData.city || "未填写"}</span>
-                          </div>
-                          <div>
-                            <strong className="text-gray-600">职业:</strong> 
-                            <span className="ml-2">{formData.occupation || formData.job || "未填写"}</span>
-                          </div>
-                          <div>
-                            <strong className="text-gray-600">居住信息:</strong> 
-                            <span className="ml-2">{formData.residenceInfo || formData.residence || "未填写"}</span>
-                          </div>
-                          <div>
-                            <strong className="text-gray-600">居住开始日期:</strong> 
-                            <span className="ml-2">{formData.residenceStartDate || formData.residenceStart || "未填写"}</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* 自我描述 */}
-                      {formData.bio && (
-                        <div className="border-b pb-4">
-                          <h2 className="text-xl font-semibold mb-4 text-gray-700">自我描述</h2>
-                          <p className="text-gray-700">{formData.bio || formData.description || "未填写"}</p>
-                        </div>
-                      )}
-
-                      {/* 经验信息 */}
-                      <div className="border-b pb-4">
-                        <h2 className="text-xl font-semibold mb-4 text-gray-700">相关经验</h2>
-                        <div className="space-y-2">
-                          <div>
-                            <strong className="text-gray-600">经验时长:</strong> 
-                            <span className="ml-2">{formData.experienceDuration || formData.experience || "未填写"}</span>
-                          </div>
-                          <div>
-                            <strong className="text-gray-600">服务场次:</strong> 
-                            <span className="ml-2">{formData.experienceSession || formData.sessions || "未填写"}</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* 价格设置 */}
-                      <div className="border-b pb-4">
-                        <h2 className="text-xl font-semibold mb-4 text-gray-700">价格设置</h2>
-                        <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <strong className="text-gray-600">基础价格:</strong> 
-                            <span className="ml-2">{formData.basePrice || formData.hourlyRate || "未设置"}</span>
-                          </div>
-                          <div>
-                            <strong className="text-gray-600">服务人数:</strong> 
-                            <span className="ml-2">{formData.minPeople || 1} - {formData.maxPeople || 10} 人</span>
-                          </div>
-                          <div>
-                            <strong className="text-gray-600">服务时长:</strong> 
-                            <span className="ml-2">{formData.minDuration || 1} - {formData.maxDuration || 8} 小时</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* 申请时间 */}
-                      <div className="pt-4">
-                        <div className="flex justify-between text-sm text-gray-500">
-                          <span>申请日期: {new Date().toLocaleDateString("zh-CN")}</span>
-                          <span>申请ID: {applicationId || "draft"}</span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* 隐藏的打印根元素 */}
         <div id="print-root" className="hidden print:block">

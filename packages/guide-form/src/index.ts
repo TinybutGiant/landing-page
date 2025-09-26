@@ -6,6 +6,13 @@ export { useGuideForm } from "./hooks/useGuideForm";
 export { PrintAndSave } from "./components/PrintAndSave";
 export { usePDFGeneration } from "./hooks/usePDFGeneration";
 
+// 申请状态相关组件
+export { default as ApplicationStatus } from "./components/ApplicationStatus";
+export { ApprovalTimeline } from "./components/ApprovalTimeline";
+export { SupplementalMaterialsUpload } from "./components/SupplementalMaterialsUpload";
+export { useApprovalTimeline } from "./hooks/useApprovalTimeline";
+export { useApplicationStatus } from "./hooks/useApplicationStatus";
+
 // 类型定义
 export type { 
   FormData, 
@@ -14,6 +21,7 @@ export type {
 export type { UIComponents } from "./components/GuideForm";
 export type { PrintAndSaveProps } from "./components/PrintAndSave";
 export type { UsePDFGenerationOptions } from "./hooks/usePDFGeneration";
+export type { ApprovalTimelineEntry } from "./hooks/useApprovalTimeline";
 
 // 工具函数
 export { validateFormCompleteness } from "./utils/validation";

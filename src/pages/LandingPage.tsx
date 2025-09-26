@@ -417,7 +417,7 @@ const LandingPage = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             viewport={{ once: true }}
-            className="flex flex-col sm:flex-row gap-4 justify-center"
+            className="flex flex-col items-center gap-4"
           >
             <motion.div
               whileHover={{ scale: 1.05, y: -2 }}
@@ -451,6 +451,26 @@ const LandingPage = () => {
                   transition={{ duration: 0.3 }}
                 />
               </Button>
+            </motion.div>
+            
+            {/* Application Status Link */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              viewport={{ once: true }}
+              className="mt-2"
+            >
+              <motion.button
+                onClick={() => window.location.href = '/view-application-status'}
+                className="text-white/80 hover:text-white underline text-lg transition-colors duration-300"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                transition={{ duration: 0.2 }}
+                data-cursor-hover
+              >
+                Already Applied? View Your Application Status
+              </motion.button>
             </motion.div>
           </motion.div>
         </div>
