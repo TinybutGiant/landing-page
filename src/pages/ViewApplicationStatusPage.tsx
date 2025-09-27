@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { 
   ApplicationStatus,
   ApprovalTimeline,
@@ -25,6 +25,11 @@ import {
 import { useToast } from "../hooks/use-toast";
 import { apiRequest } from "../lib/queryClient";
 import { isAuthenticated } from "../lib/auth";
+import { 
+  checkAndGenerateGuideForUser, 
+  triggerLazyEvaluationForApprovedApplication,
+  getUserGuideStatus 
+} from "../lib/guideGenerationService";
 
 interface ApplicationDetails {
   id: string;
@@ -48,6 +53,7 @@ interface ApprovalTimelineEntry {
 export default function ViewApplicationStatusPage() {
   const { toast } = useToast();
   const [location, setLocation] = useLocation();
+  const [lazyEvaluationTriggered, setLazyEvaluationTriggered] = useState(false);
   
   // 检查是否是提交后跳转过来的
   const isJustSubmitted = new URLSearchParams(location.split('?')[1]).get('submitted') === 'true';
@@ -94,6 +100,73 @@ export default function ViewApplicationStatusPage() {
     retry: false,
     staleTime: 5 * 60 * 1000,
   });
+
+  // Lazy evaluation for approved applications
+  useEffect(() => {
+    const triggerLazyEvaluation = async () => {
+      if (!application || !isAuthenticated() || lazyEvaluationTriggered) {
+        return;
+      }
+
+      // Only trigger for approved applications
+      if (application.applicationStatus === 'approved') {
+        console.log('[LANDING_PAGE] 🚀 Application is approved, checking user guide status...');
+        setLazyEvaluationTriggered(true);
+
+        try {
+          // Get user ID from token
+          const token = localStorage.getItem('yaotu_token');
+          if (!token) return;
+
+          // Decode token to get user ID (assuming JWT format)
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          const userId = payload.id || payload.userId;
+
+          if (!userId) {
+            console.error('[LANDING_PAGE] No user ID found in token');
+            return;
+          }
+
+          // First check if user is already a guide
+          console.log(`[LANDING_PAGE] Checking user guide status for user ${userId}`);
+          const userStatus = await getUserGuideStatus(userId);
+          
+          if (userStatus.isGuide) {
+            console.log('[LANDING_PAGE] ✅ User is already a guide, skipping lazy evaluation');
+            return;
+          }
+
+          console.log(`[LANDING_PAGE] User is not a guide yet, triggering lazy evaluation for application ${application.id}`);
+          
+          // Trigger lazy evaluation
+          const result = await triggerLazyEvaluationForApprovedApplication(application.id, userId);
+          
+          if (result.success) {
+            console.log('[LANDING_PAGE] ✅ Lazy evaluation successful:', result.message);
+            toast({
+              title: "恭喜！",
+              description: "您的地陪资料已自动生成，现在可以开始接待客户了！",
+            });
+          } else {
+            console.log('[LANDING_PAGE] ⚠️ Lazy evaluation result:', result.message);
+            // Don't show error toast for expected cases like "already a guide"
+            if (!result.message.includes('already') && !result.message.includes('already has')) {
+              toast({
+                title: "处理中",
+                description: "正在为您生成地陪资料，请稍候...",
+                variant: "default"
+              });
+            }
+          }
+        } catch (error) {
+          console.error('[LANDING_PAGE] Error triggering lazy evaluation:', error);
+          // Don't show error toast to avoid confusing the user
+        }
+      }
+    };
+
+    triggerLazyEvaluation();
+  }, [application, lazyEvaluationTriggered, toast]);
 
   // 文件上传处理
   const handleFileUpload = async (file: File) => {
@@ -179,7 +252,8 @@ export default function ViewApplicationStatusPage() {
 
   // 导航处理
   const handleNavigateToGuide = () => {
-    window.location.href = "/guide-dashboard";
+    // Redirect to main project's guide dashboard
+    window.location.href = "https://ahhh-yaotu.onrender.com/guide-dashboard";
   };
 
   const handleNavigateToBecomeGuide = () => {
