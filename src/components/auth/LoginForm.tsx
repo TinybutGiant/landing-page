@@ -9,6 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { ArrowLeft, User, Lock, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 
 const loginSchema = z.object({
   username: z.string().min(1, '请输入用户名'),
@@ -25,6 +26,7 @@ interface LoginFormProps {
 const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, redirectTo }) => {
   const [showPassword, setShowPassword] = useState(false);
   const { login, user } = useAuth();
+  const { toast } = useToast();
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema as any),
@@ -68,6 +70,11 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, redirectTo }) => {
       const success = await login(data.username, data.password);
       if (success) {
         console.log('LoginForm: 登录成功');
+        toast({
+          title: "登录成功",
+          description: "欢迎回来！",
+          variant: "success"
+        });
         
         // 登录后检查localStorage状态
         const afterLoginData: { [key: string]: any } = {};
@@ -92,11 +99,19 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, redirectTo }) => {
           window.location.href = '/become-guide';
         }
       } else {
-        alert('登录失败，请检查用户名和密码');
+        toast({
+          title: "登录失败",
+          description: "请检查用户名和密码",
+          variant: "destructive"
+        });
       }
     } catch (error) {
       console.error('Login error:', error);
-      alert('登录失败，请检查网络连接');
+      toast({
+        title: "登录失败",
+        description: "请检查网络连接",
+        variant: "destructive"
+      });
     }
   };
 

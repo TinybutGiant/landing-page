@@ -25,6 +25,7 @@ import { Progress } from '@/components/ui/progress';
 import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { useToast } from '@/hooks/use-toast';
 import { 
   ChevronLeft, 
   ChevronRight, 
@@ -34,6 +35,9 @@ import {
 import { YearMonthPicker } from '@/components/YearMonthPicker';
 
 const BecomeGuidePage: React.FC = () => {
+  // Toast hook
+  const { toast } = useToast();
+  
   // localStorage 相关功能
   const STORAGE_KEY = 'yaotu_guide_form_draft';
   
@@ -329,12 +333,20 @@ const BecomeGuidePage: React.FC = () => {
             localStorage.removeItem('yaotu_qualification_files');
             
             // 显示成功消息并跳转
-            alert('申请提交成功！请登录主项目查看状态。');
+            toast({
+              title: "申请提交成功！",
+              description: "请登录主项目查看状态。",
+              variant: "success"
+            });
             window.location.href = '/';
           } else {
             // 未登录，不清除localStorage，跳转到登录页面
             console.log('用户未登录，跳转到登录页面');
-            alert('请先登录后再提交申请');
+            toast({
+              title: "请先登录",
+              description: "请先登录后再提交申请",
+              variant: "destructive"
+            });
             window.location.href = '/login?redirect=/become-guide';
           }
         } catch (error) {
@@ -349,19 +361,31 @@ const BecomeGuidePage: React.FC = () => {
           // 检查是否是401认证错误
           if (error instanceof Error && error.message.includes('401')) {
             console.log('🔐 检测到401认证错误，跳转到登录页面');
-            alert('登录已过期，请重新登录');
+            toast({
+              title: "登录已过期",
+              description: "请重新登录",
+              variant: "destructive"
+            });
             window.location.href = '/login?redirect=/become-guide';
             return;
           }
           
           // 处理失败时不清除localStorage，保留用户数据
           const errorMessage = error instanceof Error ? error.message : '请重试';
-          alert(`处理失败: ${errorMessage}`);
+          toast({
+            title: "处理失败",
+            description: errorMessage,
+            variant: "destructive"
+          });
         }
       },
       onError: (error: any) => {
         console.warn('表单操作出现问题:', error);
-        alert('操作失败，请重试');
+        toast({
+          title: "操作失败",
+          description: "请重试",
+          variant: "destructive"
+        });
       },
       onSaveDraft: (data: any) => {
         console.log('草稿已保存到localStorage', data);

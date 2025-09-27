@@ -7,6 +7,7 @@ import LoginPage from "@/pages/LoginPage";
 import PDFTestPage from "@/pages/PDFTestPage";
 import ViewApplicationStatusPage from "@/pages/ViewApplicationStatusPage";
 import { AuthProvider } from "@/context/AuthContext";
+import { Toaster } from "@/components/ui/toaster";
 
 // 创建QueryClient实例
 const queryClient = new QueryClient({
@@ -30,6 +31,7 @@ const App = () => {
           <Route path="/pdf-test" component={PDFTestPage} />
           <Route path="/view-application-status" component={ViewApplicationStatusPage} />
         </Router>
+        <Toaster />
       </AuthProvider>
     </QueryClientProvider>
   );

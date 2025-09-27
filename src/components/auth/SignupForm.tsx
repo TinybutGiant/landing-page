@@ -10,6 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { ArrowLeft, User, Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 import { checkUsernameAvailability, validateUsername, calculatePasswordStrength } from "@/lib/auth";
 
 const signupSchema = z.object({
@@ -36,6 +37,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, redirectTo }) => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [emailUpdates, setEmailUpdates] = useState(false);
+  const { toast } = useToast();
   
   // Username validation state
   const [usernameError, setUsernameError] = useState<string>("");
@@ -99,12 +101,20 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, redirectTo }) => {
 
   const onSubmit = async (data: SignupFormData) => {
     if (!agreedToTerms) {
-      alert("请同意服务条款和隐私声明");
+      toast({
+        title: "请同意服务条款",
+        description: "请同意服务条款和隐私声明",
+        variant: "destructive"
+      });
       return;
     }
 
     if (usernameError) {
-      alert("请选择一个可用的用户名");
+      toast({
+        title: "用户名不可用",
+        description: "请选择一个可用的用户名",
+        variant: "destructive"
+      });
       return;
     }
 
@@ -136,6 +146,11 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, redirectTo }) => {
       const success = await signUp(signupData);
       if (success) {
         console.log('SignupForm: 注册成功，用户已自动登录');
+        toast({
+          title: "注册成功",
+          description: "欢迎加入我们！",
+          variant: "success"
+        });
         
         // 注册后检查localStorage状态
         const afterSignupData: { [key: string]: any } = {};
@@ -162,7 +177,11 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, redirectTo }) => {
       }
     } catch (error) {
       console.error('Signup error:', error);
-      alert('注册失败，请重试');
+      toast({
+        title: "注册失败",
+        description: "请重试",
+        variant: "destructive"
+      });
     }
   };
 
