@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
+import { useEffect } from "react";
 import { 
   ApplicationStatus,
   ApprovalTimeline,
@@ -23,6 +24,7 @@ import {
 } from "lucide-react";
 import { useToast } from "../hooks/use-toast";
 import { apiRequest } from "../lib/queryClient";
+import { isAuthenticated } from "../lib/auth";
 
 interface ApplicationDetails {
   id: string;
@@ -45,10 +47,30 @@ interface ApprovalTimelineEntry {
 
 export default function ViewApplicationStatusPage() {
   const { toast } = useToast();
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
   
   // 检查是否是提交后跳转过来的
   const isJustSubmitted = new URLSearchParams(location.split('?')[1]).get('submitted') === 'true';
+
+  // 认证检查
+  useEffect(() => {
+    if (!isAuthenticated()) {
+      console.log('用户未认证，重定向到登录页面');
+      setLocation('/login?redirect=/view-application-status');
+    }
+  }, [setLocation]);
+
+  // 如果用户未认证，显示加载状态
+  if (!isAuthenticated()) {
+    return (
+      <div className="min-h-screen bg-yellow-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">正在验证身份...</p>
+        </div>
+      </div>
+    );
+  }
 
   // Fetch application details
   const { data: application, isLoading, error } = useQuery<ApplicationDetails>({

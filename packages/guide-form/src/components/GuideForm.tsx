@@ -157,7 +157,7 @@ export const GuideForm: React.FC<GuideFormProps> = ({
               <ui.Button
                 onClick={handleDownloadPDF}
                 disabled={isProcessing}
-                className="bg-blue-500 hover:bg-blue-600 text-white mr-2"
+                className="bg-blue-500 hover:bg-blue-600 text-black mr-2"
               >
                 {isProcessing ? "生成中..." : "下载PDF"}
               </ui.Button>
@@ -547,9 +547,24 @@ export const GuideForm: React.FC<GuideFormProps> = ({
 
         <ui.Card className="rounded-2xl shadow-lg">
           <ui.CardHeader className="bg-yellow-400 rounded-t-2xl">
-            <ui.CardTitle className="text-white">
+            <ui.CardTitle className="text-black">
               {PAGE_TITLES[currentPage as keyof typeof PAGE_TITLES]}
             </ui.CardTitle>
+            {currentPage === 2 && (
+              <p className="text-sm text-gray-700 mt-2">
+                用于匹配"天选地陪"标签，请诚实评价自己
+              </p>
+            )}
+            {currentPage === 3 && (
+              <p className="text-sm text-gray-700 mt-2">
+                打破模板化申请，评估适配度
+              </p>
+            )}
+            {currentPage === 4 && (
+              <p className="text-sm text-gray-700 mt-2">
+                设置您的服务范围、定价和偏好
+              </p>
+            )}
           </ui.CardHeader>
           <ui.CardContent className="p-6">
             <Form {...form}>

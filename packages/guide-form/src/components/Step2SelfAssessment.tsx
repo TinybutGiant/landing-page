@@ -39,14 +39,6 @@ export const Step2SelfAssessment = ({ control, ui }: Step2SelfAssessmentProps) =
 
   return (
     <div className="space-y-8">
-      <div className="text-center">
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">
-          自我认知评估
-        </h3>
-        <p className="text-sm text-gray-600">
-          用于匹配"天选地陪"标签，请诚实评价自己
-        </p>
-      </div>
 
       {/* 道德感评分 */}
       <div className="space-y-4">

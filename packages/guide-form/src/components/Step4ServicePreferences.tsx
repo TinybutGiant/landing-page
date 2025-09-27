@@ -114,14 +114,6 @@ export const Step4ServicePreferences = ({
 
   return (
     <div className="space-y-8">
-      <div className="text-center">
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">
-          服务类型与偏好
-        </h3>
-        <p className="text-sm text-gray-600">
-          设置您的服务范围、定价和偏好
-        </p>
-      </div>
 
       {/* 服务对象选择 */}
       <Card>

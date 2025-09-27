@@ -28,14 +28,6 @@ export const Step3PersonalizedQuestions = ({ control, ui }: Step3PersonalizedQue
 
   return (
     <div className="space-y-6">
-      <div className="text-center">
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">
-          个性化提问
-        </h3>
-        <p className="text-sm text-gray-600">
-          打破模板化申请，评估适配度
-        </p>
-      </div>
 
       <FormField
         control={control}

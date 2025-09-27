@@ -193,7 +193,7 @@ export default function ApplicationStatus({
               </p>
               <Button 
                 onClick={onNavigateToBecomeGuide}
-                className="bg-yellow-500 hover:bg-yellow-600"
+                className="bg-yellow-500 hover:bg-yellow-600 text-black"
               >
                 开始申请
               </Button>
@@ -218,7 +218,7 @@ export default function ApplicationStatus({
           {/* 申请状态卡片 */}
           <Card className="rounded-2xl shadow-lg">
             <CardHeader className="bg-yellow-400 rounded-t-2xl">
-              <CardTitle className="text-white flex items-center gap-3">
+              <CardTitle className="text-black flex items-center gap-3">
                 {statusInfo.icon}
                 申请状态
               </CardTitle>
@@ -342,7 +342,7 @@ export default function ApplicationStatus({
                 <div className="flex justify-center">
                   <Button
                     onClick={onDownloadPDF}
-                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                    className="bg-blue-600 hover:bg-blue-700 text-black"
                   >
                     <Download className="w-4 h-4 mr-2" />
                     下载PDF申请文件
@@ -371,7 +371,7 @@ export default function ApplicationStatus({
                   </p>
                 </div>
                 
-                <Button className="bg-orange-600 hover:bg-orange-700">
+                <Button className="bg-orange-600 hover:bg-orange-700 text-black">
                   <Upload className="h-4 w-4 mr-2" />
                   上传补充材料
                 </Button>
@@ -391,7 +391,7 @@ export default function ApplicationStatus({
                   </p>
                   <Button 
                     onClick={onNavigateToGuide}
-                    className="bg-green-600 hover:bg-green-700"
+                    className="bg-green-600 hover:bg-green-700 text-black"
                   >
                     前往地陪控制台
                   </Button>
