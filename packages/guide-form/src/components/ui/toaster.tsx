@@ -1,5 +1,6 @@
 import {
   Toast,
+  ToastAction,
   ToastClose,
   ToastDescription,
   ToastProvider,
@@ -30,7 +31,7 @@ export function Toaster() {
                 <ToastDescription>{description}</ToastDescription>
               )}
             </div>
-            {action}
+            {action && <ToastAction {...action} />}
             <ToastClose />
           </Toast>
         )
