@@ -191,29 +191,12 @@ export const useGuideForm = (
       }
 
       const result = await response.json();
-      console.log('✅ 数据库提交成功，响应数据:', result);
       
       // 存储申请ID到localStorage，供PDF上传使用
-      // 申请ID可能在 result.id、result.applicationId 或 result.application.id 中
       const applicationId = result.id || result.applicationId || result.application?.id;
-      console.log('💾 提取的申请ID:', applicationId);
-      console.log('💾 申请ID类型:', typeof applicationId);
-      console.log('💾 完整响应结构:', {
-        hasId: !!result.id,
-        hasApplicationId: !!result.applicationId,
-        hasApplication: !!result.application,
-        applicationKeys: result.application ? Object.keys(result.application) : 'no application'
-      });
       
       if (applicationId) {
         localStorage.setItem('yaotu_application_id', applicationId.toString());
-        console.log('💾 申请ID已存储到localStorage:', applicationId);
-        console.log('💾 验证存储结果:', localStorage.getItem('yaotu_application_id'));
-      } else {
-        console.warn('⚠️ 响应中没有找到申请ID');
-        console.warn('⚠️ 响应数据结构:', Object.keys(result));
-        console.warn('⚠️ 完整响应:', result);
-        console.warn('⚠️ application对象:', result.application);
       }
       
       return result;
