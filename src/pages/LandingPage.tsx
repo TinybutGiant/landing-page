@@ -10,6 +10,7 @@ import {
   Shield
 } from "lucide-react";
 import CursorFollow from "@/components/CursorFollow";
+import { useAuth } from "@/context/AuthContext";
 
 const LandingPage = () => {
   // Refs for scroll-based animations
@@ -17,6 +18,9 @@ const LandingPage = () => {
   const featuresRef = useRef(null);
   const testimonialsRef = useRef(null);
   const ctaRef = useRef(null);
+  
+  // Auth context
+  const { isAuthenticated } = useAuth();
   
   // Scroll-based animations for hero section
   const { scrollYProgress } = useScroll({
@@ -73,6 +77,17 @@ const LandingPage = () => {
       text: "The cultural insights were invaluable. Highly recommend this platform!"
     }
   ];
+
+  // Handle application status navigation with auth check
+  const handleViewApplicationStatus = () => {
+    if (isAuthenticated) {
+      // User is logged in, navigate directly
+      window.location.href = '/view-application-status';
+    } else {
+      // User is not logged in, redirect to login with redirect parameter
+      window.location.href = '/login?redirect=/view-application-status';
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-white to-orange-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
@@ -462,7 +477,7 @@ const LandingPage = () => {
               className="mt-2"
             >
               <motion.button
-                onClick={() => window.location.href = '/view-application-status'}
+                onClick={handleViewApplicationStatus}
                 className="text-white/80 hover:text-white underline text-lg transition-colors duration-300"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}

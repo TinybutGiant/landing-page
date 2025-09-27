@@ -198,17 +198,20 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, redirectTo }) => {
               </form>
             </Form>
 
-            <div className="mt-6 text-center">
-              <p className="text-sm text-gray-600">
-                还没有账号？{' '}
-                <button
-                  onClick={() => window.location.href = '/signup'}
-                  className="text-yellow-600 hover:text-yellow-700 font-medium"
-                >
-                  立即注册
-                </button>
-              </p>
-            </div>
+            {/* Only show signup link if redirect is specifically to become-guide */}
+            {redirectTo === '/become-guide' && (
+              <div className="mt-6 text-center">
+                <p className="text-sm text-gray-600">
+                  还没有账号？{' '}
+                  <button
+                    onClick={() => window.location.href = '/signup'}
+                    className="text-yellow-600 hover:text-yellow-700 font-medium"
+                  >
+                    立即注册
+                  </button>
+                </p>
+              </div>
+            )}
           </CardContent>
         </Card>
       </motion.div>
