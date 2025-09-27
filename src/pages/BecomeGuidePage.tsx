@@ -217,11 +217,54 @@ const BecomeGuidePage: React.FC = () => {
     };
   };
 
+  // 只处理PDF上传的函数（不重复提交申请）
+  const handlePDFUpload = async (data: any) => {
+    try {
+      console.log('📄 开始处理PDF上传...');
+      console.log('📄 传入的数据:', data);
+      
+      // 从localStorage获取申请ID（在submitToDatabase中应该已经存储）
+      const applicationId = localStorage.getItem('yaotu_application_id');
+      console.log('📄 localStorage中的申请ID:', applicationId);
+      console.log('📄 localStorage中的所有数据:', {
+        yaotu_application_id: localStorage.getItem('yaotu_application_id'),
+        yaotu_user_id: localStorage.getItem('yaotu_user_id'),
+        yaotu_token: localStorage.getItem('yaotu_token') ? '存在' : '不存在'
+      });
+      
+      if (!applicationId) {
+        console.warn('⚠️ 未找到申请ID，跳过PDF上传');
+        console.warn('⚠️ 请检查submitToDatabase是否成功执行并存储了申请ID');
+        return;
+      }
+      
+      console.log('📄 找到申请ID:', applicationId);
+      console.log('📄 申请ID类型:', typeof applicationId);
+      console.log('📄 申请ID长度:', applicationId.length);
+      console.log('📄 是否为UUID格式:', /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(applicationId));
+      
+      // 上传PDF到R2 - 直接使用UUID字符串，不要转换为数字
+      await uploadPDFToR2(data, applicationId);
+      console.log('✅ PDF上传完成');
+      
+    } catch (error) {
+      console.error('❌ PDF上传失败:', error);
+      // PDF上传失败不影响申请提交，但记录错误
+      console.warn('⚠️ PDF上传失败，但申请已成功提交到数据库');
+    }
+  };
+
   // 上传PDF到R2并获取URL
-  const uploadPDFToR2 = async (formData: any, applicationId: number) => {
+  const uploadPDFToR2 = async (formData: any, applicationId: string | number) => {
     try {
       const token = localStorage.getItem("yaotu_token");
       const userId = localStorage.getItem("yaotu_user_id");
+      
+      console.log('📄 ========== PDF上传开始 ==========');
+      console.log('📄 申请ID:', applicationId);
+      console.log('📄 用户ID:', userId);
+      console.log('📄 Token存在:', !!token);
+      console.log('📄 表单数据:', formData);
       
       if (!token || !userId) {
         throw new Error('用户未登录');
@@ -234,10 +277,23 @@ const BecomeGuidePage: React.FC = () => {
         filename: `guide-application-${applicationId}-${Date.now()}.pdf`
       });
       
+      console.log('📄 PDF Blob生成成功，大小:', pdfBlob.size, 'bytes');
+      
       // 使用主项目的PDF上传API（相对路径，vite代理处理）
       const pdfArrayBuffer = await pdfBlob.arrayBuffer();
+      console.log('📄 PDF ArrayBuffer大小:', pdfArrayBuffer.byteLength, 'bytes');
       
-      const uploadResponse = await fetch(`/api/v2/guide-applications/${applicationId}/archive-pdf`, {
+      const apiUrl = `/api/v2/guide-applications/${applicationId}/archive-pdf`;
+      console.log('📄 API端点:', apiUrl);
+      console.log('📄 请求方法: POST');
+      console.log('📄 请求头:', {
+        'Authorization': `Bearer ${token.substring(0, 20)}...`,
+        'Content-Type': 'application/pdf',
+        'Content-Length': pdfArrayBuffer.byteLength.toString(),
+      });
+      console.log('📄 请求体大小:', pdfArrayBuffer.byteLength, 'bytes');
+      
+      const uploadResponse = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -247,193 +303,40 @@ const BecomeGuidePage: React.FC = () => {
         body: pdfArrayBuffer
       });
       
+      console.log('📄 HTTP响应状态:', uploadResponse.status, uploadResponse.statusText);
+      console.log('📄 响应头:', Object.fromEntries(uploadResponse.headers.entries()));
+      
       if (!uploadResponse.ok) {
         const errorText = await uploadResponse.text();
-        console.error('PDF上传失败:', uploadResponse.status, errorText);
+        console.error('❌ PDF上传失败:', uploadResponse.status, errorText);
+        console.error('❌ 响应详情:', {
+          status: uploadResponse.status,
+          statusText: uploadResponse.statusText,
+          headers: Object.fromEntries(uploadResponse.headers.entries()),
+          body: errorText
+        });
         throw new Error(`PDF上传失败: ${uploadResponse.status} - ${errorText}`);
       }
       
       const uploadResult = await uploadResponse.json();
-      console.log('✅ PDF上传成功，文件URL:', uploadResult.publicUrl);
-      return uploadResult.publicUrl;
+      console.log('✅ PDF上传成功！');
+      console.log('✅ 响应数据:', uploadResult);
+      console.log('✅ 文件URL:', uploadResult.publicUrl || uploadResult.url);
+      console.log('📄 ========== PDF上传完成 ==========');
+      
+      return uploadResult.publicUrl || uploadResult.url;
     } catch (error) {
       console.error('❌ PDF上传失败:', error);
+      console.error('❌ 错误详情:', {
+        name: error instanceof Error ? error.name : 'Unknown',
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : 'No stack trace'
+      });
       throw error;
     }
   };
 
-  // 数据库提交申请 - 实现三个步骤的完整流程
-  const submitToDatabase = async (data: any) => {
-    try {
-      const token = localStorage.getItem("yaotu_token");
-      
-      console.log('=== 🚀 开始申请提交流程 ===');
-      console.log('📡 API端点:', `/api/v2/guide-applications`);
-      console.log('🔑 认证Token:', token ? `${token.substring(0, 20)}...` : '未找到Token');
-      
-      // 提取实际的表单数据
-      const formData = data.data || data;
-      console.log('🔍 表单数据:', formData);
-      
-      // ========== 步骤1: 上传资质文件，更新guideApplicationData ==========
-      console.log('📁 步骤1: 开始处理资质文件上传...');
-      let processedQualifications = formData.qualifications || {};
-      
-      if (processedQualifications && Object.keys(processedQualifications).length > 0) {
-        try {
-          processedQualifications = await uploadQualificationFiles(processedQualifications);
-          console.log('✅ 步骤1完成: 资质文件上传成功');
-        } catch (error) {
-          console.error('❌ 步骤1失败: 资质文件上传失败', error);
-          throw new Error(`资质文件上传失败: ${error instanceof Error ? error.message : String(error)}`);
-        }
-      } else {
-        console.log('ℹ️ 步骤1跳过: 无资质文件需要上传');
-      }
-      
-      // ========== 步骤2: 写入数据库 ==========
-      console.log('💾 步骤2: 开始写入数据库...');
-      
-      // 构建最终发送给API的数据
-      const finalData = {
-        // 数据转换：将前端表单数据转换为后端API期望的格式
-        ...formData,
-        // 确保必需字段存在
-        name: formData.name || formData.fullName || '未填写',
-        sex: formData.sex || 'Prefer not to say',
-        // 转换服务选择数据
-        serviceSelections: formData.serviceSelections || [],
-        targetGroup: formData.targetGroup || [],
-        // 转换人数设置
-        minPeople: formData.minPeople || formData.minPeopleCount || 1,
-        maxPeople: formData.maxPeople || formData.maxPeopleCount || 10,
-        // 转换时长设置
-        minDuration: formData.minDuration || formData.minDurationHours || 1,
-        maxDuration: formData.maxDuration || formData.maxDurationHours || 8,
-        // 转换价格设置
-        basicPricePerHourCents: formData.basicPricePerHourCents || (formData.basePrice || formData.hourlyRate || 0) * 100,
-        additionalPricePerPersonCents: formData.additionalPricePerPersonCents || 0,
-        currency: formData.currency || 'JPY',
-        // 转换其他字段
-        bio: formData.bio || formData.description || '',
-        languages: formData.languages || formData.languageSkills || [],
-        experienceDuration: formData.experienceDuration || formData.experience || '',
-        experienceSession: formData.experienceSession || formData.sessions || '',
-        // 转换服务城市
-        serviceCity: formData.serviceCity || formData.city || '',
-        // 转换居住信息
-        residenceInfo: formData.residenceInfo || formData.residence || '',
-        residenceStartDate: formData.residenceStartDate || formData.residenceStart || null,
-        occupation: formData.occupation || formData.job || '',
-        // 转换自我评估
-        ethicsScore: formData.ethicsScore || 0,
-        ethicsDescription: formData.ethicsDescription || '',
-        boundaryScore: formData.boundaryScore || 0,
-        boundaryDescription: formData.boundaryDescription || '',
-        supportiveScore: formData.supportiveScore || 0,
-        supportiveDescription: formData.supportiveDescription || '',
-        // 转换灵魂提问
-        q1Interaction: formData.q1Interaction || formData.q1 || '',
-        q2FavSpot: formData.q2FavSpot || formData.q2 || '',
-        q3BoundaryResponse: formData.q3BoundaryResponse || formData.q3 || '',
-        q4EmotionalHandling: formData.q4EmotionalHandling || formData.q4 || '',
-        q5SelfSymbol: formData.q5SelfSymbol || formData.q5 || '',
-        // 使用处理后的资质信息
-        qualifications: processedQualifications,
-        // 转换其他可选字段
-        age: formData.age || null,
-        mbti: formData.mbti || null,
-        socialProfile: formData.socialProfile || formData.socialMedia || '',
-        // 设置申请状态
-        applicationStatus: 'pending'
-      };
-      
-      // 先检查用户是否真的有申请
-      console.log('🔍 检查用户是否已有申请...');
-      try {
-        if (!token) {
-          throw new Error('用户未登录');
-        }
-        
-        const checkResponse = await fetch('/api/v2/guide-applications/my-application', {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        
-        if (checkResponse.ok) {
-          const existingApp = await checkResponse.json();
-          console.log('⚠️ 发现用户已有申请:', existingApp);
-          throw new Error('用户已有申请，请更新现有申请而不是创建新申请');
-        } else if (checkResponse.status === 404) {
-          console.log('✅ 用户没有现有申请，可以创建新申请');
-        } else {
-          console.log('⚠️ 检查申请状态时出现错误:', checkResponse.status);
-        }
-      } catch (error) {
-        console.log('⚠️ 检查申请状态失败:', error);
-        // 继续执行，让后端API处理
-      }
-
-      console.log('🌐 发送HTTP请求到数据库API...');
-      console.log('🌐 请求URL:', '/api/v2/guide-applications');
-      console.log('🌐 请求方法: POST');
-      console.log('🌐 请求头:', {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token ? token.substring(0, 20) + '...' : 'null'}`
-      });
-      
-      const response = await fetch('/api/v2/guide-applications', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(finalData)
-      });
-
-      console.log('📡 HTTP响应状态:', response.status, response.statusText);
-      
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('❌ 步骤2失败: 数据库写入失败', response.status, errorText);
-        
-        // 特殊处理401认证错误
-        if (response.status === 401) {
-          throw new Error(`401: 认证失败，请重新登录`);
-        }
-        
-        throw new Error(`数据库写入失败: ${response.status} - ${errorText}`);
-      }
-
-      const result = await response.json();
-      console.log('✅ 步骤2完成: 数据库写入成功');
-      console.log('🎉 申请ID:', result.id || result.applicationId);
-      
-      // ========== 步骤3: 上传PDF，并更新对应的application的internal tags ==========
-      console.log('📄 步骤3: 开始生成并上传PDF...');
-      try {
-        const applicationId = result.id || result.applicationId;
-        if (applicationId) {
-          await uploadPDFToR2(formData, applicationId);
-          console.log('✅ 步骤3完成: PDF上传成功，internal tags已更新');
-        } else {
-          console.warn('⚠️ 步骤3跳过: 未找到申请ID');
-        }
-      } catch (error) {
-        console.error('❌ 步骤3失败: PDF上传失败', error);
-        // PDF上传失败不影响申请提交，但记录错误
-        console.warn('⚠️ PDF上传失败，但申请已成功提交到数据库');
-      }
-      
-      console.log('🎊 申请提交流程全部完成!');
-      return result;
-    } catch (error) {
-      console.error('💥 申请提交流程失败:', error);
-      throw error;
-    }
-  };
+  // 注意：submitToDatabase 函数现在由 useGuideForm hook 处理
 
   // 加载服务类别数据的函数
   const loadServiceCategories = async () => {
@@ -473,20 +376,14 @@ const BecomeGuidePage: React.FC = () => {
         try {
           // 检查是否已登录
           if (checkAuth()) {
-            // 已登录，输出当前token、用户ID和localStorage数据
-            const token = localStorage.getItem("yaotu_token");
-            const userId = localStorage.getItem("yaotu_user_id");
-            const allLocalStorageData = getAllLocalStorageData();
+            console.log('=== 用户已登录，申请已提交到数据库，现在处理PDF上传 ===');
+            console.log('提交的数据:', data);
             
-            console.log('=== 用户已登录，申请提交成功 ===');
-            console.log('当前Token:', token);
-            console.log('用户ID:', userId);
-            console.log('localStorage中的所有数据:', allLocalStorageData);
-            console.log('🎊 申请数据已成功写入数据库!');
-            console.log('🎊 提交的数据:', data);
+            // 只处理PDF上传，不重复提交申请
+            await handlePDFUpload(data);
             
-            // 只有在数据库提交成功后才清除localStorage
-            console.log('🧹 数据库提交成功，现在清除localStorage');
+            // 只有在PDF处理完成后才清除localStorage
+            console.log('🧹 PDF处理完成，现在清除localStorage');
             clearLocalStorage();
             // 清除资质文件缓存
             localStorage.removeItem('yaotu_qualification_files');
