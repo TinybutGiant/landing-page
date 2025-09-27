@@ -176,9 +176,18 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, redirectTo }) => {
                   name="password"
                   render={({ field }: { field: any }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-medium text-gray-700">
-                        密码
-                      </FormLabel>
+                      <div className="flex justify-between items-center">
+                        <FormLabel className="text-sm font-medium text-gray-700">
+                          密码
+                        </FormLabel>
+                        <button
+                          type="button"
+                          onClick={() => window.location.href = '/forgot-password'}
+                          className="text-sm text-yellow-600 hover:text-yellow-700 font-medium"
+                        >
+                          忘记密码？
+                        </button>
+                      </div>
                       <FormControl>
                         <div className="relative">
                           <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
