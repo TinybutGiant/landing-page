@@ -11,6 +11,8 @@ import {
 } from "lucide-react";
 import CursorFollow from "@/components/CursorFollow";
 import { useAuth } from "@/context/AuthContext";
+import { useLanguage } from "@/i18n/LanguageProvider";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const LandingPage = () => {
   // Refs for scroll-based animations
@@ -21,6 +23,9 @@ const LandingPage = () => {
   
   // Auth context
   const { isAuthenticated } = useAuth();
+  
+  // Language context
+  const { messages } = useLanguage();
   
   // Scroll-based animations for hero section
   const { scrollYProgress } = useScroll({
@@ -37,23 +42,23 @@ const LandingPage = () => {
   const features = [
     {
       icon: <MapPin className="w-6 h-6" />,
-      title: "Local Expertise",
-      description: "Connect with knowledgeable locals who know the hidden gems"
+      title: messages['landing.features.expertGuides'] || "Expert Guides",
+      description: messages['landing.features.expertGuidesDesc'] || "Verified professionals with academic credentials and local expertise"
     },
     {
       icon: <Globe className="w-6 h-6" />,
-      title: "Multi-language Support",
-      description: "Find guides who speak your language fluently"
+      title: messages['landing.features.authenticExperiences'] || "Authentic Experiences",
+      description: messages['landing.features.authenticExperiencesDesc'] || "Go beyond tourism with genuine cultural immersion"
     },
     {
       icon: <Shield className="w-6 h-6" />,
-      title: "Safe & Secure",
-      description: "Verified guides with secure payment processing"
+      title: messages['landing.features.safeSecure'] || "Safe & Secure",
+      description: messages['landing.features.safeSecureDesc'] || "Comprehensive safety measures and verified profiles"
     },
     {
       icon: <Heart className="w-6 h-6" />,
-      title: "Personalized Experiences",
-      description: "Customized tours tailored to your interests"
+      title: messages['landing.features.flexibleBooking'] || "Flexible Booking",
+      description: messages['landing.features.flexibleBookingDesc'] || "Easy booking with secure payment processing"
     }
   ];
 
@@ -62,19 +67,19 @@ const LandingPage = () => {
       name: "Sarah Chen",
       location: "Tokyo",
       rating: 5,
-      text: "Amazing experience! My guide showed me places I never would have found on my own."
+      text: messages['landing.testimonials.testimonial1'] || "Amazing experience! My guide showed me places I never would have found on my own."
     },
     {
       name: "Michael Rodriguez",
       location: "Osaka",
       rating: 5,
-      text: "Perfect for solo travelers. Felt safe and had an incredible time exploring."
+      text: messages['landing.testimonials.testimonial2'] || "Perfect for solo travelers. Felt safe and had an incredible time exploring."
     },
     {
       name: "Emma Thompson",
       location: "Kyoto",
       rating: 5,
-      text: "The cultural insights were invaluable. Highly recommend this platform!"
+      text: messages['landing.testimonials.testimonial3'] || "The cultural insights were invaluable. Highly recommend this platform!"
     }
   ];
 
@@ -91,6 +96,11 @@ const LandingPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-white to-orange-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      {/* Language Switcher */}
+      <div className="fixed top-4 right-4 z-50">
+        <LanguageSwitcher />
+      </div>
+      
       {/* Hero Section */}
       <motion.div
         ref={heroRef}
@@ -213,10 +223,10 @@ const LandingPage = () => {
             className="text-center mb-16"
           >
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-              Why Choose LocalGuide?
+              {messages['landing.features.title'] || "Why Choose YaoTu?"}
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-              Experience Japan through the eyes of locals who are passionate about sharing their culture and knowledge.
+              {messages['landing.hero.subtitle'] || "Experience Japan through the eyes of locals who are passionate about sharing their culture and knowledge."}
             </p>
           </motion.div>
 
@@ -305,10 +315,10 @@ const LandingPage = () => {
             className="text-center mb-16"
           >
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-              What Our Travelers Say
+              {messages['landing.testimonials.title'] || "What Our Travelers Say"}
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300">
-              Join thousands of satisfied travelers who have discovered Japan with us.
+              {messages['landing.cta.subtitle'] || "Join thousands of satisfied travelers who have discovered Japan with us."}
             </p>
           </motion.div>
 
@@ -414,7 +424,7 @@ const LandingPage = () => {
               transition: { duration: 0.3 }
             }}
           >
-            Ready to Become a Guide?
+            {messages['landing.cta.title'] || "Ready to Become a Guide?"}
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -425,7 +435,7 @@ const LandingPage = () => {
             style={{ color: '#1A1A1A' }}
             whileHover={{ scale: 1.02 }}
           >
-            Share your local expertise and earn money by guiding travelers through your city.
+            {messages['becomeGuide.subtitle'] || "Share your local expertise and earn money by guiding travelers through your city."}
           </motion.p>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -451,7 +461,7 @@ const LandingPage = () => {
                   whileHover={{ x: 2 }}
                   transition={{ duration: 0.2 }}
                 >
-                  Apply to Become a Guide
+                  {messages['landing.cta.becomeGuide'] || "Apply to Become a Guide"}
                   <motion.div
                     whileHover={{ x: 3 }}
                     transition={{ duration: 0.2 }}
@@ -484,7 +494,7 @@ const LandingPage = () => {
                 transition={{ duration: 0.2 }}
                 data-cursor-hover
               >
-                Already Applied? View Your Application Status
+                {messages['landing.cta.viewApplicationStatus'] || "Already Applied? View Your Application Status"}
               </motion.button>
             </motion.div>
           </motion.div>
