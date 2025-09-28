@@ -9,6 +9,7 @@ import { FormNavigation } from "./FormNavigation";
 import { validateFormCompleteness } from "../utils/validation";
 import { PAGE_TITLES, TOTAL_PAGES } from "../constants";
 import { usePDFGeneration } from "../hooks/usePDFGeneration";
+import { useIntl } from "react-intl";
 
 // 统一的 UI 组件接口
 export interface UIComponents {
@@ -54,7 +55,7 @@ interface GuideFormProps {
   config: GuideFormConfig;
   ui: UIComponents;
   cities?: Array<{ value: string; label: string }>;
-  targetGroups?: Array<{ value: string; label: string }>;
+  targetGroups?: Array<{ value: string; label?: string }>;
   serviceCategories?: Array<{
     id: number;
     nameCn: string;
@@ -101,6 +102,8 @@ export const GuideForm: React.FC<GuideFormProps> = ({
   onSaveLocalStorage,
   onClearLocalStorage
 }) => {
+  const intl = useIntl();
+  
   const {
     currentPage,
     setCurrentPage,
@@ -149,9 +152,9 @@ export const GuideForm: React.FC<GuideFormProps> = ({
       <div className="min-h-screen bg-yellow-50 py-12">
         <div className="max-w-4xl mx-auto px-4">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">申请预览</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">{intl.formatMessage({ id: 'becomeGuide.preview.title' })}</h1>
             <p className="text-gray-600 mb-4">
-              请仔细检查您的申请信息，确认无误后提交。
+              {intl.formatMessage({ id: 'becomeGuide.preview.description' })}
             </p>
             <div className="mb-4">
               <ui.Button
@@ -159,7 +162,7 @@ export const GuideForm: React.FC<GuideFormProps> = ({
                 disabled={isProcessing}
                 className="bg-blue-500 hover:bg-blue-600 text-black mr-2"
               >
-                {isProcessing ? "生成中..." : "下载PDF"}
+                {isProcessing ? intl.formatMessage({ id: 'becomeGuide.preview.generatingPDF' }) : intl.formatMessage({ id: 'becomeGuide.preview.downloadPDF' })}
               </ui.Button>
             </div>
           </div>
@@ -169,45 +172,45 @@ export const GuideForm: React.FC<GuideFormProps> = ({
               {/* 基本信息 */}
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-4 border-b pb-2">
-                  基本信息
+                  {intl.formatMessage({ id: 'becomeGuide.preview.basicInfo' })}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-medium text-gray-500">
-                      姓名
+                      {intl.formatMessage({ id: 'becomeGuide.preview.name' })}
                     </label>
                     <p className="text-gray-900">{form.getValues().name || "-"}</p>
                   </div>
                   <div>
                     <label className="text-sm font-medium text-gray-500">
-                      年龄
+                      {intl.formatMessage({ id: 'becomeGuide.preview.age' })}
                     </label>
-                    <p className="text-gray-900">{form.getValues().age || "-"}岁</p>
+                    <p className="text-gray-900">{form.getValues().age || "-"}{intl.formatMessage({ id: 'becomeGuide.preview.yearsOld' })}</p>
                   </div>
                   <div>
                     <label className="text-sm font-medium text-gray-500">
-                      性别
+                      {intl.formatMessage({ id: 'becomeGuide.preview.sex' })}
                     </label>
                     <p className="text-gray-900">
                       {form.getValues().sex === "Male"
-                        ? "男"
+                        ? intl.formatMessage({ id: 'becomeGuide.step1.genderOptions.male' })
                         : form.getValues().sex === "Female"
-                          ? "女"
-                          : "不愿透露"}
+                          ? intl.formatMessage({ id: 'becomeGuide.step1.genderOptions.female' })
+                          : intl.formatMessage({ id: 'becomeGuide.step1.genderOptions.preferNotToSay' })}
                     </p>
                   </div>
                   <div>
                     <label className="text-sm font-medium text-gray-500">
-                      MBTI人格类型
+                      {intl.formatMessage({ id: 'becomeGuide.preview.mbti' })}
                     </label>
                     <p className="text-gray-900">{form.getValues().mbti || "-"}</p>
                   </div>
                   <div className="md:col-span-2">
                     <label className="text-sm font-medium text-gray-500">
-                      社交媒体链接
+                      {intl.formatMessage({ id: 'becomeGuide.preview.socialProfile' })}
                     </label>
                     <p className="text-gray-900">
-                      {form.getValues().socialProfile || "未填写"}
+                      {form.getValues().socialProfile || intl.formatMessage({ id: 'becomeGuide.preview.notFilled' })}
                     </p>
                   </div>
                 </div>
@@ -216,12 +219,12 @@ export const GuideForm: React.FC<GuideFormProps> = ({
               {/* 服务信息 */}
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-4 border-b pb-2">
-                  服务信息
+                  {intl.formatMessage({ id: 'becomeGuide.preview.serviceInfo' })}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-medium text-gray-500">
-                      服务城市
+                      {intl.formatMessage({ id: 'becomeGuide.preview.serviceCity' })}
                     </label>
                     <p className="text-gray-900">
                       {form.getValues().serviceCity || "-"}
@@ -229,7 +232,7 @@ export const GuideForm: React.FC<GuideFormProps> = ({
                   </div>
                   <div>
                     <label className="text-sm font-medium text-gray-500">
-                      在日本生活的起始时间
+                      {intl.formatMessage({ id: 'becomeGuide.preview.residenceStartDate' })}
                     </label>
                     <p className="text-gray-900">
                       {form.getValues().residenceStartDate
@@ -244,7 +247,7 @@ export const GuideForm: React.FC<GuideFormProps> = ({
                   </div>
                   <div className="md:col-span-2">
                     <label className="text-sm font-medium text-gray-500">
-                      住址/常驻区域
+                      {intl.formatMessage({ id: 'becomeGuide.preview.residenceInfo' })}
                     </label>
                     <p className="text-gray-900">
                       {form.getValues().residenceInfo || "-"}
@@ -252,7 +255,7 @@ export const GuideForm: React.FC<GuideFormProps> = ({
                   </div>
                   <div>
                     <label className="text-sm font-medium text-gray-500">
-                      当前职业
+                      {intl.formatMessage({ id: 'becomeGuide.preview.occupation' })}
                     </label>
                     <p className="text-gray-900">
                       {form.getValues().occupation || "-"}
@@ -260,7 +263,7 @@ export const GuideForm: React.FC<GuideFormProps> = ({
                   </div>
                   <div className="md:col-span-2">
                     <label className="text-sm font-medium text-gray-500">
-                      自我介绍
+                      {intl.formatMessage({ id: 'becomeGuide.preview.bio' })}
                     </label>
                     <p className="text-gray-900 whitespace-pre-wrap">
                       {form.getValues().bio || "-"}
@@ -272,12 +275,12 @@ export const GuideForm: React.FC<GuideFormProps> = ({
               {/* 自我认知评估 */}
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-4 border-b pb-2">
-                  自我认知评估
+                  {intl.formatMessage({ id: 'becomeGuide.preview.selfAssessment' })}
                 </h3>
                 <div className="space-y-4">
                   <div>
                     <label className="text-sm font-medium text-gray-500">
-                      道德感评分
+                      {intl.formatMessage({ id: 'becomeGuide.preview.ethicsScore' })}
                     </label>
                     <p className="text-gray-900">{form.getValues().ethicsScore}/10</p>
                     {form.getValues().ethicsDescription && (
@@ -288,7 +291,7 @@ export const GuideForm: React.FC<GuideFormProps> = ({
                   </div>
                   <div>
                     <label className="text-sm font-medium text-gray-500">
-                      边界感评分
+                      {intl.formatMessage({ id: 'becomeGuide.preview.boundaryScore' })}
                     </label>
                     <p className="text-gray-900">{form.getValues().boundaryScore}/10</p>
                     {form.getValues().boundaryDescription && (
@@ -299,7 +302,7 @@ export const GuideForm: React.FC<GuideFormProps> = ({
                   </div>
                   <div>
                     <label className="text-sm font-medium text-gray-500">
-                      应变力评分
+                      {intl.formatMessage({ id: 'becomeGuide.preview.supportiveScore' })}
                     </label>
                     <p className="text-gray-900">
                       {form.getValues().supportiveScore}/10
@@ -316,12 +319,12 @@ export const GuideForm: React.FC<GuideFormProps> = ({
               {/* 个性化提问 */}
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-4 border-b pb-2">
-                  个性化提问
+                  {intl.formatMessage({ id: 'becomeGuide.preview.personalizedQuestions' })}
                 </h3>
                 <div className="space-y-4">
                   <div>
                     <label className="text-sm font-medium text-gray-500">
-                      希望的客人互动方式
+                      {intl.formatMessage({ id: 'becomeGuide.preview.interactionStyle' })}
                     </label>
                     <p className="text-gray-900 whitespace-pre-wrap">
                       {form.getValues().q1Interaction || "-"}
@@ -329,7 +332,7 @@ export const GuideForm: React.FC<GuideFormProps> = ({
                   </div>
                   <div>
                     <label className="text-sm font-medium text-gray-500">
-                      最喜欢的日本城市角落
+                      {intl.formatMessage({ id: 'becomeGuide.preview.favoriteSpot' })}
                     </label>
                     <p className="text-gray-900 whitespace-pre-wrap">
                       {form.getValues().q2FavSpot || "-"}
@@ -337,7 +340,7 @@ export const GuideForm: React.FC<GuideFormProps> = ({
                   </div>
                   <div>
                     <label className="text-sm font-medium text-gray-500">
-                      边界情况处理方式
+                      {intl.formatMessage({ id: 'becomeGuide.preview.boundaryHandling' })}
                     </label>
                     <p className="text-gray-900 whitespace-pre-wrap">
                       {form.getValues().q3BoundaryResponse || "-"}
@@ -345,7 +348,7 @@ export const GuideForm: React.FC<GuideFormProps> = ({
                   </div>
                   <div>
                     <label className="text-sm font-medium text-gray-500">
-                      情绪处理方式
+                      {intl.formatMessage({ id: 'becomeGuide.preview.emotionalHandling' })}
                     </label>
                     <p className="text-gray-900 whitespace-pre-wrap">
                       {form.getValues().q4EmotionalHandling || "-"}
@@ -353,7 +356,7 @@ export const GuideForm: React.FC<GuideFormProps> = ({
                   </div>
                   <div>
                     <label className="text-sm font-medium text-gray-500">
-                      代表性的物品或符号
+                      {intl.formatMessage({ id: 'becomeGuide.preview.representativeSymbol' })}
                     </label>
                     <p className="text-gray-900 whitespace-pre-wrap">
                       {form.getValues().q5SelfSymbol || "-"}
@@ -365,12 +368,12 @@ export const GuideForm: React.FC<GuideFormProps> = ({
               {/* 服务类型与偏好 */}
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-4 border-b pb-2">
-                  服务类型与偏好
+                  {intl.formatMessage({ id: 'becomeGuide.preview.servicePreferences' })}
                 </h3>
                 <div className="space-y-4">
                   <div>
                     <label className="text-sm font-medium text-gray-500">
-                      服务对象
+                      {intl.formatMessage({ id: 'becomeGuide.preview.targetGroup' })}
                     </label>
                     <p className="text-gray-900">
                       {form.getValues().targetGroup && form.getValues().targetGroup.length > 0
@@ -392,21 +395,21 @@ export const GuideForm: React.FC<GuideFormProps> = ({
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="text-sm font-medium text-gray-500">
-                        服务人数范围
+                        {intl.formatMessage({ id: 'becomeGuide.preview.serviceRange' })}
                       </label>
                       <p className="text-gray-900">
                           {form.getValues().minPeople && form.getValues().maxPeople
-                            ? `${form.getValues().minPeople} - ${form.getValues().maxPeople} 人`
+                            ? `${form.getValues().minPeople} - ${form.getValues().maxPeople} ${intl.formatMessage({ id: 'becomeGuide.preview.people' })}`
                             : "-"}
                         </p>
                     </div>
                     <div>
                       <label className="text-sm font-medium text-gray-500">
-                        服务时长范围
+                        {intl.formatMessage({ id: 'becomeGuide.preview.serviceDuration' })}
                       </label>
                       <p className="text-gray-900">
                         {form.getValues().minDuration && form.getValues().maxDuration
-                          ? `${form.getValues().minDuration} - ${form.getValues().maxDuration} 小时`
+                          ? `${form.getValues().minDuration} - ${form.getValues().maxDuration} ${intl.formatMessage({ id: 'becomeGuide.preview.hours' })}`
                           : "-"}
                       </p>
                     </div>
@@ -414,33 +417,33 @@ export const GuideForm: React.FC<GuideFormProps> = ({
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="text-sm font-medium text-gray-500">
-                        基础时薪
+                        {intl.formatMessage({ id: 'becomeGuide.preview.basicPrice' })}
                       </label>
                       <p className="text-gray-900">
                         {form.getValues().basicPricePerHourCents !== undefined
-                          ? `${((form.getValues().basicPricePerHourCents || 0) / 100).toFixed(2)} ${form.getValues().currency || "JPY"}/小时`
+                          ? `${((form.getValues().basicPricePerHourCents || 0) / 100).toFixed(2)} ${form.getValues().currency || "JPY"}${intl.formatMessage({ id: 'becomeGuide.preview.perHour' })}`
                           : "-"}
                       </p>
                     </div>
                     <div>
                       <label className="text-sm font-medium text-gray-500">
-                        额外人员费用
+                        {intl.formatMessage({ id: 'becomeGuide.preview.additionalPrice' })}
                       </label>
                       <p className="text-gray-900">
                         {form.getValues().additionalPricePerPersonCents !== undefined
-                          ? `${((form.getValues().additionalPricePerPersonCents || 0) / 100).toFixed(2)} ${form.getValues().currency || "JPY"}/人/小时`
+                          ? `${((form.getValues().additionalPricePerPersonCents || 0) / 100).toFixed(2)} ${form.getValues().currency || "JPY"}${intl.formatMessage({ id: 'becomeGuide.preview.perPersonPerHour' })}`
                           : "-"}
                       </p>
                     </div>
                   </div>
                   <div>
                     <label className="text-sm font-medium text-gray-500">
-                      提供的服务项目
+                      {intl.formatMessage({ id: 'becomeGuide.preview.providedServices' })}
                     </label>
                     <p className="text-gray-900">
                       {form.getValues().serviceSelections && form.getValues().serviceSelections.length > 0
-                        ? `已选择 ${form.getValues().serviceSelections.length} 个服务项目`
-                        : "未选择"}
+                        ? intl.formatMessage({ id: 'becomeGuide.preview.selectedServices' }, { count: form.getValues().serviceSelections.length })
+                        : intl.formatMessage({ id: 'becomeGuide.preview.notSelectedServices' })}
                     </p>
                   </div>
                 </div>
@@ -533,9 +536,9 @@ export const GuideForm: React.FC<GuideFormProps> = ({
         {showProgressBar && (
           <div className="mb-6">
             <div className="flex justify-between text-sm text-gray-500 mb-2">
-              <span>第{currentPage}页，共{TOTAL_PAGES}页</span>
+              <span>{intl.formatMessage({ id: 'becomeGuide.progress.pageInfo' }, { current: currentPage, total: TOTAL_PAGES })}</span>
               <span>
-                {Math.round((currentPage / TOTAL_PAGES) * 100)}% 完成
+                {intl.formatMessage({ id: 'becomeGuide.progress.completion' }, { percentage: Math.round((currentPage / TOTAL_PAGES) * 100) })}
               </span>
             </div>
             <ui.Progress
@@ -548,21 +551,21 @@ export const GuideForm: React.FC<GuideFormProps> = ({
         <ui.Card className="rounded-2xl shadow-lg">
           <ui.CardHeader className="bg-yellow-400 rounded-t-2xl">
             <ui.CardTitle className="text-black">
-              {PAGE_TITLES[currentPage as keyof typeof PAGE_TITLES]}
+              {intl.formatMessage({ id: PAGE_TITLES[currentPage as keyof typeof PAGE_TITLES] })}
             </ui.CardTitle>
             {currentPage === 2 && (
               <p className="text-sm text-gray-700 mt-2">
-                用于匹配"天选地陪"标签，请诚实评价自己
+                {intl.formatMessage({ id: 'becomeGuide.step2.subtitle' })}
               </p>
             )}
             {currentPage === 3 && (
               <p className="text-sm text-gray-700 mt-2">
-                打破模板化申请，评估适配度
+                {intl.formatMessage({ id: 'becomeGuide.step3.subtitle' })}
               </p>
             )}
             {currentPage === 4 && (
               <p className="text-sm text-gray-700 mt-2">
-                设置您的服务范围、定价和偏好
+                {intl.formatMessage({ id: 'becomeGuide.step4.subtitle' })}
               </p>
             )}
           </ui.CardHeader>

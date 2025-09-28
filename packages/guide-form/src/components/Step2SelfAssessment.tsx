@@ -1,6 +1,7 @@
 import { Control } from "react-hook-form";
 import { FormData } from "../types/schema";
 import { SCORE_EXPLANATIONS } from "../constants";
+import { useIntl } from "react-intl";
 
 // 基础 UI 组件接口
 export interface UIComponents {
@@ -23,6 +24,8 @@ interface Step2SelfAssessmentProps {
 }
 
 export const Step2SelfAssessment = ({ control, ui }: Step2SelfAssessmentProps) => {
+  const intl = useIntl();
+  
   const {
     FormField,
     FormItem,
@@ -44,7 +47,7 @@ export const Step2SelfAssessment = ({ control, ui }: Step2SelfAssessmentProps) =
       <div className="space-y-4">
         <div className="flex items-center gap-2">
           <FormLabel className="text-base font-medium">
-            道德感评分
+            {intl.formatMessage({ id: 'becomeGuide.step2.ethicsScore' })}
           </FormLabel>
           {Tooltip && Info && (
             <Tooltip>
@@ -86,11 +89,11 @@ export const Step2SelfAssessment = ({ control, ui }: Step2SelfAssessmentProps) =
                     className="w-full"
                   />
                   <div className="flex justify-between text-xs text-gray-500">
-                    <span>0 - 包容</span>
+                    <span>{intl.formatMessage({ id: 'becomeGuide.step2.ethicsRange0' })}</span>
                     <span className="font-medium">
-                      当前: {field.value}/10
+                      {intl.formatMessage({ id: 'becomeGuide.step2.currentScore' }, { value: field.value })}/10
                     </span>
-                    <span>10 - 规矩</span>
+                    <span>{intl.formatMessage({ id: 'becomeGuide.step2.ethicsRange10' })}</span>
                   </div>
                 </div>
               </FormControl>
@@ -104,10 +107,10 @@ export const Step2SelfAssessment = ({ control, ui }: Step2SelfAssessmentProps) =
           name="ethicsDescription"
           render={({ field }: any) => (
             <FormItem>
-              <FormLabel>请简述你对"有道德感"的理解</FormLabel>
+              <FormLabel>{intl.formatMessage({ id: 'becomeGuide.step2.ethicsDescription' })}</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="分享你对道德、承诺、规则的看法..."
+                  placeholder={intl.formatMessage({ id: 'becomeGuide.step2.ethicsDescriptionPlaceholder' })}
                   value={field.value || ""}
                   onChange={field.onChange}
                 />
@@ -122,7 +125,7 @@ export const Step2SelfAssessment = ({ control, ui }: Step2SelfAssessmentProps) =
       <div className="space-y-4">
         <div className="flex items-center gap-2">
           <FormLabel className="text-base font-medium">
-            边界感评分
+            {intl.formatMessage({ id: 'becomeGuide.step2.boundaryScore' })}
           </FormLabel>
           {Tooltip && Info && (
             <Tooltip>
@@ -164,11 +167,11 @@ export const Step2SelfAssessment = ({ control, ui }: Step2SelfAssessmentProps) =
                     className="w-full"
                   />
                   <div className="flex justify-between text-xs text-gray-500">
-                    <span>0 - 外放</span>
+                    <span>{intl.formatMessage({ id: 'becomeGuide.step2.boundaryRange0' })}</span>
                     <span className="font-medium">
-                      当前: {field.value}/10
+                      {intl.formatMessage({ id: 'becomeGuide.step2.currentScore' }, { value: field.value })}/10
                     </span>
-                    <span>10 - 稳重</span>
+                    <span>{intl.formatMessage({ id: 'becomeGuide.step2.boundaryRange10' })}</span>
                   </div>
                 </div>
               </FormControl>
@@ -183,11 +186,11 @@ export const Step2SelfAssessment = ({ control, ui }: Step2SelfAssessmentProps) =
           render={({ field }: any) => (
             <FormItem>
               <FormLabel>
-                请简述你如何处理他人请求与自我空间的关系
+                {intl.formatMessage({ id: 'becomeGuide.step2.boundaryDescription' })}
               </FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="分享你如何平衡服务他人和保护自己的边界..."
+                  placeholder={intl.formatMessage({ id: 'becomeGuide.step2.boundaryDescriptionPlaceholder' })}
                   value={field.value || ""}
                   onChange={field.onChange}
                 />
@@ -202,7 +205,7 @@ export const Step2SelfAssessment = ({ control, ui }: Step2SelfAssessmentProps) =
       <div className="space-y-4">
         <div className="flex items-center gap-2">
           <FormLabel className="text-base font-medium">
-            应变力评分
+            {intl.formatMessage({ id: 'becomeGuide.step2.supportiveScore' })}
           </FormLabel>
           {Tooltip && Info && (
             <Tooltip>
@@ -244,11 +247,11 @@ export const Step2SelfAssessment = ({ control, ui }: Step2SelfAssessmentProps) =
                     className="w-full"
                   />
                   <div className="flex justify-between text-xs text-gray-500">
-                    <span>0 - 木讷</span>
+                    <span>{intl.formatMessage({ id: 'becomeGuide.step2.supportiveRange0' })}</span>
                     <span className="font-medium">
-                      当前: {field.value}/10
+                      {intl.formatMessage({ id: 'becomeGuide.step2.currentScore' }, { value: field.value })}/10
                     </span>
-                    <span>10 - 主导型</span>
+                    <span>{intl.formatMessage({ id: 'becomeGuide.step2.supportiveRange10' })}</span>
                   </div>
                 </div>
               </FormControl>
@@ -263,11 +266,11 @@ export const Step2SelfAssessment = ({ control, ui }: Step2SelfAssessmentProps) =
           render={({ field }: any) => (
             <FormItem>
               <FormLabel>
-                请描述你如何让身边的人感到被理解或舒服
+                {intl.formatMessage({ id: 'becomeGuide.step2.supportiveDescription' })}
               </FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="分享你的社交技巧和氛围调节能力..."
+                  placeholder={intl.formatMessage({ id: 'becomeGuide.step2.supportiveDescriptionPlaceholder' })}
                   value={field.value || ""}
                   onChange={field.onChange}
                 />

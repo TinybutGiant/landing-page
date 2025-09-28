@@ -1,5 +1,6 @@
 import { Control } from "react-hook-form";
 import { FormData } from "../types/schema";
+import { useIntl } from "react-intl";
 
 // 基础 UI 组件接口
 export interface UIComponents {
@@ -17,6 +18,8 @@ interface Step3PersonalizedQuestionsProps {
 }
 
 export const Step3PersonalizedQuestions = ({ control, ui }: Step3PersonalizedQuestionsProps) => {
+  const intl = useIntl();
+  
   const {
     FormField,
     FormItem,
@@ -35,11 +38,11 @@ export const Step3PersonalizedQuestions = ({ control, ui }: Step3PersonalizedQue
         render={({ field }: any) => (
           <FormItem>
             <FormLabel>
-              你希望和你的客人的相处过程中有哪些互动？
+              {intl.formatMessage({ id: 'becomeGuide.step3.q1Interaction' })}
             </FormLabel>
             <FormControl>
               <Textarea
-                placeholder="描述你理想中的导游-客人互动方式..."
+                placeholder={intl.formatMessage({ id: 'becomeGuide.step3.q1InteractionPlaceholder' })}
                 className="min-h-[80px]"
                 value={field.value || ""}
                 onChange={field.onChange}
@@ -56,11 +59,11 @@ export const Step3PersonalizedQuestions = ({ control, ui }: Step3PersonalizedQue
         render={({ field }: any) => (
           <FormItem>
             <FormLabel>
-              请分享你最喜欢的一个日本城市角落，并说明为什么
+              {intl.formatMessage({ id: 'becomeGuide.step3.q2FavSpot' })}
             </FormLabel>
             <FormControl>
               <Textarea
-                placeholder="可以是一个小巷、咖啡店、观景点等，分享它的特别之处..."
+                placeholder={intl.formatMessage({ id: 'becomeGuide.step3.q2FavSpotPlaceholder' })}
                 className="min-h-[80px]"
                 value={field.value || ""}
                 onChange={field.onChange}
@@ -77,11 +80,11 @@ export const Step3PersonalizedQuestions = ({ control, ui }: Step3PersonalizedQue
         render={({ field }: any) => (
           <FormItem>
             <FormLabel>
-              如果客人在行程中表现出不尊重你，你会如何处理？
+              {intl.formatMessage({ id: 'becomeGuide.step3.q3BoundaryResponse' })}
             </FormLabel>
             <FormControl>
               <Textarea
-                placeholder="描述你的处理方式和边界原则..."
+                placeholder={intl.formatMessage({ id: 'becomeGuide.step3.q3BoundaryResponsePlaceholder' })}
                 className="min-h-[80px]"
                 value={field.value || ""}
                 onChange={field.onChange}
@@ -98,11 +101,11 @@ export const Step3PersonalizedQuestions = ({ control, ui }: Step3PersonalizedQue
         render={({ field }: any) => (
           <FormItem>
             <FormLabel>
-              如果你心情低落，还会上线接单吗？你会怎么做？
+              {intl.formatMessage({ id: 'becomeGuide.step3.q4EmotionalHandling' })}
             </FormLabel>
             <FormControl>
               <Textarea
-                placeholder="分享你的情绪管理和职业态度..."
+                placeholder={intl.formatMessage({ id: 'becomeGuide.step3.q4EmotionalHandlingPlaceholder' })}
                 className="min-h-[80px]"
                 value={field.value || ""}
                 onChange={field.onChange}
@@ -119,11 +122,11 @@ export const Step3PersonalizedQuestions = ({ control, ui }: Step3PersonalizedQue
         render={({ field }: any) => (
           <FormItem>
             <FormLabel>
-              有没有一件事是你觉得最能代表你的地陪能力？
+              {intl.formatMessage({ id: 'becomeGuide.step3.q5SelfSymbol' })}
             </FormLabel>
             <FormControl>
               <Textarea
-                placeholder="可以是一个经历、一个习惯、一个信念等..."
+                placeholder={intl.formatMessage({ id: 'becomeGuide.step3.q5SelfSymbolPlaceholder' })}
                 className="min-h-[80px]"
                 value={field.value || ""}
                 onChange={field.onChange}

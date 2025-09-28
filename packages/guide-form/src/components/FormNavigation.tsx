@@ -1,4 +1,5 @@
 import { TOTAL_PAGES } from "../constants";
+import { useIntl } from "react-intl";
 
 // 基础 UI 组件接口
 export interface UIComponents {
@@ -28,6 +29,7 @@ export const FormNavigation = ({
   isSavingDraft,
   ui
 }: FormNavigationProps) => {
+  const intl = useIntl();
   const { Button, Progress, ChevronLeft, ChevronRight, Save } = ui;
 
   return (
@@ -36,9 +38,9 @@ export const FormNavigation = ({
       <div className="flex justify-between items-center">
         <div className="flex-1 mr-4">
           <div className="flex justify-between text-sm text-gray-500 mb-2">
-            <span>第{currentPage}页，共{TOTAL_PAGES}页</span>
+            <span>{intl.formatMessage({ id: 'becomeGuide.progress.pageInfo' }, { current: currentPage, total: TOTAL_PAGES })}</span>
             <span>
-              {Math.round((currentPage / TOTAL_PAGES) * 100)}% 完成
+              {intl.formatMessage({ id: 'becomeGuide.progress.completion' }, { percentage: Math.round((currentPage / TOTAL_PAGES) * 100) })}
             </span>
           </div>
           <Progress
@@ -54,7 +56,7 @@ export const FormNavigation = ({
           className="flex items-center gap-2 ml-4"
         >
           {Save && <Save className="h-4 w-4" />}
-          {isSavingDraft ? "保存中..." : "保存草稿"}
+          {isSavingDraft ? intl.formatMessage({ id: 'becomeGuide.navigation.saving' }) : intl.formatMessage({ id: 'becomeGuide.navigation.saveDraft' })}
         </Button>
       </div>
 
@@ -69,7 +71,7 @@ export const FormNavigation = ({
               className="flex items-center gap-2"
             >
               {ChevronLeft && <ChevronLeft className="h-4 w-4" />}
-              上一步
+              {intl.formatMessage({ id: 'becomeGuide.navigation.previous' })}
             </Button>
           )}
         </div>
@@ -81,7 +83,7 @@ export const FormNavigation = ({
               onClick={onNextPage}
               className="flex items-center gap-2"
             >
-              下一步
+              {intl.formatMessage({ id: 'becomeGuide.navigation.next' })}
               {ChevronRight && <ChevronRight className="h-4 w-4" />}
             </Button>
           ) : (
@@ -90,7 +92,7 @@ export const FormNavigation = ({
               onClick={onGoToPreview}
               className="bg-green-600 hover:bg-green-700"
             >
-              预览申请
+              {intl.formatMessage({ id: 'becomeGuide.navigation.preview' })}
             </Button>
           )}
         </div>

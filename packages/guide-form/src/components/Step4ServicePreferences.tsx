@@ -2,6 +2,7 @@ import { Control } from "react-hook-form";
 import { useState, useEffect } from "react";
 import { FormData } from "../types/schema";
 import { CURRENCY_OPTIONS } from "../constants";
+import { useIntl } from "react-intl";
 
 // 基础 UI 组件接口
 export interface UIComponents {
@@ -45,7 +46,7 @@ interface Step4ServicePreferencesProps {
   control: Control<FormData>;
   ui: UIComponents;
   serviceCategories?: ServiceCategory[];
-  targetGroups?: Array<{ value: string; label: string }>;
+  targetGroups?: Array<{ value: string; label?: string }>;
   onLoadServiceCategories?: () => Promise<ServiceCategory[]>;
 }
 
@@ -56,6 +57,8 @@ export const Step4ServicePreferences = ({
   targetGroups = [],
   onLoadServiceCategories
 }: Step4ServicePreferencesProps) => {
+  const intl = useIntl();
+  
   const {
     FormField,
     FormItem,
@@ -118,7 +121,7 @@ export const Step4ServicePreferences = ({
       {/* 服务对象选择 */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">服务对象 *</CardTitle>
+          <CardTitle className="text-base">{intl.formatMessage({ id: 'becomeGuide.step4.targetGroup' })} *</CardTitle>
         </CardHeader>
         <CardContent>
           <FormField
@@ -151,7 +154,7 @@ export const Step4ServicePreferences = ({
                           htmlFor={`target-${group.value}`}
                           className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                         >
-                          {group.label}
+                          {intl.formatMessage({ id: `becomeGuide.step4.targetGroupOptions.${group.value}` })}
                         </label>
                       </div>
                     ))}
@@ -167,11 +170,11 @@ export const Step4ServicePreferences = ({
       {/* 服务项目选择 */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">服务项目 *</CardTitle>
+          <CardTitle className="text-base">{intl.formatMessage({ id: 'becomeGuide.step4.serviceItems' })} *</CardTitle>
         </CardHeader>
         <CardContent>
           {loading ? (
-            <div className="text-center py-4">加载中...</div>
+            <div className="text-center py-4">{intl.formatMessage({ id: 'becomeGuide.step4.loadingCategories' })}</div>
           ) : (
             <FormField
               control={control}
@@ -183,7 +186,7 @@ export const Step4ServicePreferences = ({
                       {serviceCategories.map((category) => (
                         <div key={category.id} className="space-y-2">
                           <h4 className="font-medium text-sm text-gray-700">
-                            {category.nameCn}
+                            {intl.locale === 'zh-CN' ? category.nameCn : category.nameEn}
                           </h4>
                           <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                             {category.subcategories.map((subcategory) => (
@@ -209,7 +212,7 @@ export const Step4ServicePreferences = ({
                                   htmlFor={`service-${subcategory.id}`}
                                   className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                                 >
-                                  {subcategory.nameCn}
+                                  {intl.locale === 'zh-CN' ? subcategory.nameCn : subcategory.nameEn}
                                 </label>
                               </div>
                             ))}
@@ -229,7 +232,7 @@ export const Step4ServicePreferences = ({
       {/* 服务人数设置 */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">服务人数设置</CardTitle>
+          <CardTitle className="text-base">{intl.formatMessage({ id: 'becomeGuide.step4.serviceRange' })}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -238,7 +241,7 @@ export const Step4ServicePreferences = ({
               name="minPeople"
               render={({ field }: any) => (
                 <FormItem>
-                  <FormLabel>最少人数</FormLabel>
+                  <FormLabel>{intl.formatMessage({ id: 'becomeGuide.step4.minPeople' })}</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -258,7 +261,7 @@ export const Step4ServicePreferences = ({
               name="maxPeople"
               render={({ field }: any) => (
                 <FormItem>
-                  <FormLabel>最多人数</FormLabel>
+                  <FormLabel>{intl.formatMessage({ id: 'becomeGuide.step4.maxPeople' })}</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -279,7 +282,7 @@ export const Step4ServicePreferences = ({
       {/* 服务时长设置 */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">服务时长设置</CardTitle>
+          <CardTitle className="text-base">{intl.formatMessage({ id: 'becomeGuide.step4.serviceDuration' })}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -288,7 +291,7 @@ export const Step4ServicePreferences = ({
               name="minDuration"
               render={({ field }: any) => (
                 <FormItem>
-                  <FormLabel>最短时长（小时）</FormLabel>
+                  <FormLabel>{intl.formatMessage({ id: 'becomeGuide.step4.minDuration' })}</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -308,7 +311,7 @@ export const Step4ServicePreferences = ({
               name="maxDuration"
               render={({ field }: any) => (
                 <FormItem>
-                  <FormLabel>最长时长（小时）</FormLabel>
+                  <FormLabel>{intl.formatMessage({ id: 'becomeGuide.step4.maxDuration' })}</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -329,7 +332,7 @@ export const Step4ServicePreferences = ({
       {/* 定价设置 */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">定价设置</CardTitle>
+          <CardTitle className="text-base">{intl.formatMessage({ id: 'becomeGuide.step4.pricing' })}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -339,7 +342,7 @@ export const Step4ServicePreferences = ({
                 name="basicPricePerHourCents"
                 render={({ field }: any) => (
                   <FormItem>
-                    <FormLabel>基础时薪（分）</FormLabel>
+                    <FormLabel>{intl.formatMessage({ id: 'becomeGuide.step4.basicPricePerHour' })}</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
@@ -358,7 +361,7 @@ export const Step4ServicePreferences = ({
                 name="additionalPricePerPersonCents"
                 render={({ field }: any) => (
                   <FormItem>
-                    <FormLabel>额外人员费用（分）</FormLabel>
+                    <FormLabel>{intl.formatMessage({ id: 'becomeGuide.step4.additionalPricePerPerson' })}</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
@@ -378,14 +381,14 @@ export const Step4ServicePreferences = ({
               name="currency"
               render={({ field }: any) => (
                 <FormItem>
-                  <FormLabel>货币类型</FormLabel>
+                  <FormLabel>{intl.formatMessage({ id: 'becomeGuide.step4.currency' })}</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value || "JPY"}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="请选择货币类型" />
+                        <SelectValue placeholder={intl.formatMessage({ id: 'becomeGuide.step4.currencyPlaceholder' })} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>

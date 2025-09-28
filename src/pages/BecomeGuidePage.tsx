@@ -33,10 +33,14 @@ import {
   Info 
 } from 'lucide-react';
 import { YearMonthPicker } from '@/components/YearMonthPicker';
+import { useIntl } from 'react-intl';
+import { useLanguage } from '@/i18n/LanguageProvider';
 
 const BecomeGuidePage: React.FC = () => {
   // Toast hook
   const { toast } = useToast();
+  const intl = useIntl();
+  const { locale } = useLanguage();
   
   // localStorage 相关功能
   const STORAGE_KEY = 'yaotu_guide_form_draft';
@@ -673,15 +677,15 @@ const BecomeGuidePage: React.FC = () => {
     { value: 'nagoya', label: '名古屋' }
   ];
 
-  // 目标群体数据
+  // 目标群体数据 - 只保留 value，label 通过国际化获取
   const targetGroups = [
-    { value: 'individual', label: '个人旅客' },
-    { value: 'couple', label: '情侣/夫妇' },
-    { value: 'family', label: '家庭' },
-    { value: 'group', label: '团体' },
-    { value: 'child', label: '亲子' },
-    { value: 'elderly', label: '老年人' },
-    { value: 'business', label: '商务客户' }
+    { value: 'individual' },
+    { value: 'couple' },
+    { value: 'family' },
+    { value: 'group' },
+    { value: 'child' },
+    { value: 'elderly' },
+    { value: 'business' }
   ];
 
   // 检查是否有localStorage中的申请数据
@@ -756,8 +760,8 @@ const BecomeGuidePage: React.FC = () => {
           <div className="max-w-4xl mx-auto">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-3xl font-bold">成为YaoTu地陪</h1>
-                <p className="text-yellow-100 mt-2">分享您的当地专业知识，通过引导旅行者了解您的城市来赚钱</p>
+                <h1 className="text-3xl font-bold">{intl.formatMessage({ id: 'becomeGuide.title' })}</h1>
+                <p className="text-yellow-100 mt-2">{intl.formatMessage({ id: 'becomeGuide.subtitle' })}</p>
               </div>
               <button
                 onClick={() => window.location.href = '/'}
@@ -778,8 +782,8 @@ const BecomeGuidePage: React.FC = () => {
             cities={cities}
             targetGroups={targetGroups}
             onLoadServiceCategories={loadServiceCategories}
-            customTitle="成为我们的地陪"
-            customDescription="加入我们，分享你的当地知识，帮助旅行者发现真正的日本。"
+            customTitle={intl.formatMessage({ id: 'becomeGuide.title' })}
+            customDescription={intl.formatMessage({ id: 'becomeGuide.subtitle' })}
             showProgressBar={true}
             onLoadLocalStorage={loadFromLocalStorage}
             onSaveLocalStorage={saveToLocalStorage}

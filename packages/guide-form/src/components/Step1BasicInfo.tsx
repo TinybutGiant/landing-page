@@ -1,6 +1,7 @@
 import { Control } from "react-hook-form";
 import { FormData } from "../types/schema";
 import { SEX_OPTIONS, MBTI_OPTIONS } from "../constants";
+import { useIntl } from "react-intl";
 
 // 基础 UI 组件接口 - 需要由使用者提供实现
 export interface UIComponents {
@@ -34,6 +35,8 @@ export const Step1BasicInfo = ({
   ui,
   cities = []
 }: Step1BasicInfoProps) => {
+  const intl = useIntl();
+  
   const {
     FormField,
     FormItem,
@@ -57,7 +60,7 @@ export const Step1BasicInfo = ({
       {/* 基本信息部分 */}
       <div>
         <h3 className="text-lg font-semibold text-gray-900 mb-4">
-          基本信息
+          {intl.formatMessage({ id: 'becomeGuide.step1.basicInfo' })}
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField
@@ -65,10 +68,10 @@ export const Step1BasicInfo = ({
             name="name"
             render={({ field }: any) => (
               <FormItem>
-                <FormLabel>姓名 *</FormLabel>
+                <FormLabel>{intl.formatMessage({ id: 'becomeGuide.step1.name' })} *</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="请输入您的姓名"
+                    placeholder={intl.formatMessage({ id: 'becomeGuide.step1.namePlaceholder' })}
                     {...field}
                   />
                 </FormControl>
@@ -83,9 +86,9 @@ export const Step1BasicInfo = ({
             render={({ field }: any) => (
               <FormItem>
                 <FormLabel>
-                  年龄 *
+                  {intl.formatMessage({ id: 'becomeGuide.step1.age' })} *
                   <span className="text-sm text-gray-500 ml-2">
-                    (至少需要18岁)
+                    ({intl.formatMessage({ id: 'becomeGuide.step1.ageRequirement' })})
                   </span>
                 </FormLabel>
                 <FormControl>
@@ -111,14 +114,14 @@ export const Step1BasicInfo = ({
             name="sex"
             render={({ field }: any) => (
               <FormItem>
-                <FormLabel>性别 *</FormLabel>
+                <FormLabel>{intl.formatMessage({ id: 'becomeGuide.step1.gender' })} *</FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="请选择性别" />
+                      <SelectValue placeholder={intl.formatMessage({ id: 'becomeGuide.step1.genderPlaceholder' })} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -127,7 +130,7 @@ export const Step1BasicInfo = ({
                         key={option.value}
                         value={option.value}
                       >
-                        {option.label}
+                        {intl.formatMessage({ id: `becomeGuide.step1.genderOptions.${option.value.toLowerCase()}` })}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -143,9 +146,9 @@ export const Step1BasicInfo = ({
             render={({ field }: any) => (
               <FormItem>
                 <FormLabel>
-                  MBTI人格类型
+                  {intl.formatMessage({ id: 'becomeGuide.step1.mbti' })}
                   <span className="text-sm text-gray-500 ml-2">
-                    (帮助我们更好地了解您的性格特点)
+                    ({intl.formatMessage({ id: 'becomeGuide.step1.mbtiDescription' })})
                   </span>
                 </FormLabel>
                 <Select
@@ -154,7 +157,7 @@ export const Step1BasicInfo = ({
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="请选择您的MBTI类型" />
+                      <SelectValue placeholder={intl.formatMessage({ id: 'becomeGuide.step1.mbtiPlaceholder' })} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -176,10 +179,10 @@ export const Step1BasicInfo = ({
           name="socialProfile"
           render={({ field }: any) => (
             <FormItem className="mt-4">
-              <FormLabel>小红书 / Instagram主页链接</FormLabel>
+              <FormLabel>{intl.formatMessage({ id: 'becomeGuide.step1.socialProfile' })}</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="请输入您的社交媒体主页链接"
+                  placeholder={intl.formatMessage({ id: 'becomeGuide.step1.socialProfilePlaceholder' })}
                   value={field.value || ""}
                   onChange={field.onChange}
                 />
@@ -193,7 +196,7 @@ export const Step1BasicInfo = ({
       {/* 服务信息部分 */}
       <div>
         <h3 className="text-lg font-semibold text-gray-900 mb-4">
-          服务信息
+          {intl.formatMessage({ id: 'becomeGuide.step1.serviceInfo' })}
         </h3>
         <div className="space-y-4">
           <FormField
@@ -201,14 +204,14 @@ export const Step1BasicInfo = ({
             name="serviceCity"
             render={({ field }: any) => (
               <FormItem>
-                <FormLabel>可服务的城市 *</FormLabel>
+                <FormLabel>{intl.formatMessage({ id: 'becomeGuide.step1.serviceCity' })} *</FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value || ""}
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="如：大阪 / 东京 / 京都等" />
+                      <SelectValue placeholder={intl.formatMessage({ id: 'becomeGuide.step1.serviceCityPlaceholder' })} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -217,7 +220,7 @@ export const Step1BasicInfo = ({
                         key={city.value}
                         value={city.value}
                       >
-                        {city.label}
+                        {intl.formatMessage({ id: `becomeGuide.step1.cities.${city.value}` })}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -232,10 +235,10 @@ export const Step1BasicInfo = ({
             name="residenceInfo"
             render={({ field }: any) => (
               <FormItem>
-                <FormLabel>您的住址/常驻区域</FormLabel>
+                <FormLabel>{intl.formatMessage({ id: 'becomeGuide.step1.residenceInfo' })}</FormLabel>
                 <FormControl>
                   <Textarea
-                    placeholder="便于估算通勤时间（如：新宿区、涩谷附近等）"
+                    placeholder={intl.formatMessage({ id: 'becomeGuide.step1.residenceInfoPlaceholder' })}
                     value={field.value || ""}
                     onChange={field.onChange}
                   />
@@ -251,7 +254,7 @@ export const Step1BasicInfo = ({
               name="residenceStartDate"
               render={({ field }: any) => (
                 <FormItem>
-                  <FormLabel>在日本生活的起始时间</FormLabel>
+                  <FormLabel>{intl.formatMessage({ id: 'becomeGuide.step1.residenceStartDate' })}</FormLabel>
                   <FormControl>
                     <YearMonthPicker
                       value={
@@ -266,7 +269,7 @@ export const Step1BasicInfo = ({
                             : "",
                         );
                       }}
-                      placeholder="请选择开始在日本生活的年月"
+                      placeholder={intl.formatMessage({ id: 'becomeGuide.step1.residenceStartDatePlaceholder' })}
                     />
                   </FormControl>
                   <FormMessage />
@@ -280,10 +283,10 @@ export const Step1BasicInfo = ({
             name="occupation"
             render={({ field }: any) => (
               <FormItem>
-                <FormLabel>当前职业 / 身份</FormLabel>
+                <FormLabel>{intl.formatMessage({ id: 'becomeGuide.step1.occupation' })}</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="如：留学生、公司员工、自由职业者等"
+                    placeholder={intl.formatMessage({ id: 'becomeGuide.step1.occupationPlaceholder' })}
                     value={field.value || ""}
                     onChange={field.onChange}
                   />
@@ -298,10 +301,10 @@ export const Step1BasicInfo = ({
             name="bio"
             render={({ field }: any) => (
               <FormItem>
-                <FormLabel>用一段话介绍你自己吧</FormLabel>
+                <FormLabel>{intl.formatMessage({ id: 'becomeGuide.step1.bio' })}</FormLabel>
                 <FormControl>
                   <Textarea
-                    placeholder="你希望客人看到你哪一面？分享你的特长、兴趣或独特经历..."
+                    placeholder={intl.formatMessage({ id: 'becomeGuide.step1.bioPlaceholder' })}
                     className="min-h-[100px]"
                     value={field.value || ""}
                     onChange={field.onChange}
@@ -317,7 +320,7 @@ export const Step1BasicInfo = ({
       {/* 资质与经验 */}
       <div>
         <h3 className="text-lg font-semibold text-gray-900 mb-4">
-          资质与经验
+          {intl.formatMessage({ id: 'becomeGuide.step1.qualifications' })}
         </h3>
         <div className="space-y-4">
           {/* 语言能力 */}
@@ -326,17 +329,17 @@ export const Step1BasicInfo = ({
             name="languages"
             render={({ field }: any) => (
               <FormItem>
-                <FormLabel>你可以提供服务的语言能力</FormLabel>
+                <FormLabel>{intl.formatMessage({ id: 'becomeGuide.step1.languages' })}</FormLabel>
                 <div className="flex space-x-4">
-                  {["中文", "日语", "英文"].map((language) => (
+                  {["chinese", "japanese", "english"].map((languageKey) => (
                     <div
-                      key={language}
+                      key={languageKey}
                       className="flex items-center space-x-2"
                     >
                       <Checkbox
-                        id={`language-${language}`}
+                        id={`language-${languageKey}`}
                         checked={
-                          field.value?.includes(language) ||
+                          field.value?.includes(languageKey) ||
                           false
                         }
                         onCheckedChange={(checked: boolean) => {
@@ -345,23 +348,23 @@ export const Step1BasicInfo = ({
                           if (checked) {
                             field.onChange([
                               ...currentLanguages,
-                              language,
+                              languageKey,
                             ]);
                           } else {
                             field.onChange(
                               currentLanguages.filter(
                                 (lang: string) =>
-                                  lang !== language,
+                                  lang !== languageKey,
                               ),
                             );
                           }
                         }}
                       />
                       <label
-                        htmlFor={`language-${language}`}
+                        htmlFor={`language-${languageKey}`}
                         className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                       >
-                        {language}
+                        {intl.formatMessage({ id: `becomeGuide.step1.languageOptions.${languageKey}` })}
                       </label>
                     </div>
                   ))}
@@ -374,7 +377,7 @@ export const Step1BasicInfo = ({
           {/* 地陪经验 */}
           <div className="space-y-4">
             <FormLabel className="text-base font-medium">
-              地陪经验
+              {intl.formatMessage({ id: 'becomeGuide.step1.experience' })}
             </FormLabel>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
@@ -382,10 +385,10 @@ export const Step1BasicInfo = ({
                 name="experienceDuration"
                 render={({ field }: any) => (
                   <FormItem>
-                    <FormLabel>做地陪的时长</FormLabel>
+                    <FormLabel>{intl.formatMessage({ id: 'becomeGuide.step1.experienceDuration' })}</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="如：2年、6个月等"
+                        placeholder={intl.formatMessage({ id: 'becomeGuide.step1.experienceDurationPlaceholder' })}
                         value={field.value || ""}
                         onChange={field.onChange}
                       />
@@ -400,10 +403,10 @@ export const Step1BasicInfo = ({
                 name="experienceSession"
                 render={({ field }: any) => (
                   <FormItem>
-                    <FormLabel>具体次数</FormLabel>
+                    <FormLabel>{intl.formatMessage({ id: 'becomeGuide.step1.experienceSession' })}</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="如：50次左右、100+次等"
+                        placeholder={intl.formatMessage({ id: 'becomeGuide.step1.experienceSessionPlaceholder' })}
                         value={field.value || ""}
                         onChange={field.onChange}
                       />

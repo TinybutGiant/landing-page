@@ -18,19 +18,19 @@ export const MBTI_OPTIONS = [
   "ISTP",
 ];
 
-// 性别选项
+// 性别选项 - 使用翻译键
 export const SEX_OPTIONS = [
-  { value: "Male", label: "男" },
-  { value: "Female", label: "女" },
-  { value: "Prefer not to say", label: "不愿透露" },
+  { value: "Male", labelKey: "becomeGuide.step1.genderOptions.male" },
+  { value: "Female", labelKey: "becomeGuide.step1.genderOptions.female" },
+  { value: "Prefer not to say", labelKey: "becomeGuide.step1.genderOptions.preferNotToSay" },
 ];
 
-// 页面配置
+// 页面配置 - 使用翻译键
 export const PAGE_TITLES = {
-  1: "基本信息 & 服务信息",
-  2: "自我认知评估", 
-  3: "个性化提问",
-  4: "服务类型与偏好"
+  1: "becomeGuide.step1.step1PageTitle",
+  2: "becomeGuide.step2.step2PageTitle", 
+  3: "becomeGuide.step3.step3PageTitle",
+  4: "becomeGuide.step4.step4PageTitle"
 } as const;
 
 export const TOTAL_PAGES = 4;
@@ -58,21 +58,21 @@ export const CURRENCY_OPTIONS = [
   { value: "CNY", label: "人民币 (CNY)" },
 ] as const;
 
-// 评分说明
+// 评分说明 - 使用翻译键
 export const SCORE_EXPLANATIONS = {
   ethics: {
-    title: "道德感评估",
-    description: "衡量责任感、正直性、安全边界。对应客户信任度。",
-    ranges: "1-3: 包容 | 4-7: 平衡 | 8-10: 规矩",
+    title: "becomeGuide.step2.ethicsScore",
+    description: "becomeGuide.step2.ethicsDescription",
+    ranges: "becomeGuide.step2.ethicsRange0 | becomeGuide.step2.ethicsRange10",
   },
   boundary: {
-    title: "边界感评估",
-    description: "衡量私人空间与互动尺度的把握能力。对应服务舒适度。",
-    ranges: "1-3: 外放 | 4-7: 社交型 | 8-10: 稳重",
+    title: "becomeGuide.step2.boundaryScore",
+    description: "becomeGuide.step2.boundaryDescription",
+    ranges: "becomeGuide.step2.boundaryRange0 | becomeGuide.step2.boundaryRange10",
   },
   supportive: {
-    title: "应变力评估",
-    description: "衡量氛围调节、临场反应能力。对应社交感染力。",
-    ranges: "1-3: 木讷 | 4-7: 活跃伴聊 | 8-10: 主导型",
+    title: "becomeGuide.step2.supportiveScore",
+    description: "becomeGuide.step2.supportiveDescription",
+    ranges: "becomeGuide.step2.supportiveRange0 | becomeGuide.step2.supportiveRange10",
   },
 };
