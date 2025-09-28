@@ -1,6 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { useEffect, useState } from "react";
+import { useIntl } from 'react-intl';
+import { useLanguage } from '@/i18n/LanguageProvider';
 import { 
   ApplicationStatus,
   ApprovalTimeline,
@@ -54,6 +56,8 @@ export default function ViewApplicationStatusPage() {
   const { toast } = useToast();
   const [location, setLocation] = useLocation();
   const [lazyEvaluationTriggered, setLazyEvaluationTriggered] = useState(false);
+  const intl = useIntl();
+  const { locale } = useLanguage();
   
   // 检查是否是提交后跳转过来的
   const isJustSubmitted = new URLSearchParams(location.split('?')[1]).get('submitted') === 'true';
@@ -72,7 +76,7 @@ export default function ViewApplicationStatusPage() {
       <div className="min-h-screen bg-yellow-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">正在验证身份...</p>
+          <p className="text-gray-600">{intl.formatMessage({ id: 'viewApplicationStatus.verifyingIdentity' })}</p>
         </div>
       </div>
     );
@@ -144,16 +148,16 @@ export default function ViewApplicationStatusPage() {
           if (result.success) {
             console.log('[LANDING_PAGE] ✅ Lazy evaluation successful:', result.message);
             toast({
-              title: "恭喜！",
-              description: "您的地陪资料已自动生成，现在可以开始接待客户了！",
+              title: intl.formatMessage({ id: 'viewApplicationStatus.congratulations' }),
+              description: intl.formatMessage({ id: 'viewApplicationStatus.guideProfileGenerated' }),
             });
           } else {
             console.log('[LANDING_PAGE] ⚠️ Lazy evaluation result:', result.message);
             // Don't show error toast for expected cases like "already a guide"
             if (!result.message.includes('already') && !result.message.includes('already has')) {
               toast({
-                title: "处理中",
-                description: "正在为您生成地陪资料，请稍候...",
+                title: intl.formatMessage({ id: 'viewApplicationStatus.processing' }),
+                description: intl.formatMessage({ id: 'viewApplicationStatus.generatingGuideProfile' }),
                 variant: "default"
               });
             }
@@ -182,7 +186,7 @@ export default function ViewApplicationStatusPage() {
     });
 
     if (!response.ok) {
-      throw new Error('文件上传失败');
+      throw new Error(intl.formatMessage({ id: 'viewApplicationStatus.fileUploadFailed' }));
     }
 
     return response.json();
@@ -215,8 +219,8 @@ export default function ViewApplicationStatusPage() {
         const newWindow = window.open(pdfUrl, '_blank');
         if (newWindow) {
           toast({
-            title: "PDF已打开",
-            description: "PDF文件已在新窗口中打开",
+            title: intl.formatMessage({ id: 'viewApplicationStatus.pdfOpened' }),
+            description: intl.formatMessage({ id: 'viewApplicationStatus.pdfOpenedInNewWindow' }),
           });
         } else {
           // 如果弹窗被阻止，尝试直接下载
@@ -229,22 +233,22 @@ export default function ViewApplicationStatusPage() {
           document.body.removeChild(link);
           
           toast({
-            title: "PDF下载已开始",
-            description: "PDF文件下载已开始",
+            title: intl.formatMessage({ id: 'viewApplicationStatus.pdfDownloadStarted' }),
+            description: intl.formatMessage({ id: 'viewApplicationStatus.pdfDownloadStartedDescription' }),
           });
         }
       } else {
         toast({
-          title: "PDF不可用",
-          description: "PDF文件正在生成中，请稍后再试",
+          title: intl.formatMessage({ id: 'viewApplicationStatus.pdfNotAvailable' }),
+          description: intl.formatMessage({ id: 'viewApplicationStatus.pdfGenerating' }),
           variant: "destructive",
         });
       }
     } catch (error) {
       console.error('下载PDF失败:', error);
       toast({
-        title: "下载失败",
-        description: "PDF下载失败，请重试",
+        title: intl.formatMessage({ id: 'viewApplicationStatus.downloadFailed' }),
+        description: intl.formatMessage({ id: 'viewApplicationStatus.pdfDownloadFailed' }),
         variant: "destructive",
       });
     }

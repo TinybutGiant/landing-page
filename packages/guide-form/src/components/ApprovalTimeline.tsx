@@ -1,3 +1,5 @@
+import { useIntl } from 'react-intl';
+
 interface ApprovalTimelineEntry {
   id: string | number;
   type: 'application_submitted' | 'admin_action' | 'user_response';
@@ -27,13 +29,14 @@ export function ApprovalTimeline({
   FileCheck, 
   Upload 
 }: ApprovalTimelineProps) {
+  const intl = useIntl();
   const getTimelineItemInfo = (entry: ApprovalTimelineEntry) => {
     switch (entry.type) {
       case 'application_submitted':
         return {
           icon: <CheckCircle className="h-5 w-5 text-blue-500" />,
-          title: "申请已提交",
-          description: "您的地陪申请已成功提交，等待审核",
+          title: intl.formatMessage({ id: 'approvalTimeline.applicationSubmitted' }),
+          description: intl.formatMessage({ id: 'approvalTimeline.applicationSubmittedDescription' }),
           color: "text-blue-600"
         };
       
@@ -42,36 +45,36 @@ export function ApprovalTimeline({
           case 'review':
             return {
               icon: <Clock className="h-5 w-5 text-yellow-500" />,
-              title: "当前申请正在审核中",
-              description: entry.note || "管理员正在审核您的申请",
+              title: intl.formatMessage({ id: 'approvalTimeline.underReview' }),
+              description: entry.note || intl.formatMessage({ id: 'approvalTimeline.underReviewDescription' }),
               color: "text-yellow-600"
             };
           case 'approve':
             return {
               icon: <CheckCircle className="h-5 w-5 text-green-500" />,
-              title: "当前申请已审核通过",
-              description: entry.note || "恭喜！您的申请已经通过审核",
+              title: intl.formatMessage({ id: 'approvalTimeline.approved' }),
+              description: entry.note || intl.formatMessage({ id: 'approvalTimeline.approvedDescription' }),
               color: "text-green-600"
             };
           case 'reject':
             return {
               icon: <XCircle className="h-5 w-5 text-red-500" />,
-              title: "当前申请已被拒绝",
-              description: entry.note || "很抱歉，您的申请未通过审核",
+              title: intl.formatMessage({ id: 'approvalTimeline.rejected' }),
+              description: entry.note || intl.formatMessage({ id: 'approvalTimeline.rejectedDescription' }),
               color: "text-red-600"
             };
           case 'require_more_info':
             return {
               icon: <AlertCircle className="h-5 w-5 text-orange-500" />,
-              title: "需要补充材料",
-              description: entry.note || "请按要求补充相关材料",
+              title: intl.formatMessage({ id: 'approvalTimeline.requireMoreInfo' }),
+              description: entry.note || intl.formatMessage({ id: 'approvalTimeline.requireMoreInfoDescription' }),
               color: "text-orange-600"
             };
           default:
             return {
               icon: <Clock className="h-5 w-5 text-gray-500" />,
-              title: "管理员操作",
-              description: entry.note || "管理员已处理申请",
+              title: intl.formatMessage({ id: 'approvalTimeline.adminAction' }),
+              description: entry.note || intl.formatMessage({ id: 'approvalTimeline.adminActionDescription' }),
               color: "text-gray-600"
             };
         }
@@ -79,15 +82,15 @@ export function ApprovalTimeline({
       case 'user_response':
         return {
           icon: <FileCheck className="h-5 w-5 text-blue-500" />,
-          title: "补充材料已上传",
-          description: "您已提交补充材料，等待重新审核",
+          title: intl.formatMessage({ id: 'approvalTimeline.supplementalMaterialsUploaded' }),
+          description: intl.formatMessage({ id: 'approvalTimeline.supplementalMaterialsUploadedDescription' }),
           color: "text-blue-600"
         };
       
       default:
         return {
           icon: <Clock className="h-5 w-5 text-gray-500" />,
-          title: "未知状态",
+          title: intl.formatMessage({ id: 'approvalTimeline.unknownStatus' }),
           description: "",
           color: "text-gray-600"
         };
@@ -120,7 +123,7 @@ export function ApprovalTimeline({
 
   return (
     <div className="space-y-6">
-      <h3 className="text-lg font-semibold text-gray-900">审批历史</h3>
+      <h3 className="text-lg font-semibold text-gray-900">{intl.formatMessage({ id: 'approvalTimeline.title' })}</h3>
       
       <div className="relative">
         {/* Timeline line */}
@@ -151,7 +154,7 @@ export function ApprovalTimeline({
                         </p>
                         {entry.adminName && (
                           <p className="text-xs text-gray-500 mt-1">
-                            审核人员: {entry.adminName}
+                            {intl.formatMessage({ id: 'approvalTimeline.reviewer' })}: {entry.adminName}
                           </p>
                         )}
                       </div>
@@ -180,10 +183,10 @@ export function ApprovalTimeline({
               <div className="ml-4 flex-1 min-w-0">
                 <div className="bg-orange-50 rounded-lg border border-orange-200 p-4 shadow-sm">
                   <h4 className="font-medium text-orange-600">
-                    补充材料尚未上传
+                    {intl.formatMessage({ id: 'approvalTimeline.supplementalMaterialsNotUploaded' })}
                   </h4>
                   <p className="text-sm text-orange-700 mt-1">
-                    请根据管理员要求上传补充材料以继续审核流程
+                    {intl.formatMessage({ id: 'approvalTimeline.supplementalMaterialsNotUploadedDescription' })}
                   </p>
                 </div>
               </div>

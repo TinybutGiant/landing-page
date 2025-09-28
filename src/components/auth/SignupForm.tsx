@@ -12,20 +12,22 @@ import { ArrowLeft, User, Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { checkUsernameAvailability, validateUsername, calculatePasswordStrength } from "@/lib/auth";
+import { useIntl } from 'react-intl';
+import { useLanguage } from '@/i18n/LanguageProvider';
 
-const signupSchema = z.object({
-  username: z.string().min(3, '用户名至少需要3个字符'),
-  email: z.string().email('请输入有效的邮箱地址'),
-  password: z.string().min(8, '密码至少需要8个字符'),
+const createSignupSchema = (intl: any) => z.object({
+  username: z.string().min(3, intl.formatMessage({ id: 'signup.validation.usernameMinLength' })),
+  email: z.string().email(intl.formatMessage({ id: 'signup.validation.emailInvalid' })),
+  password: z.string().min(8, intl.formatMessage({ id: 'signup.validation.passwordMinLength' })),
   confirmPassword: z.string(),
-  firstName: z.string().min(1, '请输入名字'),
-  lastName: z.string().min(1, '请输入姓氏'),
+  firstName: z.string().min(1, intl.formatMessage({ id: 'signup.validation.firstNameRequired' })),
+  lastName: z.string().min(1, intl.formatMessage({ id: 'signup.validation.lastNameRequired' })),
 }).refine((data) => data.password === data.confirmPassword, {
-  message: "密码不匹配",
+  message: intl.formatMessage({ id: 'signup.validation.passwordMismatch' }),
   path: ["confirmPassword"],
 });
 
-type SignupFormData = z.infer<typeof signupSchema>;
+type SignupFormData = z.infer<ReturnType<typeof createSignupSchema>>;
 
 interface SignupFormProps {
   onSuccess?: () => void;
@@ -38,6 +40,8 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, redirectTo }) => {
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [emailUpdates, setEmailUpdates] = useState(false);
   const { toast } = useToast();
+  const intl = useIntl();
+  const { locale } = useLanguage();
   
   // Username validation state
   const [usernameError, setUsernameError] = useState<string>("");
@@ -54,7 +58,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, redirectTo }) => {
   const { signUp } = useAuth();
 
   const form = useForm<SignupFormData>({
-    resolver: zodResolver(signupSchema as any),
+    resolver: zodResolver(createSignupSchema(intl) as any),
     defaultValues: {
       username: '',
       email: '',
@@ -68,7 +72,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, redirectTo }) => {
   // Username validation function
   const handleUsernameChange = async (username: string) => {
     if (!validateUsername(username)) {
-      setUsernameError("用户名必须至少3个字符，只能包含小写字母和数字");
+      setUsernameError(intl.formatMessage({ id: 'signup.usernameValidation.invalidFormat' }));
       setUsernameSuggestion("");
       return;
     }
@@ -81,13 +85,13 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, redirectTo }) => {
         setUsernameError("");
         setUsernameSuggestion("");
       } else {
-        setUsernameError("用户名已被占用");
+        setUsernameError(intl.formatMessage({ id: 'signup.usernameValidation.usernameTaken' }));
         const suggestion = `${username}${Math.floor(Math.random() * 1000)}`;
         setUsernameSuggestion(suggestion);
       }
     } catch (error) {
       console.error("Error checking username:", error);
-      setUsernameError("检查用户名可用性时出错");
+      setUsernameError(intl.formatMessage({ id: 'signup.usernameValidation.checkError' }));
     } finally {
       setIsCheckingUsername(false);
     }
@@ -102,8 +106,8 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, redirectTo }) => {
   const onSubmit = async (data: SignupFormData) => {
     if (!agreedToTerms) {
       toast({
-        title: "请同意服务条款",
-        description: "请同意服务条款和隐私声明",
+        title: intl.formatMessage({ id: 'signup.error.agreeToTerms' }),
+        description: intl.formatMessage({ id: 'signup.error.agreeToTermsDescription' }),
         variant: "destructive"
       });
       return;
@@ -111,8 +115,8 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, redirectTo }) => {
 
     if (usernameError) {
       toast({
-        title: "用户名不可用",
-        description: "请选择一个可用的用户名",
+        title: intl.formatMessage({ id: 'signup.error.usernameUnavailable' }),
+        description: intl.formatMessage({ id: 'signup.error.usernameUnavailableDescription' }),
         variant: "destructive"
       });
       return;
@@ -147,8 +151,8 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, redirectTo }) => {
       if (success) {
         console.log('SignupForm: 注册成功，用户已自动登录');
         toast({
-          title: "注册成功",
-          description: "欢迎加入我们！",
+          title: intl.formatMessage({ id: 'signup.success.title' }),
+          description: intl.formatMessage({ id: 'signup.success.description' }),
           variant: "success"
         });
         
@@ -178,8 +182,8 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, redirectTo }) => {
     } catch (error) {
       console.error('Signup error:', error);
       toast({
-        title: "注册失败",
-        description: "请重试",
+        title: intl.formatMessage({ id: 'signup.error.title' }),
+        description: intl.formatMessage({ id: 'signup.error.description' }),
         variant: "destructive"
       });
     }
@@ -203,14 +207,14 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, redirectTo }) => {
                 className="text-gray-600 hover:text-gray-900"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                返回首页
+                {intl.formatMessage({ id: 'signup.backToHome' })}
               </Button>
             </div>
             <CardTitle className="text-2xl font-bold text-gray-900">
-              注册账号
+              {intl.formatMessage({ id: 'signup.title' })}
             </CardTitle>
             <p className="text-gray-600 mt-2">
-              创建您的YaoTu账号，开始您的导游之旅
+              {intl.formatMessage({ id: 'signup.subtitle' })}
             </p>
           </CardHeader>
           
@@ -224,12 +228,12 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, redirectTo }) => {
                     render={({ field }: { field: any }) => (
                       <FormItem>
                         <FormLabel className="text-sm font-medium text-gray-700">
-                          名字
+                          {intl.formatMessage({ id: 'signup.firstName' })}
                         </FormLabel>
                         <FormControl>
                           <Input
                             {...field}
-                            placeholder="名字"
+                            placeholder={intl.formatMessage({ id: 'signup.firstNamePlaceholder' })}
                             disabled={form.formState.isSubmitting}
                           />
                         </FormControl>
@@ -243,12 +247,12 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, redirectTo }) => {
                     render={({ field }: { field: any }) => (
                       <FormItem>
                         <FormLabel className="text-sm font-medium text-gray-700">
-                          姓氏
+                          {intl.formatMessage({ id: 'signup.lastName' })}
                         </FormLabel>
                         <FormControl>
                           <Input
                             {...field}
-                            placeholder="姓氏"
+                            placeholder={intl.formatMessage({ id: 'signup.lastNamePlaceholder' })}
                             disabled={form.formState.isSubmitting}
                           />
                         </FormControl>
@@ -264,14 +268,14 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, redirectTo }) => {
                   render={({ field }: { field: any }) => (
                     <FormItem>
                       <FormLabel className="text-sm font-medium text-gray-700">
-                        用户名
+                        {intl.formatMessage({ id: 'signup.username' })}
                       </FormLabel>
                       <FormControl>
                         <div className="relative">
                           <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                           <Input
                             {...field}
-                            placeholder="选择用户名（小写字母和数字）"
+                            placeholder={intl.formatMessage({ id: 'signup.usernamePlaceholder' })}
                             className="pl-10"
                             disabled={form.formState.isSubmitting}
                             onChange={(e) => {
@@ -288,14 +292,14 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, redirectTo }) => {
                         </div>
                       </FormControl>
                       {isCheckingUsername && (
-                        <p className="text-sm text-gray-500 mt-1">检查可用性...</p>
+                        <p className="text-sm text-gray-500 mt-1">{intl.formatMessage({ id: 'signup.checkingAvailability' })}</p>
                       )}
                       {usernameError && (
                         <p className="text-sm text-red-500 mt-1">{usernameError}</p>
                       )}
                       {usernameSuggestion && (
                         <div className="mt-1">
-                          <p className="text-sm text-gray-600">建议: </p>
+                          <p className="text-sm text-gray-600">{intl.formatMessage({ id: 'signup.suggestion' })}: </p>
                           <button
                             type="button"
                             onClick={() => {
@@ -320,7 +324,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, redirectTo }) => {
                   render={({ field }: { field: any }) => (
                     <FormItem>
                       <FormLabel className="text-sm font-medium text-gray-700">
-                        邮箱地址
+                        {intl.formatMessage({ id: 'signup.email' })}
                       </FormLabel>
                       <FormControl>
                         <div className="relative">
@@ -328,7 +332,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, redirectTo }) => {
                           <Input
                             {...field}
                             type="email"
-                            placeholder="请输入邮箱地址"
+                            placeholder={intl.formatMessage({ id: 'signup.emailPlaceholder' })}
                             className="pl-10"
                             disabled={form.formState.isSubmitting}
                           />
@@ -345,7 +349,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, redirectTo }) => {
                   render={({ field }: { field: any }) => (
                     <FormItem>
                       <FormLabel className="text-sm font-medium text-gray-700">
-                        密码
+                        {intl.formatMessage({ id: 'signup.password' })}
                       </FormLabel>
                       <FormControl>
                         <div className="relative">
@@ -353,7 +357,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, redirectTo }) => {
                           <Input
                             {...field}
                             type={showPassword ? "text" : "password"}
-                            placeholder="创建密码（至少8个字符）"
+                            placeholder={intl.formatMessage({ id: 'signup.passwordPlaceholder' })}
                             className="pl-10 pr-10"
                             disabled={form.formState.isSubmitting}
                             onChange={(e) => {
@@ -390,7 +394,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, redirectTo }) => {
                             </span>
                           </div>
                           <div className="text-xs text-gray-500 mt-1">
-                            密码必须包含：字母、数字和特殊字符
+                            {intl.formatMessage({ id: 'signup.passwordRequirements' })}
                           </div>
                         </div>
                       )}
@@ -405,7 +409,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, redirectTo }) => {
                   render={({ field }: { field: any }) => (
                     <FormItem>
                       <FormLabel className="text-sm font-medium text-gray-700">
-                        确认密码
+                        {intl.formatMessage({ id: 'signup.confirmPassword' })}
                       </FormLabel>
                       <FormControl>
                         <div className="relative">
@@ -413,7 +417,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, redirectTo }) => {
                           <Input
                             {...field}
                             type={showConfirmPassword ? "text" : "password"}
-                            placeholder="请再次输入密码"
+                            placeholder={intl.formatMessage({ id: 'signup.confirmPasswordPlaceholder' })}
                             className="pl-10 pr-10"
                             disabled={form.formState.isSubmitting}
                           />
@@ -440,13 +444,13 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, redirectTo }) => {
                       className="mt-1"
                     />
                     <label htmlFor="terms" className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-                      我同意{" "}
+                      {intl.formatMessage({ id: 'signup.agreeToTerms' })}{" "}
                       <a href="/terms" className="text-yellow-600 hover:text-yellow-700 underline">
-                        服务条款
+                        {intl.formatMessage({ id: 'signup.termsOfService' })}
                       </a>{" "}
-                      和{" "}
+                      {intl.formatMessage({ id: 'signup.and' })}{" "}
                       <a href="/privacy" className="text-yellow-600 hover:text-yellow-700 underline">
-                        隐私声明
+                        {intl.formatMessage({ id: 'signup.privacyPolicy' })}
                       </a>
                     </label>
                   </div>
@@ -459,7 +463,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, redirectTo }) => {
                       className="mt-1"
                     />
                     <label htmlFor="emailUpdates" className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-                      通过邮件接收更新。随时可以取消订阅。
+                      {intl.formatMessage({ id: 'signup.emailUpdates' })}
                     </label>
                   </div>
                 </div>
@@ -469,19 +473,19 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, redirectTo }) => {
                   className="w-full bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-300"
                   disabled={form.formState.isSubmitting || !agreedToTerms}
                 >
-                  {form.formState.isSubmitting ? '注册中...' : '创建账号'}
+                  {form.formState.isSubmitting ? intl.formatMessage({ id: 'signup.creating' }) : intl.formatMessage({ id: 'signup.createAccount' })}
                 </Button>
               </form>
             </Form>
 
             <div className="mt-6 text-center">
               <p className="text-sm text-gray-600">
-                已有账号？{' '}
+                {intl.formatMessage({ id: 'signup.alreadyHaveAccount' })}{' '}
                 <button
                   onClick={() => window.location.href = '/login'}
                   className="text-yellow-600 hover:text-yellow-700 font-medium"
                 >
-                  立即登录
+                  {intl.formatMessage({ id: 'signup.loginNow' })}
                 </button>
               </p>
             </div>

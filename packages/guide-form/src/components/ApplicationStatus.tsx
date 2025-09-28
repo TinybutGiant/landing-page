@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useIntl } from 'react-intl';
 import { ApprovalTimeline } from "./ApprovalTimeline";
 import { SupplementalMaterialsUpload } from "./SupplementalMaterialsUpload";
 
@@ -97,6 +98,7 @@ export default function ApplicationStatus({
   FileText,
   History,
 }: ApplicationStatusProps) {
+  const intl = useIntl();
   // 检查是否需要显示补充材料上传
   const needsSupplementalMaterials = () => {
     if (!timelineData?.timeline || !application) return false;
@@ -132,37 +134,37 @@ export default function ApplicationStatus({
       case "pending":
         return {
           icon: <Clock className="h-6 w-6 text-yellow-500" />,
-          text: "审核中",
+          text: intl.formatMessage({ id: 'applicationStatus.pending' }),
           color: "bg-yellow-50 border-yellow-200 text-yellow-800",
-          description: "您的申请正在审核中，我们会尽快处理。"
+          description: intl.formatMessage({ id: 'applicationStatus.pendingDescription' })
         };
       case "needs_more_info":
         return {
           icon: <AlertCircle className="h-6 w-6 text-orange-500" />,
-          text: "需要补充材料",
+          text: intl.formatMessage({ id: 'applicationStatus.needsMoreInfo' }),
           color: "bg-orange-50 border-orange-200 text-orange-800",
-          description: "请按照要求补充相关材料。"
+          description: intl.formatMessage({ id: 'applicationStatus.needsMoreInfoDescription' })
         };
       case "approved":
         return {
           icon: <CheckCircle className="h-6 w-6 text-green-500" />,
-          text: "申请通过",
+          text: intl.formatMessage({ id: 'applicationStatus.approved' }),
           color: "bg-green-50 border-green-200 text-green-800",
-          description: "恭喜！您的申请已通过，欢迎成为YaoTu地陪！"
+          description: intl.formatMessage({ id: 'applicationStatus.approvedDescription' })
         };
       case "rejected":
         return {
           icon: <XCircle className="h-6 w-6 text-red-500" />,
-          text: "申请未通过",
+          text: intl.formatMessage({ id: 'applicationStatus.rejected' }),
           color: "bg-red-50 border-red-200 text-red-800",
-          description: "很抱歉，您的申请未通过审核。"
+          description: intl.formatMessage({ id: 'applicationStatus.rejectedDescription' })
         };
       default:
         return {
           icon: <Clock className="h-6 w-6 text-gray-500" />,
-          text: "未知状态",
+          text: intl.formatMessage({ id: 'applicationStatus.unknown' }),
           color: "bg-gray-50 border-gray-200 text-gray-800",
-          description: "申请状态未知。"
+          description: intl.formatMessage({ id: 'applicationStatus.unknownDescription' })
         };
     }
   };
@@ -187,15 +189,15 @@ export default function ApplicationStatus({
           <Card className="rounded-2xl shadow-lg">
             <CardContent className="p-8 text-center">
               <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">未找到申请记录</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">{intl.formatMessage({ id: 'applicationStatus.noApplicationFound' })}</h2>
               <p className="text-gray-600 mb-6">
-                您还没有提交地陪申请，请先完成申请表单。
+                {intl.formatMessage({ id: 'applicationStatus.noApplicationDescription' })}
               </p>
               <Button 
                 onClick={onNavigateToBecomeGuide}
                 className="bg-yellow-500 hover:bg-yellow-600 text-black"
               >
-                开始申请
+                {intl.formatMessage({ id: 'applicationStatus.startApplication' })}
               </Button>
             </CardContent>
           </Card>
@@ -210,8 +212,8 @@ export default function ApplicationStatus({
     <div className="min-h-screen bg-yellow-50 py-12">
       <div className="max-w-4xl mx-auto px-4">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">申请状态</h1>
-          <p className="text-gray-600">查看您的地陪申请进度和详情</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">{intl.formatMessage({ id: 'applicationStatus.title' })}</h1>
+          <p className="text-gray-600">{intl.formatMessage({ id: 'applicationStatus.subtitle' })}</p>
         </div>
 
         <div className="space-y-6">
@@ -220,7 +222,7 @@ export default function ApplicationStatus({
             <CardHeader className="bg-yellow-400 rounded-t-2xl">
               <CardTitle className="text-black flex items-center gap-3">
                 {statusInfo.icon}
-                申请状态
+                {intl.formatMessage({ id: 'applicationStatus.statusTitle' })}
               </CardTitle>
             </CardHeader>
             <CardContent className="p-6">
@@ -231,20 +233,20 @@ export default function ApplicationStatus({
                     <p className="mt-1">{statusInfo.description}</p>
                   </div>
                   <Badge variant="outline" className="ml-4">
-                    申请ID: {application.id.substring(0, 8)}
+                    {intl.formatMessage({ id: 'applicationStatus.applicationId' })}: {application.id.substring(0, 8)}
                   </Badge>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 <div>
-                  <span className="font-medium text-gray-700">提交时间：</span>
+                  <span className="font-medium text-gray-700">{intl.formatMessage({ id: 'applicationStatus.submittedAt' })}：</span>
                   <span className="text-gray-600">
                     {new Date(application.createdAt).toLocaleString('zh-CN')}
                   </span>
                 </div>
                 <div>
-                  <span className="font-medium text-gray-700">最后更新：</span>
+                  <span className="font-medium text-gray-700">{intl.formatMessage({ id: 'applicationStatus.lastUpdated' })}：</span>
                   <span className="text-gray-600">
                     {new Date(application.updatedAt).toLocaleString('zh-CN')}
                   </span>
@@ -259,7 +261,7 @@ export default function ApplicationStatus({
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <History className="h-5 w-5" />
-                  审批历史
+                  {intl.formatMessage({ id: 'applicationStatus.approvalHistory' })}
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-6">
@@ -289,7 +291,7 @@ export default function ApplicationStatus({
                   />
                 ) : (
                   <p className="text-gray-500 text-center py-4">
-                    暂无审批历史记录
+                    {intl.formatMessage({ id: 'applicationStatus.noApprovalHistory' })}
                   </p>
                 )}
               </CardContent>
@@ -325,18 +327,18 @@ export default function ApplicationStatus({
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <FileText className="h-5 w-5" />
-                  申请文档
+                  {intl.formatMessage({ id: 'applicationStatus.applicationDocuments' })}
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-6">
                 {isJustSubmitted && (
                   <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
-                    <p className="text-green-800 font-medium">🎉 申请提交成功！</p>
-                    <p className="text-green-700 text-sm mt-1">您可以点击下方按钮下载PDF并打印。</p>
+                    <p className="text-green-800 font-medium">🎉 {intl.formatMessage({ id: 'applicationStatus.submissionSuccess' })}</p>
+                    <p className="text-green-700 text-sm mt-1">{intl.formatMessage({ id: 'applicationStatus.downloadPDFInstruction' })}</p>
                   </div>
                 )}
                 <p className="text-gray-600 mb-4">
-                  您可以生成并下载完整的申请PDF文档，用于查看或打印。
+                  {intl.formatMessage({ id: 'applicationStatus.pdfDescription' })}
                 </p>
                 
                 <div className="flex justify-center">
@@ -345,11 +347,11 @@ export default function ApplicationStatus({
                     className="bg-blue-600 hover:bg-blue-700 text-black"
                   >
                     <Download className="w-4 h-4 mr-2" />
-                    下载PDF申请文件
+                    {intl.formatMessage({ id: 'applicationStatus.downloadPDF' })}
                   </Button>
                 </div>
                 <p className="text-center text-sm text-gray-500 mt-3">
-                  您的申请PDF已自动生成并归档
+                  {intl.formatMessage({ id: 'applicationStatus.pdfArchived' })}
                 </p>
               </CardContent>
             </Card>
@@ -361,7 +363,7 @@ export default function ApplicationStatus({
               <CardHeader className="bg-orange-50">
                 <CardTitle className="text-orange-800 flex items-center gap-2">
                   <AlertCircle className="h-5 w-5" />
-                  需要补充的材料
+                  {intl.formatMessage({ id: 'applicationStatus.supplementalMaterialsNeeded' })}
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-6">
@@ -373,7 +375,7 @@ export default function ApplicationStatus({
                 
                 <Button className="bg-orange-600 hover:bg-orange-700 text-black">
                   <Upload className="h-4 w-4 mr-2" />
-                  上传补充材料
+                  {intl.formatMessage({ id: 'applicationStatus.uploadSupplementalMaterials' })}
                 </Button>
               </CardContent>
             </Card>

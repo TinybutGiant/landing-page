@@ -130,7 +130,7 @@ export const Step1BasicInfo = ({
                         key={option.value}
                         value={option.value}
                       >
-                        {intl.formatMessage({ id: `becomeGuide.step1.genderOptions.${option.value.toLowerCase()}` })}
+                        {intl.formatMessage({ id: option.labelKey })}
                       </SelectItem>
                     ))}
                   </SelectContent>

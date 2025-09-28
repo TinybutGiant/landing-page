@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useIntl } from 'react-intl';
 
 interface UploadedFile {
   id: string;
@@ -50,6 +51,7 @@ export function SupplementalMaterialsUpload({
   onSubmit,
   onToast
 }: SupplementalMaterialsUploadProps) {
+  const intl = useIntl();
   const [description, setDescription] = useState("");
   const [files, setFiles] = useState<UploadedFile[]>([]);
   const [uploading, setUploading] = useState(false);
@@ -68,8 +70,8 @@ export function SupplementalMaterialsUpload({
 
     if (!allowedTypes.includes(selectedFile.type)) {
       onToast?.({
-        title: "文件类型不支持",
-        description: "请上传图片、PDF或Word文档",
+        title: intl.formatMessage({ id: 'supplementalMaterials.unsupportedFileType' }),
+        description: intl.formatMessage({ id: 'supplementalMaterials.unsupportedFileTypeDescription' }),
         variant: "destructive"
       });
       return;
@@ -79,8 +81,8 @@ export function SupplementalMaterialsUpload({
     const maxSize = 10 * 1024 * 1024;
     if (selectedFile.size > maxSize) {
       onToast?.({
-        title: "文件过大",
-        description: "文件大小不能超过10MB",
+        title: intl.formatMessage({ id: 'supplementalMaterials.fileTooLarge' }),
+        description: intl.formatMessage({ id: 'supplementalMaterials.fileTooLargeDescription' }),
         variant: "destructive"
       });
       return;
@@ -89,7 +91,7 @@ export function SupplementalMaterialsUpload({
     setUploading(true);
     try {
       if (!onFileUpload) {
-        throw new Error('文件上传功能未配置');
+        throw new Error(intl.formatMessage({ id: 'supplementalMaterials.uploadNotConfigured' }));
       }
 
       const result = await onFileUpload(selectedFile);
@@ -105,15 +107,15 @@ export function SupplementalMaterialsUpload({
       setFiles(prev => [...prev, newFile]);
       
       onToast?.({
-        title: "文件上传成功",
-        description: `${selectedFile.name} 已上传`
+        title: intl.formatMessage({ id: 'supplementalMaterials.uploadSuccess' }),
+        description: intl.formatMessage({ id: 'supplementalMaterials.uploadSuccessDescription' }, { fileName: selectedFile.name })
       });
 
     } catch (error) {
       console.error("文件上传失败:", error);
       onToast?.({
-        title: "上传失败",
-        description: error instanceof Error ? error.message : "文件上传失败",
+        title: intl.formatMessage({ id: 'supplementalMaterials.uploadFailed' }),
+        description: error instanceof Error ? error.message : intl.formatMessage({ id: 'supplementalMaterials.uploadFailedDescription' }),
         variant: "destructive"
       });
     } finally {
@@ -138,8 +140,8 @@ export function SupplementalMaterialsUpload({
   const handleSubmit = async () => {
     if (!description.trim() && files.length === 0) {
       onToast?.({
-        title: "请填写内容",
-        description: "请至少填写补充说明或上传一个文件",
+        title: intl.formatMessage({ id: 'supplementalMaterials.pleaseFillContent' }),
+        description: intl.formatMessage({ id: 'supplementalMaterials.pleaseFillContentDescription' }),
         variant: "destructive"
       });
       return;
@@ -170,7 +172,7 @@ export function SupplementalMaterialsUpload({
       }
 
       if (!onSubmit) {
-        throw new Error('提交功能未配置');
+        throw new Error(intl.formatMessage({ id: 'supplementalMaterials.submitNotConfigured' }));
       }
 
       await onSubmit({
@@ -179,8 +181,8 @@ export function SupplementalMaterialsUpload({
       });
 
       onToast?.({
-        title: "提交成功",
-        description: "补充材料已提交，申请状态已更新为待审核"
+        title: intl.formatMessage({ id: 'supplementalMaterials.submitSuccess' }),
+        description: intl.formatMessage({ id: 'supplementalMaterials.submitSuccessDescription' })
       });
 
       // 重置表单
@@ -193,8 +195,8 @@ export function SupplementalMaterialsUpload({
     } catch (error) {
       console.error("提交补充材料失败:", error);
       onToast?.({
-        title: "提交失败",
-        description: error instanceof Error ? error.message : "提交补充材料失败",
+        title: intl.formatMessage({ id: 'supplementalMaterials.submitFailed' }),
+        description: error instanceof Error ? error.message : intl.formatMessage({ id: 'supplementalMaterials.submitFailedDescription' }),
         variant: "destructive"
       });
     } finally {
@@ -215,19 +217,19 @@ export function SupplementalMaterialsUpload({
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-orange-800">
           <Upload className="h-5 w-5" />
-          补充材料尚未上传
+          {intl.formatMessage({ id: 'supplementalMaterials.title' })}
         </CardTitle>
         <p className="text-sm text-orange-600">
-          请根据管理员要求上传补充材料以继续审核流程
+          {intl.formatMessage({ id: 'supplementalMaterials.description' })}
         </p>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* 文字说明输入框 */}
         <div className="space-y-2">
-          <Label htmlFor="description">补充说明</Label>
+          <Label htmlFor="description">{intl.formatMessage({ id: 'supplementalMaterials.supplementalDescription' })}</Label>
           <Textarea
             id="description"
-            placeholder="请详细说明您提供的补充材料..."
+            placeholder={intl.formatMessage({ id: 'supplementalMaterials.supplementalDescriptionPlaceholder' })}
             value={description}
                       onChange={(e: any) => setDescription(e.target.value)}
             rows={4}
@@ -237,7 +239,7 @@ export function SupplementalMaterialsUpload({
 
         {/* 文件上传区域 */}
         <div className="space-y-2">
-          <Label>补充文件</Label>
+          <Label>{intl.formatMessage({ id: 'supplementalMaterials.supplementalFiles' })}</Label>
           <div className="border-2 border-dashed border-orange-300 rounded-lg p-4 text-center">
             <Input
               type="file"
@@ -253,10 +255,10 @@ export function SupplementalMaterialsUpload({
             >
               <Upload className="h-8 w-8 text-orange-500" />
               <span className="text-sm text-orange-600">
-                {uploading ? "上传中..." : "点击选择文件"}
+                {uploading ? intl.formatMessage({ id: 'supplementalMaterials.uploading' }) : intl.formatMessage({ id: 'supplementalMaterials.clickToSelectFile' })}
               </span>
               <span className="text-xs text-gray-500">
-                支持图片、PDF、Word文档，最大10MB
+                {intl.formatMessage({ id: 'supplementalMaterials.supportedFormats' })}
               </span>
             </Label>
           </div>
@@ -265,7 +267,7 @@ export function SupplementalMaterialsUpload({
         {/* 已上传文件列表 */}
         {files.length > 0 && (
           <div className="space-y-2">
-            <Label>已上传文件</Label>
+            <Label>{intl.formatMessage({ id: 'supplementalMaterials.uploadedFiles' })}</Label>
             <div className="space-y-2">
               {files.map((file) => (
                 <div key={file.id} className="flex items-center space-x-3 p-3 bg-white rounded-lg border">
@@ -278,7 +280,7 @@ export function SupplementalMaterialsUpload({
                       {formatFileSize(file.size)}
                     </p>
                     <Input
-                      placeholder="文件描述（可选）"
+                      placeholder={intl.formatMessage({ id: 'supplementalMaterials.fileDescriptionPlaceholder' })}
                       value={file.description}
                       onChange={(e: any) => updateFileDescription(file.id, e.target.value)}
                       className="mt-1 text-xs"
@@ -306,11 +308,11 @@ export function SupplementalMaterialsUpload({
             className="w-full bg-orange-600 hover:bg-orange-700"
           >
             {submitting ? (
-              "提交中..."
+              intl.formatMessage({ id: 'supplementalMaterials.submitting' })
             ) : (
               <>
                 <CheckCircle className="h-4 w-4 mr-2" />
-                提交补充材料
+                {intl.formatMessage({ id: 'supplementalMaterials.submitSupplementalMaterials' })}
               </>
             )}
           </Button>

@@ -5,20 +5,24 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Mail } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useIntl } from 'react-intl';
+import { useLanguage } from '@/i18n/LanguageProvider';
 
 const ForgotPasswordForm: React.FC = () => {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { toast } = useToast();
+  const intl = useIntl();
+  const { locale } = useLanguage();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!email) {
       toast({
-        title: "错误",
-        description: "请输入您的邮箱地址",
+        title: intl.formatMessage({ id: 'forgotPassword.error.title' }),
+        description: intl.formatMessage({ id: 'forgotPassword.error.emailRequired' }),
         variant: "destructive",
       });
       return;
@@ -28,8 +32,8 @@ const ForgotPasswordForm: React.FC = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       toast({
-        title: "错误",
-        description: "请输入有效的邮箱地址",
+        title: intl.formatMessage({ id: 'forgotPassword.error.title' }),
+        description: intl.formatMessage({ id: 'forgotPassword.error.invalidEmail' }),
         variant: "destructive",
       });
       return;
@@ -52,13 +56,13 @@ const ForgotPasswordForm: React.FC = () => {
 
       setIsSubmitted(true);
       toast({
-        title: "邮件已发送",
-        description: "如果该邮箱已注册，您将收到重置密码的邮件",
+        title: intl.formatMessage({ id: 'forgotPassword.success.title' }),
+        description: intl.formatMessage({ id: 'forgotPassword.success.description' }),
       });
     } catch (error) {
       toast({
-        title: "发送失败",
-        description: "发送重置邮件时出现错误，请稍后重试",
+        title: intl.formatMessage({ id: 'forgotPassword.error.sendFailed' }),
+        description: intl.formatMessage({ id: 'forgotPassword.error.sendFailedDescription' }),
         variant: "destructive",
       });
     } finally {
@@ -85,24 +89,24 @@ const ForgotPasswordForm: React.FC = () => {
                   className="text-gray-600 hover:text-gray-900"
                 >
                   <ArrowLeft className="w-4 h-4 mr-2" />
-                  返回登录
+                  {intl.formatMessage({ id: 'forgotPassword.backToLogin' })}
                 </Button>
               </div>
               <div className="mx-auto h-12 w-12 rounded-full bg-yellow-100 flex items-center justify-center mb-4">
                 <Mail className="h-6 w-6 text-yellow-600" />
               </div>
               <CardTitle className="text-2xl font-bold text-gray-900">
-                邮件已发送
+                {intl.formatMessage({ id: 'forgotPassword.emailSent.title' })}
               </CardTitle>
               <p className="text-gray-600 mt-2">
-                如果该邮箱地址已注册，您将收到重置密码的邮件。请检查您的邮箱（包括垃圾邮件文件夹）。
+                {intl.formatMessage({ id: 'forgotPassword.emailSent.description' })}
               </p>
             </CardHeader>
             
             <CardContent>
               <div className="space-y-4">
                 <p className="text-sm text-gray-600 text-center">
-                  没有收到邮件？请等待几分钟或检查垃圾邮件文件夹。
+                  {intl.formatMessage({ id: 'forgotPassword.emailSent.noEmailReceived' })}
                 </p>
                 
                 <div className="flex flex-col space-y-2">
@@ -114,7 +118,7 @@ const ForgotPasswordForm: React.FC = () => {
                     variant="outline" 
                     className="w-full"
                   >
-                    重新发送
+                    {intl.formatMessage({ id: 'forgotPassword.resendEmail' })}
                   </Button>
                   
                   <Button 
@@ -122,7 +126,7 @@ const ForgotPasswordForm: React.FC = () => {
                     className="w-full"
                     onClick={() => window.location.href = '/login'}
                   >
-                    返回登录
+                    {intl.formatMessage({ id: 'forgotPassword.backToLogin' })}
                   </Button>
                 </div>
               </div>
@@ -151,14 +155,14 @@ const ForgotPasswordForm: React.FC = () => {
                 className="text-gray-600 hover:text-gray-900"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                返回登录
+                {intl.formatMessage({ id: 'forgotPassword.backToLogin' })}
               </Button>
             </div>
             <CardTitle className="text-2xl font-bold text-gray-900">
-              忘记密码？
+              {intl.formatMessage({ id: 'forgotPassword.title' })}
             </CardTitle>
             <p className="text-gray-600 mt-2">
-              输入您的邮箱地址，我们将发送重置密码的链接给您。
+              {intl.formatMessage({ id: 'forgotPassword.subtitle' })}
             </p>
           </CardHeader>
           
@@ -166,7 +170,7 @@ const ForgotPasswordForm: React.FC = () => {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                  邮箱地址
+                  {intl.formatMessage({ id: 'forgotPassword.emailLabel' })}
                 </label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -177,7 +181,7 @@ const ForgotPasswordForm: React.FC = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="pl-10"
-                    placeholder="输入您的邮箱地址"
+                    placeholder={intl.formatMessage({ id: 'forgotPassword.emailPlaceholder' })}
                     disabled={isLoading}
                   />
                 </div>
@@ -188,7 +192,7 @@ const ForgotPasswordForm: React.FC = () => {
                 className="w-full bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-300"
                 disabled={isLoading}
               >
-                {isLoading ? "发送中..." : "发送重置链接"}
+                {isLoading ? intl.formatMessage({ id: 'forgotPassword.sending' }) : intl.formatMessage({ id: 'forgotPassword.sendResetLink' })}
               </Button>
             </form>
           </CardContent>

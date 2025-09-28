@@ -85,7 +85,7 @@ const BecomeGuidePage: React.FC = () => {
         savedAt: new Date().toISOString(),
         // 确保基本字段存在
         name: data.name || data.fullName || '',
-        sex: data.sex || 'Prefer not to say',
+        sex: data.sex || 'preferNotToSay',
         // 确保数组字段存在
         serviceSelections: data.serviceSelections || [],
         targetGroup: data.targetGroup || [],
@@ -574,8 +574,8 @@ const BecomeGuidePage: React.FC = () => {
       <div className="space-y-4">
         <div>
           <label htmlFor="qualification-files" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-            资质文件上传
-            <span className="text-xs text-gray-500 ml-2">(支持图片、PDF，最大10MB)</span>
+            {intl.formatMessage({ id: 'becomeGuide.step1.uploadQualificationFiles' })}
+            <span className="text-xs text-gray-500 ml-2">({intl.formatMessage({ id: 'becomeGuide.step1.uploadQualificationFilesDescription' })})</span>
           </label>
           <Input
             id="qualification-files"
@@ -590,7 +590,7 @@ const BecomeGuidePage: React.FC = () => {
         
         {uploadedFiles.length > 0 && (
           <div className="space-y-2">
-            <p className="text-sm text-gray-600">已选择的文件:</p>
+            <p className="text-sm text-gray-600">{intl.formatMessage({ id: 'becomeGuide.step1.uploadedFiles' }, { current: uploadedFiles.length, max: 5 })}</p>
             {uploadedFiles.map((file: any, index: number) => (
               <div key={index} className="flex items-center space-x-2 p-3 bg-gray-50 rounded border">
                 <div className="flex-1">
@@ -598,11 +598,11 @@ const BecomeGuidePage: React.FC = () => {
                     <span className="text-sm font-medium">{file.name}</span>
                     <span className="text-xs text-gray-500">({(file.size / 1024 / 1024).toFixed(2)} MB)</span>
                     {file.uploaded && (
-                      <span className="text-xs text-green-600">✓ 已上传</span>
+                      <span className="text-xs text-green-600">✓ {intl.formatMessage({ id: 'becomeGuide.step1.uploaded' })}</span>
                     )}
                   </div>
                   <Input
-                    placeholder="文件描述（可选）"
+                    placeholder={intl.formatMessage({ id: 'becomeGuide.step1.fileDescriptionPlaceholder' })}
                     value={file.description}
                     onChange={(e) => updateFileDescription(index, e.target.value)}
                     className="mt-1 text-xs"
@@ -613,6 +613,7 @@ const BecomeGuidePage: React.FC = () => {
                   size="sm"
                   onClick={() => removeFile(index)}
                   className="text-red-500 hover:text-red-700"
+                  title={intl.formatMessage({ id: 'becomeGuide.step1.removeFile' })}
                 >
                   ×
                 </Button>

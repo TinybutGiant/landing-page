@@ -10,13 +10,15 @@ import { z } from "zod";
 import { ArrowLeft, User, Lock, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { useIntl } from 'react-intl';
+import { useLanguage } from '@/i18n/LanguageProvider';
 
-const loginSchema = z.object({
-  username: z.string().min(1, '请输入用户名'),
-  password: z.string().min(1, '请输入密码'),
+const createLoginSchema = (intl: any) => z.object({
+  username: z.string().min(1, intl.formatMessage({ id: 'login.validation.usernameRequired' })),
+  password: z.string().min(1, intl.formatMessage({ id: 'login.validation.passwordRequired' })),
 });
 
-type LoginFormData = z.infer<typeof loginSchema>;
+type LoginFormData = z.infer<ReturnType<typeof createLoginSchema>>;
 
 interface LoginFormProps {
   onSuccess?: () => void;
@@ -27,9 +29,11 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, redirectTo }) => {
   const [showPassword, setShowPassword] = useState(false);
   const { login, user } = useAuth();
   const { toast } = useToast();
+  const intl = useIntl();
+  const { locale } = useLanguage();
 
   const form = useForm<LoginFormData>({
-    resolver: zodResolver(loginSchema as any),
+    resolver: zodResolver(createLoginSchema(intl) as any),
     defaultValues: {
       username: '',
       password: ''
@@ -71,8 +75,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, redirectTo }) => {
       if (success) {
         console.log('LoginForm: 登录成功');
         toast({
-          title: "登录成功",
-          description: "欢迎回来！",
+          title: intl.formatMessage({ id: 'login.success.title' }),
+          description: intl.formatMessage({ id: 'login.success.description' }),
           variant: "success"
         });
         
@@ -100,16 +104,16 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, redirectTo }) => {
         }
       } else {
         toast({
-          title: "登录失败",
-          description: "请检查用户名和密码",
+          title: intl.formatMessage({ id: 'login.error.title' }),
+          description: intl.formatMessage({ id: 'login.error.invalidCredentials' }),
           variant: "destructive"
         });
       }
     } catch (error) {
       console.error('Login error:', error);
       toast({
-        title: "登录失败",
-        description: "请检查网络连接",
+        title: intl.formatMessage({ id: 'login.error.title' }),
+        description: intl.formatMessage({ id: 'login.error.networkError' }),
         variant: "destructive"
       });
     }
@@ -133,14 +137,14 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, redirectTo }) => {
                 className="text-gray-600 hover:text-gray-900"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                返回首页
+                {intl.formatMessage({ id: 'login.backToHome' })}
               </Button>
             </div>
             <CardTitle className="text-2xl font-bold text-gray-900">
-              登录账号
+              {intl.formatMessage({ id: 'login.title' })}
             </CardTitle>
             <p className="text-gray-600 mt-2">
-              登录您的YaoTu账号，继续您的导游申请
+              {intl.formatMessage({ id: 'login.subtitle' })}
             </p>
           </CardHeader>
           
@@ -153,14 +157,14 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, redirectTo }) => {
                   render={({ field }: { field: any }) => (
                     <FormItem>
                       <FormLabel className="text-sm font-medium text-gray-700">
-                        用户名
+                        {intl.formatMessage({ id: 'login.username' })}
                       </FormLabel>
                       <FormControl>
                         <div className="relative">
                           <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                           <Input
                             {...field}
-                            placeholder="请输入用户名"
+                            placeholder={intl.formatMessage({ id: 'login.usernamePlaceholder' })}
                             className="pl-10"
                             disabled={form.formState.isSubmitting}
                           />
@@ -178,14 +182,14 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, redirectTo }) => {
                     <FormItem>
                       <div className="flex justify-between items-center">
                         <FormLabel className="text-sm font-medium text-gray-700">
-                          密码
+                          {intl.formatMessage({ id: 'login.password' })}
                         </FormLabel>
                         <button
                           type="button"
                           onClick={() => window.location.href = '/forgot-password'}
                           className="text-sm text-yellow-600 hover:text-yellow-700 font-medium"
                         >
-                          忘记密码？
+                          {intl.formatMessage({ id: 'login.forgotPassword' })}
                         </button>
                       </div>
                       <FormControl>
@@ -194,7 +198,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, redirectTo }) => {
                           <Input
                             {...field}
                             type={showPassword ? "text" : "password"}
-                            placeholder="请输入密码"
+                            placeholder={intl.formatMessage({ id: 'login.passwordPlaceholder' })}
                             className="pl-10 pr-10"
                             disabled={form.formState.isSubmitting}
                           />
@@ -217,7 +221,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, redirectTo }) => {
                   className="w-full bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-300"
                   disabled={form.formState.isSubmitting}
                 >
-                  {form.formState.isSubmitting ? '登录中...' : '登录账号'}
+                  {form.formState.isSubmitting ? intl.formatMessage({ id: 'login.loggingIn' }) : intl.formatMessage({ id: 'login.loginButton' })}
                 </Button>
               </form>
             </Form>
@@ -226,12 +230,12 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, redirectTo }) => {
             {redirectTo === '/become-guide' && (
               <div className="mt-6 text-center">
                 <p className="text-sm text-gray-600">
-                  还没有账号？{' '}
+                  {intl.formatMessage({ id: 'login.noAccount' })}{' '}
                   <button
                     onClick={() => window.location.href = '/signup'}
                     className="text-yellow-600 hover:text-yellow-700 font-medium"
                   >
-                    立即注册
+                    {intl.formatMessage({ id: 'login.signupNow' })}
                   </button>
                 </p>
               </div>

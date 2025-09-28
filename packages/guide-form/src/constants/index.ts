@@ -22,7 +22,7 @@ export const MBTI_OPTIONS = [
 export const SEX_OPTIONS = [
   { value: "Male", labelKey: "becomeGuide.step1.genderOptions.male" },
   { value: "Female", labelKey: "becomeGuide.step1.genderOptions.female" },
-  { value: "Prefer not to say", labelKey: "becomeGuide.step1.genderOptions.preferNotToSay" },
+  { value: "preferNotToSay", labelKey: "becomeGuide.step1.genderOptions.preferNotToSay" },
 ];
 
 // 页面配置 - 使用翻译键

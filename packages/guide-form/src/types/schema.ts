@@ -6,7 +6,7 @@ export const formSchema = z.object({
   // 基本信息
   name: z.string().min(1, "请输入姓名"),
   age: z.number().min(MIN_AGE, `年龄必须至少${MIN_AGE}岁`).max(MAX_AGE, `年龄不能超过${MAX_AGE}岁`),
-  sex: z.enum(["Male", "Female", "Prefer not to say"]),
+  sex: z.enum(["Male", "Female", "preferNotToSay"]),
   mbti: z
     .enum([
       "ENFJ",

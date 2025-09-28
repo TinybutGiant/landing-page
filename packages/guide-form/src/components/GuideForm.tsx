@@ -379,13 +379,13 @@ export const GuideForm: React.FC<GuideFormProps> = ({
                       {form.getValues().targetGroup && form.getValues().targetGroup.length > 0
                         ? form.getValues().targetGroup.map((group) => {
                             const labels: Record<string, string> = {
-                              individual: "个人旅客",
-                              couple: "情侣/夫妇",
-                              family: "家庭",
-                              group: "团体",
-                              child: "亲子",
-                              elderly: "老年人",
-                              business: "商务客户"
+                              individual: intl.formatMessage({ id: 'becomeGuide.preview.individual' }),
+                              couple: intl.formatMessage({ id: 'becomeGuide.preview.couple' }),
+                              family: intl.formatMessage({ id: 'becomeGuide.preview.family' }),
+                              group: intl.formatMessage({ id: 'becomeGuide.preview.group' }),
+                              child: intl.formatMessage({ id: 'becomeGuide.preview.child' }),
+                              elderly: intl.formatMessage({ id: 'becomeGuide.preview.elderly' }),
+                              business: intl.formatMessage({ id: 'becomeGuide.preview.business' })
                             };
                             return labels[group] || group;
                           }).join("、")
@@ -468,9 +468,9 @@ export const GuideForm: React.FC<GuideFormProps> = ({
                     </div>
                     <div className="ml-3">
                       <p className="text-sm text-red-700">
-                        <strong>以下信息尚未完善：</strong>
+                        <strong>{intl.formatMessage({ id: 'becomeGuide.preview.missingFields' })}</strong>
                         <br />
-                        {missingFields.join("、")}
+                        {missingFields.join(intl.formatMessage({ id: 'becomeGuide.preview.fieldSeparator' }))}
                       </p>
                     </div>
                   </div>
@@ -492,7 +492,7 @@ export const GuideForm: React.FC<GuideFormProps> = ({
                     htmlFor="confirmation"
                     className="text-sm text-gray-700 leading-relaxed"
                   >
-                    我确认以上所填写的所有信息均属实且准确无误。我理解虚假信息可能导致申请被拒绝或账户被暂停。我同意YaoTu平台的服务条款和隐私政策，并承诺作为地陪时将遵守平台规则，提供优质的服务体验。
+                    {intl.formatMessage({ id: 'becomeGuide.preview.declaration' })}
                   </label>
                 </div>
               </div>
@@ -501,7 +501,7 @@ export const GuideForm: React.FC<GuideFormProps> = ({
               <div className="flex justify-between items-center pt-6 border-t">
                 <ui.Button type="button" variant="outline" onClick={backToForm}>
                   <ui.ChevronLeft className="h-4 w-4 mr-1" />
-                  返回编辑
+                  {intl.formatMessage({ id: 'becomeGuide.preview.backToEdit' })}
                 </ui.Button>
 
                 <ui.Button
@@ -510,7 +510,7 @@ export const GuideForm: React.FC<GuideFormProps> = ({
                   disabled={isLoading || isSubmitting}
                   className="bg-green-600 hover:bg-green-700"
                 >
-                  {isLoading || isSubmitting ? "提交中..." : "确认提交申请"}
+                  {isLoading || isSubmitting ? intl.formatMessage({ id: 'becomeGuide.preview.submitting' }) : intl.formatMessage({ id: 'becomeGuide.preview.submitApplication' })}
                 </ui.Button>
               </div>
             </ui.CardContent>
