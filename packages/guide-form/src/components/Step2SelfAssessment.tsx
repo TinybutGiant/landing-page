@@ -56,15 +56,16 @@ export const Step2SelfAssessment = ({ control, ui }: Step2SelfAssessmentProps) =
               </TooltipTrigger>
               <TooltipContent>
                 <div className="max-w-sm">
-                  <p className="font-medium">
-                    {SCORE_EXPLANATIONS.ethics.title}
-                  </p>
-                  <p className="text-sm">
-                    {SCORE_EXPLANATIONS.ethics.description}
-                  </p>
-                  <p className="text-xs mt-1">
-                    {SCORE_EXPLANATIONS.ethics.ranges}
-                  </p>
+                  <div className="text-sm space-y-2">
+                    {intl.formatMessage({ id: 'becomeGuide.step2.ethicsScoreDescription' })
+                      .split('\n\n')
+                      .map((paragraph, index) => (
+                        <div key={index} className="p-2 bg-gray-50 rounded-md border-l-2 border-blue-200">
+                          <p className="whitespace-pre-line">{paragraph}</p>
+                        </div>
+                      ))
+                    }
+                  </div>
                 </div>
               </TooltipContent>
             </Tooltip>
@@ -134,15 +135,16 @@ export const Step2SelfAssessment = ({ control, ui }: Step2SelfAssessmentProps) =
               </TooltipTrigger>
               <TooltipContent>
                 <div className="max-w-sm">
-                  <p className="font-medium">
-                    {SCORE_EXPLANATIONS.boundary.title}
-                  </p>
-                  <p className="text-sm">
-                    {SCORE_EXPLANATIONS.boundary.description}
-                  </p>
-                  <p className="text-xs mt-1">
-                    {SCORE_EXPLANATIONS.boundary.ranges}
-                  </p>
+                  <div className="text-sm space-y-2">
+                    {intl.formatMessage({ id: 'becomeGuide.step2.boundaryScoreDescription' })
+                      .split('\n\n')
+                      .map((paragraph, index) => (
+                        <div key={index} className="p-2 bg-gray-50 rounded-md border-l-2 border-blue-200">
+                          <p className="whitespace-pre-line">{paragraph}</p>
+                        </div>
+                      ))
+                    }
+                  </div>
                 </div>
               </TooltipContent>
             </Tooltip>
@@ -214,15 +216,16 @@ export const Step2SelfAssessment = ({ control, ui }: Step2SelfAssessmentProps) =
               </TooltipTrigger>
               <TooltipContent>
                 <div className="max-w-sm">
-                  <p className="font-medium">
-                    {SCORE_EXPLANATIONS.supportive.title}
-                  </p>
-                  <p className="text-sm">
-                    {SCORE_EXPLANATIONS.supportive.description}
-                  </p>
-                  <p className="text-xs mt-1">
-                    {SCORE_EXPLANATIONS.supportive.ranges}
-                  </p>
+                  <div className="text-sm space-y-2">
+                    {intl.formatMessage({ id: 'becomeGuide.step2.supportiveScoreDescription' })
+                      .split('\n\n')
+                      .map((paragraph, index) => (
+                        <div key={index} className="p-2 bg-gray-50 rounded-md border-l-2 border-blue-200">
+                          <p className="whitespace-pre-line">{paragraph}</p>
+                        </div>
+                      ))
+                    }
+                  </div>
                 </div>
               </TooltipContent>
             </Tooltip>

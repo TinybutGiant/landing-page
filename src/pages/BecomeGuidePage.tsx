@@ -25,6 +25,7 @@ import { Progress } from '@/components/ui/progress';
 import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import { useToast } from '@/hooks/use-toast';
 import { 
   ChevronLeft, 
@@ -659,6 +660,11 @@ const BecomeGuidePage: React.FC = () => {
     Separator,
     YearMonthPicker,
     
+    // Tooltip 组件
+    Tooltip,
+    TooltipContent,
+    TooltipTrigger,
+    
     // 自定义组件
     QualificationUploader,
     
@@ -776,20 +782,21 @@ const BecomeGuidePage: React.FC = () => {
 
         {/* Form Content */}
         <div className="max-w-4xl mx-auto p-6">
-
-          <GuideForm
-            config={config}
-            ui={uiComponents}
-            cities={cities}
-            targetGroups={targetGroups}
-            onLoadServiceCategories={loadServiceCategories}
-            customTitle={intl.formatMessage({ id: 'becomeGuide.title' })}
-            customDescription={intl.formatMessage({ id: 'becomeGuide.subtitle' })}
-            showProgressBar={true}
-            onLoadLocalStorage={loadFromLocalStorage}
-            onSaveLocalStorage={saveToLocalStorage}
-            onClearLocalStorage={clearLocalStorage}
-          />
+          <TooltipProvider>
+            <GuideForm
+              config={config}
+              ui={uiComponents}
+              cities={cities}
+              targetGroups={targetGroups}
+              onLoadServiceCategories={loadServiceCategories}
+              customTitle={intl.formatMessage({ id: 'becomeGuide.title' })}
+              customDescription={intl.formatMessage({ id: 'becomeGuide.subtitle' })}
+              showProgressBar={true}
+              onLoadLocalStorage={loadFromLocalStorage}
+              onSaveLocalStorage={saveToLocalStorage}
+              onClearLocalStorage={clearLocalStorage}
+            />
+          </TooltipProvider>
         </div>
 
 
