@@ -9,7 +9,8 @@ export const useGuideForm = (
   config: GuideFormConfig,
   onLoadLocalStorage?: () => any,
   onSaveLocalStorage?: (data: any) => void,
-  onClearLocalStorage?: () => void
+  onClearLocalStorage?: () => void,
+  initialStep?: 'preview'
 ) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [showPreview, setShowPreview] = useState(false);
@@ -78,6 +79,13 @@ export const useGuideForm = (
       }
     }
   }, [onLoadLocalStorage, form]);
+
+  // 处理初始步骤
+  useEffect(() => {
+    if (initialStep === 'preview') {
+      setShowPreview(true);
+    }
+  }, [initialStep]);
 
   // 保存草稿到localStorage
   const saveDraft = async (data: FormData) => {
@@ -230,8 +238,8 @@ export const useGuideForm = (
       const userId = config.auth.getUserId();
       
       if (!token || !userId) {
-        // 未登录，跳转到登录页面
-        const currentUrl = window.location.pathname;
+        // 未登录，跳转到登录页面，保持当前URL参数
+        const currentUrl = window.location.pathname + window.location.search;
         window.location.href = `/login?redirect=${encodeURIComponent(currentUrl)}`;
         return;
       }

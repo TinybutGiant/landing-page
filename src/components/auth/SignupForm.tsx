@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -42,6 +43,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, redirectTo }) => {
   const { toast } = useToast();
   const intl = useIntl();
   const { locale } = useLanguage();
+  const [, setLocation] = useLocation();
   
   // Username validation state
   const [usernameError, setUsernameError] = useState<string>("");
@@ -173,10 +175,10 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, redirectTo }) => {
         if (onSuccess) {
           onSuccess();
         } else if (redirectTo) {
-          window.location.href = redirectTo;
+          setLocation(redirectTo);
         } else {
           // 默认跳转到申请页面
-          window.location.href = '/become-guide';
+          setLocation('/become-guide');
         }
       }
     } catch (error) {

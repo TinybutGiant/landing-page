@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useLocation, useRoute } from 'wouter';
 import { GuideForm, GuideFormConfig, UIComponents } from '@replit/guide-form';
 import { usePDFGeneration, generatePDFBlob } from '@replit/guide-form';
 import { Button } from '@/components/ui/button';
@@ -42,6 +43,14 @@ const BecomeGuidePage: React.FC = () => {
   const { toast } = useToast();
   const intl = useIntl();
   const { locale } = useLanguage();
+  
+  // Wouter navigation
+  const [location, setLocation] = useLocation();
+  
+  // 获取URL参数
+  const urlParams = new URLSearchParams(window.location.search);
+  const step = urlParams.get('step');
+  const redirectTo = urlParams.get('redirect');
   
   // localStorage 相关功能
   const STORAGE_KEY = 'yaotu_guide_form_draft';
@@ -343,7 +352,7 @@ const BecomeGuidePage: React.FC = () => {
               description: "请登录主项目查看状态。",
               variant: "success"
             });
-            window.location.href = '/';
+            setLocation('/');
           } else {
             // 未登录，不清除localStorage，跳转到登录页面
             console.log('用户未登录，跳转到登录页面');
@@ -352,7 +361,7 @@ const BecomeGuidePage: React.FC = () => {
               description: "请先登录后再提交申请",
               variant: "destructive"
             });
-            window.location.href = '/login?redirect=/become-guide';
+            setLocation('/login?redirect=' + encodeURIComponent('/become-guide?step=preview'));
           }
         } catch (error) {
           console.error('💥 BecomeGuidePage: 处理成功回调失败:', error);
@@ -371,7 +380,7 @@ const BecomeGuidePage: React.FC = () => {
               description: "请重新登录",
               variant: "destructive"
             });
-            window.location.href = '/login?redirect=/become-guide';
+            setLocation('/login?redirect=' + encodeURIComponent('/become-guide?step=preview'));
             return;
           }
           
@@ -771,7 +780,7 @@ const BecomeGuidePage: React.FC = () => {
                 <p className="text-yellow-100 mt-2">{intl.formatMessage({ id: 'becomeGuide.subtitle' })}</p>
               </div>
               <button
-                onClick={() => window.location.href = '/'}
+                onClick={() => setLocation('/')}
                 className="text-white/80 hover:text-white text-2xl"
               >
                 ×
@@ -795,6 +804,7 @@ const BecomeGuidePage: React.FC = () => {
               onLoadLocalStorage={loadFromLocalStorage}
               onSaveLocalStorage={saveToLocalStorage}
               onClearLocalStorage={clearLocalStorage}
+              initialStep={step === 'preview' ? 'preview' : undefined}
             />
           </TooltipProvider>
         </div>

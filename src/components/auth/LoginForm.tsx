@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -31,6 +32,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, redirectTo }) => {
   const { toast } = useToast();
   const intl = useIntl();
   const { locale } = useLanguage();
+  const [, setLocation] = useLocation();
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(createLoginSchema(intl) as any),
@@ -97,10 +99,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, redirectTo }) => {
         if (onSuccess) {
           onSuccess();
         } else if (redirectTo) {
-          window.location.href = redirectTo;
+          setLocation(redirectTo);
         } else {
           // 默认跳转到申请页面
-          window.location.href = '/become-guide';
+          setLocation('/become-guide');
         }
       } else {
         toast({

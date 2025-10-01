@@ -87,6 +87,7 @@ interface GuideFormProps {
   onLoadLocalStorage?: () => any;
   onSaveLocalStorage?: (data: any) => void;
   onClearLocalStorage?: () => void;
+  initialStep?: 'preview';
 }
 
 export const GuideForm: React.FC<GuideFormProps> = ({
@@ -101,7 +102,8 @@ export const GuideForm: React.FC<GuideFormProps> = ({
   showProgressBar = true,
   onLoadLocalStorage,
   onSaveLocalStorage,
-  onClearLocalStorage
+  onClearLocalStorage,
+  initialStep
 }) => {
   const intl = useIntl();
   
@@ -126,7 +128,7 @@ export const GuideForm: React.FC<GuideFormProps> = ({
     backToForm,
     onSubmit,
     validateFormCompleteness: validateForm
-  } = useGuideForm(config, onLoadLocalStorage, onSaveLocalStorage, onClearLocalStorage);
+  } = useGuideForm(config, onLoadLocalStorage, onSaveLocalStorage, onClearLocalStorage, initialStep);
 
   const { Form } = ui;
 
