@@ -1,6 +1,7 @@
 // 主要组件
 export { GuideForm } from "./components/GuideForm";
 export { useGuideForm } from "./hooks/useGuideForm";
+export { ApplicationPreview } from "./components/ApplicationPreview";
 
 // PDF功能组件
 export { PrintAndSave } from "./components/PrintAndSave";
@@ -19,12 +20,22 @@ export type {
   GuideFormConfig 
 } from "./types/schema";
 export type { UIComponents } from "./components/GuideForm";
+export type { UIComponents as ApplicationPreviewUIComponents } from "./components/ApplicationPreview";
 export type { PrintAndSaveProps } from "./components/PrintAndSave";
 export type { UsePDFGenerationOptions } from "./hooks/usePDFGeneration";
 export type { ApprovalTimelineEntry } from "./hooks/useApprovalTimeline";
 
 // 工具函数
 export { validateFormCompleteness } from "./utils/validation";
+
+// 货币转换工具函数
+export {
+  convertYuanToCents,
+  convertCentsToYuan,
+  formatCurrency,
+  processFormDataForDatabase,
+  processDatabaseDataForForm,
+} from "./utils/currencyUtils";
 
 // PDF工具函数
 export {

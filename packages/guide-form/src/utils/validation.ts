@@ -51,8 +51,10 @@ export const validateFormCompleteness = (formData: FormData): string[] => {
   if (!formData.maxPeople) missingFields.push("最多人数");
   if (!formData.minDuration) missingFields.push("最短时长");
   if (!formData.maxDuration) missingFields.push("最长时长");
-  if (!formData.basicPricePerHourCents && formData.basicPricePerHourCents !== 0)
+  if (formData.basicPricePerHour === undefined || formData.basicPricePerHour === null || formData.basicPricePerHour < 0)
     missingFields.push("基础时薪");
+  if (formData.additionalPricePerPerson === undefined || formData.additionalPricePerPerson === null || formData.additionalPricePerPerson < 0)
+    missingFields.push("额外人员费用");
   if (!formData.currency) missingFields.push("货币类型");
 
   return missingFields;

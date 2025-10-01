@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { FormData } from "../types/schema";
 import { CURRENCY_OPTIONS } from "../constants";
 import { useIntl } from "react-intl";
+import { formatCurrency } from "../utils/currencyUtils";
 
 // 基础 UI 组件接口
 export interface UIComponents {
@@ -43,7 +44,7 @@ interface ServiceSubcategory {
 }
 
 interface Step4ServicePreferencesProps {
-  control: Control<FormData>;
+  control: Control<any>;
   ui: UIComponents;
   serviceCategories?: ServiceCategory[];
   targetGroups?: Array<{ value: string; label?: string }>;
@@ -339,7 +340,7 @@ export const Step4ServicePreferences = ({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={control}
-                name="basicPricePerHourCents"
+                name="basicPricePerHour"
                 render={({ field }: any) => (
                   <FormItem>
                     <FormLabel>{intl.formatMessage({ id: 'becomeGuide.step4.basicPricePerHour' })}</FormLabel>
@@ -347,8 +348,10 @@ export const Step4ServicePreferences = ({
                       <Input
                         type="number"
                         min="0"
+                        step="0.01"
                         value={field.value || ""}
-                        onChange={(e: any) => field.onChange(parseInt(e.target.value) || 0)}
+                        onChange={(e: any) => field.onChange(parseFloat(e.target.value) || 0)}
+                        placeholder="30.00"
                       />
                     </FormControl>
                     <FormMessage />
@@ -358,7 +361,7 @@ export const Step4ServicePreferences = ({
 
               <FormField
                 control={control}
-                name="additionalPricePerPersonCents"
+                name="additionalPricePerPerson"
                 render={({ field }: any) => (
                   <FormItem>
                     <FormLabel>{intl.formatMessage({ id: 'becomeGuide.step4.additionalPricePerPerson' })}</FormLabel>
@@ -366,8 +369,10 @@ export const Step4ServicePreferences = ({
                       <Input
                         type="number"
                         min="0"
+                        step="0.01"
                         value={field.value || ""}
-                        onChange={(e: any) => field.onChange(parseInt(e.target.value) || 0)}
+                        onChange={(e: any) => field.onChange(parseFloat(e.target.value) || 0)}
+                        placeholder="5.00"
                       />
                     </FormControl>
                     <FormMessage />

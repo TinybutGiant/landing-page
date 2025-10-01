@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formSchema, type FormData, type GuideFormConfig } from "../types/schema";
 import { validateFormCompleteness } from "../utils/validation";
+import { processFormDataForDatabase, processDatabaseDataForForm } from "../utils/currencyUtils";
 
 export const useGuideForm = (
   config: GuideFormConfig,
@@ -56,8 +57,8 @@ export const useGuideForm = (
       maxPeople: 10,
       minDuration: 2,
       maxDuration: 8,
-      basicPricePerHourCents: 3000,
-      additionalPricePerPersonCents: 500,
+      basicPricePerHour: 30.00,
+      additionalPricePerPerson: 5.00,
       currency: "JPY" as const,
       ...savedData,
     },
@@ -177,11 +178,11 @@ export const useGuideForm = (
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({
+        body: JSON.stringify(processFormDataForDatabase({
           ...processedData,
           userId: userId,
           applicationStatus: "pending"
-        })
+        }))
       });
 
       if (!response.ok) {

@@ -77,6 +77,8 @@ export const formSchema = z.object({
   maxPeople: z.coerce.number().int().min(MIN_PEOPLE, `最多人数不能少于${MIN_PEOPLE}`).max(MAX_PEOPLE, `最多人数不能超过${MAX_PEOPLE}`).optional(),
   minDuration: z.coerce.number().int().min(MIN_DURATION, `最短时长不能少于${MIN_DURATION}小时`).max(24, "最短时长不能超过24小时").optional(),
   maxDuration: z.coerce.number().int().min(MIN_DURATION, `最长时长不能少于${MIN_DURATION}小时`).max(24, "最长时长不能超过24小时").optional(),
+  basicPricePerHour: z.coerce.number().min(0, "基础时薪不能为负数").optional(),
+  additionalPricePerPerson: z.coerce.number().min(0, "额外人员费用不能为负数").optional(),
   basicPricePerHourCents: z.coerce.number().int().min(0, "基础时薪不能为负数").optional(),
   additionalPricePerPersonCents: z.coerce.number().int().min(0, "额外人员费用不能为负数").optional(),
   currency: z.enum(["JPY", "USD", "CNY"]).default("JPY"),
