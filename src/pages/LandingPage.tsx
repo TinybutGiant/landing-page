@@ -94,6 +94,24 @@ const LandingPage = () => {
     }
   };
 
+  // Handle become guide navigation with auth and application status check
+  const handleBecomeGuide = () => {
+    if (isAuthenticated) {
+      // Check if user already has an application
+      const applicationId = localStorage.getItem('yaotu_application_id');
+      if (applicationId) {
+        // User already has an application, redirect to status page
+        window.location.href = '/view-application-status';
+      } else {
+        // User is logged in but no application, allow access
+        window.location.href = '/become-guide';
+      }
+    } else {
+      // User is not logged in, allow access to become-guide page
+      window.location.href = '/become-guide';
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-white to-orange-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       {/* Language Switcher */}
@@ -453,7 +471,7 @@ const LandingPage = () => {
                 size="lg"
                 className="bg-white hover:bg-gray-100 px-8 py-3 rounded-full font-semibold shadow-lg hover:shadow-2xl transition-all duration-300 relative overflow-hidden group"
                 style={{ color: '#FFD511' }}
-                onClick={() => window.location.href = '/become-guide'}
+                onClick={handleBecomeGuide}
                 data-cursor-hover
               >
                 <motion.span

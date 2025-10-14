@@ -130,6 +130,12 @@ const BecomeGuidePage: React.FC = () => {
     return !!(token && userId);
   };
 
+  // 检查用户是否已有申请
+  const checkApplicationStatus = () => {
+    const applicationId = localStorage.getItem('yaotu_application_id');
+    return !!applicationId;
+  };
+
   // 测试代理连接
   const testProxyConnection = async () => {
     try {
@@ -731,6 +737,15 @@ const BecomeGuidePage: React.FC = () => {
     console.log('BecomeGuidePage: 组件挂载，开始检查localStorage状态');
     console.log('当前域名:', window.location.hostname);
     console.log('当前协议:', window.location.protocol);
+    
+    // 检查已登录用户是否已有申请
+    if (checkAuth() && checkApplicationStatus()) {
+      console.log('BecomeGuidePage: 用户已登录且已有申请，重定向到状态页面');
+      setLocation('/view-application-status');
+      return;
+    }
+    
+    // 未登录用户可以访问申请页面，但在提交时会要求登录
     
     // 检查所有localStorage数据
     const allLocalStorageData: { [key: string]: any } = {};
