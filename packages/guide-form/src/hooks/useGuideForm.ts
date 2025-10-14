@@ -206,6 +206,9 @@ export const useGuideForm = (
       
       if (applicationId) {
         localStorage.setItem('yaotu_application_id', applicationId.toString());
+        console.log('✅ 申请ID已保存到localStorage:', applicationId);
+      } else {
+        console.warn('⚠️ 未找到申请ID，服务器返回:', result);
       }
       
       return result;
@@ -238,9 +241,11 @@ export const useGuideForm = (
       const userId = config.auth.getUserId();
       
       if (!token || !userId) {
-        // 未登录，跳转到登录页面，保持当前URL参数
+        // 未登录，跳转到注册页面，确保包含step=preview参数
         const currentUrl = window.location.pathname + window.location.search;
-        window.location.href = `/login?redirect=${encodeURIComponent(currentUrl)}`;
+        // 如果是become-guide页面，确保包含step=preview参数
+        const redirectUrl = currentUrl.includes('step=preview') ? currentUrl : '/become-guide?step=preview';
+        window.location.href = `/signup?redirect=${encodeURIComponent(redirectUrl)}`;
         return;
       }
       

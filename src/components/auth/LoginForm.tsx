@@ -48,12 +48,12 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, redirectTo }) => {
       if (onSuccess) {
         onSuccess();
       } else if (redirectTo) {
-        window.location.href = redirectTo;
+        setLocation(redirectTo);
       } else {
-        window.location.href = '/become-guide';
+        setLocation('/become-guide');
       }
     }
-  }, [user, onSuccess, redirectTo]);
+  }, [user, onSuccess, redirectTo, setLocation]);
 
   const onSubmit = async (data: LoginFormData) => {
     try {
@@ -96,14 +96,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, redirectTo }) => {
         }
         console.log('LoginForm: 登录后localStorage状态:', afterLoginData);
         
-        if (onSuccess) {
-          onSuccess();
-        } else if (redirectTo) {
-          setLocation(redirectTo);
-        } else {
-          // 默认跳转到申请页面
-          setLocation('/become-guide');
-        }
       } else {
         toast({
           title: intl.formatMessage({ id: 'login.error.title' }),
@@ -228,13 +220,19 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, redirectTo }) => {
               </form>
             </Form>
 
-            {/* Only show signup link if redirect is specifically to become-guide */}
-            {redirectTo === '/become-guide' && (
+            {/* Show signup link if redirect is to become-guide */}
+            {redirectTo && redirectTo.includes('/become-guide') && (
               <div className="mt-6 text-center">
                 <p className="text-sm text-gray-600">
                   {intl.formatMessage({ id: 'login.noAccount' })}{' '}
                   <button
-                    onClick={() => window.location.href = '/signup'}
+                    onClick={() => {
+                      const currentUrl = window.location.href;
+                      const redirectParam = currentUrl.includes('redirect=') 
+                        ? currentUrl.substring(currentUrl.indexOf('redirect='))
+                        : '';
+                      window.location.href = `/signup?${redirectParam}`;
+                    }}
                     className="text-yellow-600 hover:text-yellow-700 font-medium"
                   >
                     {intl.formatMessage({ id: 'login.signupNow' })}

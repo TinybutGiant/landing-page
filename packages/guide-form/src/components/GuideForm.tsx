@@ -143,7 +143,7 @@ export const GuideForm: React.FC<GuideFormProps> = ({
   });
 
   const handleDownloadPDF = () => {
-    downloadPDF("preview-content", {
+    downloadPDF("print-root", {
       filename: `guide-application-${Date.now()}.pdf`,
     });
   };

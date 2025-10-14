@@ -238,19 +238,25 @@ const BecomeGuidePage: React.FC = () => {
   // 只处理PDF上传的函数（不重复提交申请）
   const handlePDFUpload = async (data: any) => {
     try {
+      console.log('🔄 开始处理PDF上传...');
+      
       // 从localStorage获取申请ID
       const applicationId = localStorage.getItem('yaotu_application_id');
+      console.log('📋 从localStorage获取的申请ID:', applicationId);
       
       if (!applicationId) {
-        console.warn('未找到申请ID，跳过PDF上传');
+        console.warn('⚠️ 未找到申请ID，跳过PDF上传');
+        console.log('🔍 当前localStorage内容:', Object.keys(localStorage).map(key => ({ key, value: localStorage.getItem(key) })));
         return;
       }
       
+      console.log('📤 开始上传PDF到R2...');
       // 上传PDF到R2
       await uploadPDFToR2(data, applicationId);
+      console.log('✅ PDF上传完成');
       
     } catch (error) {
-      console.error('PDF上传失败:', error);
+      console.error('❌ PDF上传失败:', error);
       // PDF上传失败不影响申请提交
     }
   };
@@ -258,6 +264,7 @@ const BecomeGuidePage: React.FC = () => {
   // 上传PDF到R2并获取URL
   const uploadPDFToR2 = async (formData: any, applicationId: string | number) => {
     try {
+      console.log('🔐 检查用户认证状态...');
       const token = localStorage.getItem("yaotu_token");
       const userId = localStorage.getItem("yaotu_user_id");
       
@@ -265,14 +272,19 @@ const BecomeGuidePage: React.FC = () => {
         throw new Error('用户未登录');
       }
       
+      console.log('📄 开始生成PDF...');
       // 生成PDF Blob
-      const pdfBlob = await generatePDFBlob("preview-content", {
+      const pdfBlob = await generatePDFBlob("print-root", {
         filename: `guide-application-${applicationId}-${Date.now()}.pdf`
       });
       
+      console.log('📄 PDF生成完成，大小:', pdfBlob.size, 'bytes');
+      
       // 转换为ArrayBuffer
       const pdfArrayBuffer = await pdfBlob.arrayBuffer();
+      console.log('📄 PDF转换为ArrayBuffer完成，大小:', pdfArrayBuffer.byteLength, 'bytes');
       
+      console.log('📤 开始上传PDF到R2，申请ID:', applicationId);
       // 上传到R2
       const uploadResponse = await fetch(`/api/v2/guide-applications/${applicationId}/archive-pdf`, {
         method: 'POST',
@@ -284,16 +296,20 @@ const BecomeGuidePage: React.FC = () => {
         body: pdfArrayBuffer
       });
       
+      console.log('📤 上传响应状态:', uploadResponse.status);
+      
       if (!uploadResponse.ok) {
         const errorText = await uploadResponse.text();
+        console.error('❌ PDF上传失败，响应:', errorText);
         throw new Error(`PDF上传失败: ${uploadResponse.status} - ${errorText}`);
       }
       
       const uploadResult = await uploadResponse.json();
+      console.log('✅ PDF上传成功，结果:', uploadResult);
       return uploadResult.publicUrl || uploadResult.url;
       
     } catch (error) {
-      console.error('PDF上传失败:', error);
+      console.error('❌ PDF上传失败:', error);
       throw error;
     }
   };
@@ -361,7 +377,10 @@ const BecomeGuidePage: React.FC = () => {
               description: "请先登录后再提交申请",
               variant: "destructive"
             });
-            setLocation('/login?redirect=' + encodeURIComponent('/become-guide?step=preview'));
+            // 确保redirect URL包含step=preview参数
+            const redirectUrl = '/become-guide?step=preview';
+            const encodedRedirect = encodeURIComponent(redirectUrl);
+            setLocation('/login?redirect=' + encodedRedirect);
           }
         } catch (error) {
           console.error('💥 BecomeGuidePage: 处理成功回调失败:', error);
@@ -380,7 +399,10 @@ const BecomeGuidePage: React.FC = () => {
               description: "请重新登录",
               variant: "destructive"
             });
-            setLocation('/login?redirect=' + encodeURIComponent('/become-guide?step=preview'));
+            // 确保redirect URL包含step=preview参数
+            const redirectUrl = '/become-guide?step=preview';
+            const encodedRedirect = encodeURIComponent(redirectUrl);
+            setLocation('/login?redirect=' + encodedRedirect);
             return;
           }
           

@@ -484,7 +484,13 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, redirectTo }) => {
               <p className="text-sm text-gray-600">
                 {intl.formatMessage({ id: 'signup.alreadyHaveAccount' })}{' '}
                 <button
-                  onClick={() => window.location.href = '/login'}
+                  onClick={() => {
+                    const currentUrl = window.location.href;
+                    const redirectParam = currentUrl.includes('redirect=') 
+                      ? currentUrl.substring(currentUrl.indexOf('redirect='))
+                      : '';
+                    window.location.href = `/login?${redirectParam}`;
+                  }}
                   className="text-yellow-600 hover:text-yellow-700 font-medium"
                 >
                   {intl.formatMessage({ id: 'signup.loginNow' })}
