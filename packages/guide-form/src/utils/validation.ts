@@ -16,6 +16,7 @@ export const validateFormCompleteness = (formData: FormData): string[] => {
   if (!formData.residenceStartDate)
     missingFields.push("在日本生活的起始时间");
   if (!formData.residenceInfo?.trim()) missingFields.push("住址/常驻区域");
+  if (!formData.residenceZipcode?.trim()) missingFields.push("邮政编码");
   if (!formData.occupation?.trim()) missingFields.push("当前职业");
   if (!formData.bio?.trim()) missingFields.push("自我介绍");
 

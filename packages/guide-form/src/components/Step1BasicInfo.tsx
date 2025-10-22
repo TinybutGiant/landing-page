@@ -247,6 +247,23 @@ export const Step1BasicInfo = ({
               </FormItem>
             )}
           />
+          <FormField
+            control={control}
+            name="residenceZipcode"
+            render={({ field }: any) => (
+              <FormItem>
+                <FormLabel>邮政编码</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="请输入该区域对应的邮编（如：1500001）"
+                    value={field.value || ""}
+                    onChange={field.onChange}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           {YearMonthPicker && (
             <FormField

@@ -40,6 +40,7 @@ export const formSchema = z.object({
   // 服务信息
   serviceCity: z.string().optional(),
   residenceInfo: z.string().optional(),
+  residenceZipcode: z.string().optional(),
   residenceStartDate: z.string().optional(),
   occupation: z.string().optional(),
   bio: z.string().optional(),

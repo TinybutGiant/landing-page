@@ -38,6 +38,7 @@ export const useGuideForm = (
       supportiveDescription: "",
       serviceCity: "",
       residenceInfo: "",
+      residenceZipcode: "",
       residenceStartDate: "",
       occupation: "",
       bio: "",

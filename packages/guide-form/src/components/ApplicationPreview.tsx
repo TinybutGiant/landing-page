@@ -153,6 +153,14 @@ export const ApplicationPreview = ({
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-500">
+                    邮政编码
+                  </label>
+                  <p className="text-gray-900">
+                    {formData.residenceZipcode || "-"}
+                  </p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-500">
                     职业
                   </label>
                   <p className="text-gray-900">
