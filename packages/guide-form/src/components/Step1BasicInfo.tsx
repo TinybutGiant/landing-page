@@ -1,7 +1,9 @@
-import { Control } from "react-hook-form";
+﻿import { Control } from "react-hook-form";
 import { FormData } from "../types/schema";
 import { SEX_OPTIONS, MBTI_OPTIONS } from "../constants";
 import { useIntl } from "react-intl";
+import { sanitizePostalCode, formatPostalCode, isValidPostalCode } from "../utils/postalCode";
+
 
 // 基础 UI 组件接口 - 需要由使用者提供实现
 export interface UIComponents {
@@ -252,18 +254,35 @@ export const Step1BasicInfo = ({
             name="residenceZipcode"
             render={({ field }: any) => (
               <FormItem>
-                <FormLabel>邮政编码</FormLabel>
+                <FormLabel>
+                  <span className="mr-1">{"〒"}</span>
+                  {intl.formatMessage({ id: 'becomeGuide.step1.residenceZipcode', defaultMessage: 'Postal Code' })}
+                </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="请输入该区域对应的邮编（如：1500001）"
-                    value={field.value || ""}
-                    onChange={field.onChange}
+                    inputMode="numeric"
+                    maxLength={8}
+                    placeholder={intl.formatMessage({ id: 'becomeGuide.step1.residenceZipcodePlaceholder', defaultMessage: '例如：1234567 或 123-4567' })}
+                    value={formatPostalCode(field.value || "")}
+                    onChange={(e: any) => {
+                      const sanitized = sanitizePostalCode(e.target.value);
+                      field.onChange(sanitized);
+                    }}
                   />
                 </FormControl>
+                <p className="text-xs text-gray-500 mt-1">
+                  {intl.formatMessage({ id: 'becomeGuide.step1.residenceZipcodeHelper', defaultMessage: '请填写邮编（ 7 位）。你可以输入“1234567” 或 “123-4567”，系统会自动格式化。' })}
+                </p>
+                {field.value && !isValidPostalCode(field.value) && (
+                  <p className="text-sm text-red-500 mt-1">
+                    {intl.formatMessage({ id: 'becomeGuide.step1.residenceZipcodeError', defaultMessage: '请输入 7 位日本邮政编码（仅数字）。' })}
+                  </p>
+                )}
                 <FormMessage />
               </FormItem>
             )}
           />
+
 
           {YearMonthPicker && (
             <FormField
@@ -461,3 +480,4 @@ export const Step1BasicInfo = ({
     </div>
   );
 };
+

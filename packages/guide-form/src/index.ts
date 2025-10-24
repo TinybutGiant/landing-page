@@ -27,6 +27,7 @@ export type { ApprovalTimelineEntry } from "./hooks/useApprovalTimeline";
 
 // 工具函数
 export { validateFormCompleteness } from "./utils/validation";
+export { sanitizePostalCode, formatPostalCode, isValidPostalCode, POSTAL_CODE_REGEX } from "./utils/postalCode";
 
 // 货币转换工具函数
 export {

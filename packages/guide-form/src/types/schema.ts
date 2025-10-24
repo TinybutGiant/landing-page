@@ -40,7 +40,10 @@ export const formSchema = z.object({
   // 服务信息
   serviceCity: z.string().optional(),
   residenceInfo: z.string().optional(),
-  residenceZipcode: z.string().optional(),
+  residenceZipcode: z.string()
+    .regex(/^\d{7}$/, "邮政编码必须是7位数字")
+    .optional()
+    .or(z.literal("")),
   residenceStartDate: z.string().optional(),
   occupation: z.string().optional(),
   bio: z.string().optional(),
