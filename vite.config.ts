@@ -17,12 +17,17 @@ export default defineConfig({
     sourcemap: true,
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-          motion: ['framer-motion'],
-          ui: ['lucide-react', '@radix-ui/react-slot', '@radix-ui/react-checkbox']
-        }
-      }
+        manualChunks(id) {
+          // 不要单独分离 React，否则某些懒加载模块会找不到它
+          if (id.includes('node_modules')) {
+            if (id.includes('@radix-ui')) return 'ui';
+            if (id.includes('date-fns') || id.includes('clsx') || id.includes('tailwind-merge')) return 'utils';
+            if (id.includes('framer-motion')) return 'motion';
+            if (id.includes('lucide-react')) return 'ui';
+            return 'vendor';
+          }
+        },
+      },
     }
   },
   server: {
