@@ -177,7 +177,7 @@ export default function ViewApplicationStatusPage() {
     const formData = new FormData();
     formData.append('file', file);
 
-    const response = await fetch('/api/v2/guide-applications/supplemental-material-upload', {
+    const response = await fetch('https://replit-localguide.pages.dev/api/v2/guide-applications/supplemental-material-upload', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('yaotu_token')}`

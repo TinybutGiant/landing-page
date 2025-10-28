@@ -1,6 +1,6 @@
 # Cloudflare Pages redirects and rewrites
 # API requests should be proxied to your main project
-/api/* https://replit-localguide.pages.dev/api/:splat 200
+/api/* https://replit-localguide.pages.dev/api/:splat 200!
 
 # All other requests should serve the SPA
 /* /index.html 200

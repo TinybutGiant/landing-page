@@ -140,7 +140,7 @@ const BecomeGuidePage: React.FC = () => {
   const testProxyConnection = async () => {
     try {
       console.log('🧪 测试代理连接...');
-      const response = await fetch('/api/v2/guide-applications/test');
+      const response = await fetch('https://replit-localguide.pages.dev/api/v2/guide-applications/test');
       if (response.ok) {
         const data = await response.json();
         console.log('✅ 代理连接正常:', data);
@@ -208,7 +208,7 @@ const BecomeGuidePage: React.FC = () => {
           formData.append('file', blob, file.name);
           
           // 上传到R2
-          const uploadResponse = await fetch('/api/v2/guide-applications/qualification-upload', {
+          const uploadResponse = await fetch('https://replit-localguide.pages.dev/api/v2/guide-applications/qualification-upload', {
             method: 'POST',
             headers: {
               'Authorization': `Bearer ${token}`
@@ -326,7 +326,7 @@ const BecomeGuidePage: React.FC = () => {
   const loadServiceCategories = async () => {
     try {
       console.log('BecomeGuidePage: 开始加载服务类别数据...');
-      const response = await fetch('/api/v2/service-categories/with-subcategories');
+      const response = await fetch('https://replit-localguide.pages.dev/api/v2/service-categories/with-subcategories');
       if (response.ok) {
         const data = await response.json();
         console.log('BecomeGuidePage: 服务类别数据加载成功:', data);
@@ -536,7 +536,7 @@ const BecomeGuidePage: React.FC = () => {
           formData.append('file', blob, file.name);
           
           // 上传到R2
-          const uploadResponse = await fetch('/api/v2/guide-applications/qualification-upload', {
+          const uploadResponse = await fetch('https://replit-localguide.pages.dev/api/v2/guide-applications/qualification-upload', {
             method: 'POST',
             headers: {
               'Authorization': `Bearer ${token}`
@@ -771,7 +771,7 @@ const BecomeGuidePage: React.FC = () => {
       // 测试服务类别API端点
       try {
         console.log('BecomeGuidePage: 测试服务类别API端点...');
-        const response = await fetch('/api/v2/service-categories/with-subcategories');
+        const response = await fetch('https://replit-localguide.pages.dev/api/v2/service-categories/with-subcategories');
         if (response.ok) {
           const data = await response.json();
           console.log('BecomeGuidePage: 服务类别API响应成功:', data);

@@ -97,7 +97,7 @@ const API_BASE_URL = '';
  */
 export async function signUp(userData: SignupData): Promise<{ success: boolean; user?: AuthUser; error?: string }> {
   try {
-    const response = await fetch('/api/auth/signup', {
+    const response = await fetch('https://replit-localguide.pages.dev/api/auth/signup', {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(userData),
@@ -128,7 +128,7 @@ export async function signUp(userData: SignupData): Promise<{ success: boolean; 
  */
 export async function login(username: string, password: string): Promise<{ success: boolean; user?: AuthUser; error?: string }> {
   try {
-    const response = await fetch('/api/auth/login', {
+    const response = await fetch('https://replit-localguide.pages.dev/api/auth/login', {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password }),
@@ -167,7 +167,7 @@ export function logout(): void {
  */
 export async function checkUsernameAvailability(username: string): Promise<{ available: boolean; error?: string }> {
   try {
-    const response = await fetch(`/api/auth/check-username?username=${encodeURIComponent(username)}`);
+    const response = await fetch(`https://replit-localguide.pages.dev/api/auth/check-username?username=${encodeURIComponent(username)}`);
     
     if (!response.ok) {
       return { available: false, error: "Failed to check username availability" };
