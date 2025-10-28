@@ -19,13 +19,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Check for existing session on mount
   useEffect(() => {
     const checkAuth = () => {
-      if (isAuthenticated()) {
+      try {
         const userData = getUserData();
         if (userData) {
+          console.log('AuthContext: Found existing user data:', userData);
           setUser(userData);
+        } else {
+          console.log('AuthContext: No existing user data found');
         }
+      } catch (error) {
+        console.error('AuthContext: Error checking auth:', error);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     checkAuth();
@@ -72,11 +78,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
   };
 
+  // 计算认证状态，优先使用user状态，如果没有则检查localStorage
+  const authStatus = user ? true : (() => {
+    try {
+      return isAuthenticated();
+    } catch {
+      return false;
+    }
+  })();
+
   return (
     <AuthContext.Provider value={{ 
       user, 
       loading, 
-      isAuthenticated: !!user,
+      isAuthenticated: authStatus,
       login: handleLogin,
       logout: handleLogout,
       signUp: handleSignUp
