@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useLocation, useRoute } from 'wouter';
 import { GuideForm, GuideFormConfig, UIComponents } from '@replit/guide-form';
 import { usePDFGeneration, generatePDFBlob } from '@replit/guide-form';
+import { api, authApi } from '@/lib/apiClient';
 import { Button } from '@/components/ui/button';
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -140,15 +141,9 @@ const BecomeGuidePage: React.FC = () => {
   const testProxyConnection = async () => {
     try {
       console.log('🧪 测试代理连接...');
-      const response = await fetch('https://replit-localguide.pages.dev/api/v2/guide-applications/test');
-      if (response.ok) {
-        const data = await response.json();
-        console.log('✅ 代理连接正常:', data);
-        return true;
-      } else {
-        console.error('❌ 代理连接失败:', response.status, response.statusText);
-        return false;
-      }
+      const data = await api.get('/api/v2/guide-applications/test');
+      console.log('✅ 代理连接正常:', data);
+      return true;
     } catch (error) {
       console.error('❌ 代理连接测试失败:', error);
       return false;
@@ -208,19 +203,7 @@ const BecomeGuidePage: React.FC = () => {
           formData.append('file', blob, file.name);
           
           // 上传到R2
-          const uploadResponse = await fetch('https://replit-localguide.pages.dev/api/v2/guide-applications/qualification-upload', {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${token}`
-            },
-            body: formData
-          });
-          
-          if (!uploadResponse.ok) {
-            throw new Error(`文件上传失败: ${uploadResponse.status}`);
-          }
-          
-          const result = await uploadResponse.json();
+          const result = await authApi.upload('/api/v2/guide-applications/qualification-upload', formData);
           console.log(`文件上传成功: ${file.name}`, result);
           
           uploadedCertifications[key] = {
@@ -326,15 +309,9 @@ const BecomeGuidePage: React.FC = () => {
   const loadServiceCategories = async () => {
     try {
       console.log('BecomeGuidePage: 开始加载服务类别数据...');
-      const response = await fetch('https://replit-localguide.pages.dev/api/v2/service-categories/with-subcategories');
-      if (response.ok) {
-        const data = await response.json();
-        console.log('BecomeGuidePage: 服务类别数据加载成功:', data);
-        return data;
-      } else {
-        console.error('BecomeGuidePage: 服务类别API响应失败:', response.status, response.statusText);
-        throw new Error(`API响应失败: ${response.status}`);
-      }
+      const data = await api.get('/api/v2/service-categories/with-subcategories');
+      console.log('BecomeGuidePage: 服务类别数据加载成功:', data);
+      return data;
     } catch (error) {
       console.error('BecomeGuidePage: 服务类别数据加载失败:', error);
       throw error;
@@ -536,19 +513,7 @@ const BecomeGuidePage: React.FC = () => {
           formData.append('file', blob, file.name);
           
           // 上传到R2
-          const uploadResponse = await fetch('https://replit-localguide.pages.dev/api/v2/guide-applications/qualification-upload', {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${token}`
-            },
-            body: formData
-          });
-          
-          if (!uploadResponse.ok) {
-            throw new Error(`上传失败: ${uploadResponse.status}`);
-          }
-          
-          const result = await uploadResponse.json();
+          const result = await authApi.upload('/api/v2/guide-applications/qualification-upload', formData);
           console.log('文件上传成功:', result);
           
           return {
@@ -771,13 +736,8 @@ const BecomeGuidePage: React.FC = () => {
       // 测试服务类别API端点
       try {
         console.log('BecomeGuidePage: 测试服务类别API端点...');
-        const response = await fetch('https://replit-localguide.pages.dev/api/v2/service-categories/with-subcategories');
-        if (response.ok) {
-          const data = await response.json();
-          console.log('BecomeGuidePage: 服务类别API响应成功:', data);
-        } else {
-          console.error('BecomeGuidePage: 服务类别API响应失败:', response.status, response.statusText);
-        }
+        const data = await api.get('/api/v2/service-categories/with-subcategories');
+        console.log('BecomeGuidePage: 服务类别API响应成功:', data);
       } catch (error) {
         console.error('BecomeGuidePage: 服务类别API请求失败:', error);
       }

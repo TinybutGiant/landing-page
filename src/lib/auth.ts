@@ -1,6 +1,8 @@
 // Authentication utilities for landing-page project
 // Based on the main project's authentication system
 
+import { api } from './apiClient';
+
 export interface AuthUser {
   id: number;
   username: string;
@@ -97,18 +99,7 @@ const API_BASE_URL = '';
  */
 export async function signUp(userData: SignupData): Promise<{ success: boolean; user?: AuthUser; error?: string }> {
   try {
-    const response = await fetch('https://replit-localguide.pages.dev/api/auth/signup', {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(userData),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      return { success: false, error: errorData.error || "Failed to create account" };
-    }
-
-    const data = await response.json();
+    const data = await api.post('/api/auth/signup', userData);
     
     if (data.token) {
       // Store authentication data
@@ -117,9 +108,9 @@ export async function signUp(userData: SignupData): Promise<{ success: boolean; 
     } else {
       return { success: false, error: "No authentication token received" };
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error("Signup error:", error);
-    return { success: false, error: "Network error occurred" };
+    return { success: false, error: error.message || "Network error occurred" };
   }
 }
 
@@ -128,18 +119,7 @@ export async function signUp(userData: SignupData): Promise<{ success: boolean; 
  */
 export async function login(username: string, password: string): Promise<{ success: boolean; user?: AuthUser; error?: string }> {
   try {
-    const response = await fetch('https://replit-localguide.pages.dev/api/auth/login', {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      return { success: false, error: errorData.error || "Invalid credentials" };
-    }
-
-    const data = await response.json();
+    const data = await api.post('/api/auth/login', { username, password });
     
     if (data.token) {
       // Store authentication data
@@ -148,9 +128,9 @@ export async function login(username: string, password: string): Promise<{ succe
     } else {
       return { success: false, error: "No authentication token received" };
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error("Login error:", error);
-    return { success: false, error: "Network error occurred" };
+    return { success: false, error: error.message || "Network error occurred" };
   }
 }
 
@@ -167,17 +147,11 @@ export function logout(): void {
  */
 export async function checkUsernameAvailability(username: string): Promise<{ available: boolean; error?: string }> {
   try {
-    const response = await fetch(`https://replit-localguide.pages.dev/api/auth/check-username?username=${encodeURIComponent(username)}`);
-    
-    if (!response.ok) {
-      return { available: false, error: "Failed to check username availability" };
-    }
-    
-    const data = await response.json();
+    const data = await api.get(`/api/auth/check-username?username=${encodeURIComponent(username)}`);
     return { available: data.available };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error checking username:", error);
-    return { available: false, error: "Network error occurred" };
+    return { available: false, error: error.message || "Network error occurred" };
   }
 }
 

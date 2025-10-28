@@ -3,6 +3,7 @@ import { useLocation } from "wouter";
 import { useEffect, useState } from "react";
 import { useIntl } from 'react-intl';
 import { useLanguage } from '@/i18n/LanguageProvider';
+import { authApi } from '@/lib/apiClient';
 import { 
   ApplicationStatus,
   ApprovalTimeline,
@@ -177,19 +178,11 @@ export default function ViewApplicationStatusPage() {
     const formData = new FormData();
     formData.append('file', file);
 
-    const response = await fetch('https://replit-localguide.pages.dev/api/v2/guide-applications/supplemental-material-upload', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('yaotu_token')}`
-      },
-      body: formData
-    });
-
-    if (!response.ok) {
+    try {
+      return await authApi.upload('/api/v2/guide-applications/supplemental-material-upload', formData);
+    } catch (error) {
       throw new Error(intl.formatMessage({ id: 'viewApplicationStatus.fileUploadFailed' }));
     }
-
-    return response.json();
   };
 
   // 提交补充材料
