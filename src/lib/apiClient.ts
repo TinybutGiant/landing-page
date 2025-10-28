@@ -4,7 +4,7 @@
 const API_BASE =
   import.meta.env.VITE_API_URL ||
   (window.location.hostname.includes("localhost")
-    ? "http://localhost:8788"
+    ? "" // 本地开发使用相对路径，通过Vite代理
     : "https://replit-localguide.pages.dev");
 
 console.log("🌐 API Base URL:", API_BASE);
