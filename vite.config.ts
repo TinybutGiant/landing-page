@@ -35,7 +35,7 @@ export default defineConfig({
     open: true,
     proxy: {
       "/api": {
-        target: "https://replit-localguide.pages.dev",
+        target: "https://ahhh-yaotu.onrender.com",
         changeOrigin: true,
         secure: true,
         rewrite: (path) => path,

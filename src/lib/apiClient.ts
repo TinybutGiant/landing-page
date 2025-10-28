@@ -5,7 +5,9 @@ const API_BASE =
   import.meta.env.VITE_API_URL ||
   (window.location.hostname.includes("localhost")
     ? "" // 本地开发使用相对路径，通过Vite代理
-    : "https://replit-localguide.pages.dev");
+    : window.location.hostname.includes("ahhh-yaotu.com")
+    ? "https://ahhh-yaotu.onrender.com" // 如果域名是ahhh-yaotu.com，使用Render API
+    : "https://ahhh-yaotu.onrender.com"); // 默认使用Render API
 
 console.log("🌐 API Base URL:", API_BASE);
 

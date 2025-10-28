@@ -309,7 +309,7 @@ const BecomeGuidePage: React.FC = () => {
   const loadServiceCategories = async () => {
     try {
       console.log('BecomeGuidePage: 开始加载服务类别数据...');
-      const data = await api.get('/api/v2/service-categories/with-subcategories');
+      const data = await api.get('/api/v2/service-categories');
       console.log('BecomeGuidePage: 服务类别数据加载成功:', data);
       return data;
     } catch (error) {
@@ -736,7 +736,7 @@ const BecomeGuidePage: React.FC = () => {
       // 测试服务类别API端点
       try {
         console.log('BecomeGuidePage: 测试服务类别API端点...');
-        const data = await api.get('/api/v2/service-categories/with-subcategories');
+        const data = await api.get('/api/v2/service-categories');
         console.log('BecomeGuidePage: 服务类别API响应成功:', data);
       } catch (error) {
         console.error('BecomeGuidePage: 服务类别API请求失败:', error);
