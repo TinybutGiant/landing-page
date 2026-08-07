@@ -1,288 +1,295 @@
-import { Control } from "react-hook-form";
-import { FormData } from "../types/schema";
-import { SCORE_EXPLANATIONS } from "../constants";
-import { useIntl } from "react-intl";
+import type { ReactNode } from 'react';
+import type { Control } from 'react-hook-form';
+import type { FormData } from '../types/schema';
+import {
+  createGuideFormTranslator,
+  type GuideFormLocale,
+  type TranslationFunction,
+} from '../i18n';
+import { EvaluationSlider, type EvaluationSliderUI } from './EvaluationSlider';
 
-// 基础 UI 组件接口
-export interface UIComponents {
+export interface EvaluationQuestionUI extends EvaluationSliderUI {
+  Checkbox: any;
+  FormControl: any;
   FormField: any;
   FormItem: any;
   FormLabel: any;
-  FormControl: any;
   FormMessage: any;
+  RadioGroup: any;
+  RadioGroupItem: any;
   Textarea: any;
-  Slider: any;
-  Tooltip?: any;
-  TooltipContent?: any;
-  TooltipTrigger?: any;
-  Info?: any;
 }
 
-interface Step2SelfAssessmentProps {
-  control: Control<FormData>;
-  ui: UIComponents;
+export interface Step2SelfAssessmentProps {
+  control: Control<FormData> | Control<any>;
+  ui: EvaluationQuestionUI;
+  t?: TranslationFunction;
+  locale?: GuideFormLocale;
 }
 
-export const Step2SelfAssessment = ({ control, ui }: Step2SelfAssessmentProps) => {
-  const intl = useIntl();
-  
+const Q1_OPTIONS = [
+  'understandRequest',
+  'refuseUnsafe',
+  'offerAlternative',
+  'contactPlatform',
+  'satisfyFirst',
+  'doNotEngage',
+] as const;
+
+const Q2_OPTIONS = [
+  'stronglyDisagree',
+  'disagree',
+  'neutral',
+  'agree',
+  'stronglyAgree',
+] as const;
+
+const Q3_OPTIONS = [
+  'askAndSupport',
+  'observeThenCheck',
+  'activelyHelp',
+  'waitForRequest',
+  'doNotIntervene',
+] as const;
+
+const Q4_OPTIONS = [
+  'shareStories',
+  'localConnections',
+  'takePhotos',
+  'adjustPace',
+  'quietCompany',
+  'giveSpace',
+  'stayInTouch',
+  'professionalRelationship',
+] as const;
+
+const QuestionCard = ({ children }: { children: ReactNode }) => (
+  <div className="space-y-4 rounded-lg border border-gray-200 bg-[#F9FAFB] p-5 dark:border-gray-700 dark:bg-gray-800/40">
+    {children}
+  </div>
+);
+
+export const Step2SelfAssessment = ({
+  control,
+  ui,
+  t,
+  locale = 'en',
+}: Step2SelfAssessmentProps) => {
   const {
+    Checkbox,
+    FormControl,
     FormField,
     FormItem,
     FormLabel,
-    FormControl,
     FormMessage,
-    Textarea,
-    Slider,
-    Tooltip,
-    TooltipContent,
-    TooltipTrigger,
-    Info
+    RadioGroup,
+    RadioGroupItem,
   } = ui;
+  const translate = t ?? createGuideFormTranslator(locale);
 
   return (
-    <div className="space-y-8">
-
-      {/* 道德感评分 */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-2">
-          <FormLabel className="text-base font-medium">
-            {intl.formatMessage({ id: 'becomeGuide.step2.ethicsScore' })}
-          </FormLabel>
-          {Tooltip && Info && (
-            <Tooltip>
-              <TooltipTrigger>
-                <Info className="h-4 w-4 text-gray-400" />
-              </TooltipTrigger>
-              <TooltipContent>
-                <div className="max-w-sm">
-                  <div className="text-sm space-y-2">
-                    {intl.formatMessage({ id: 'becomeGuide.step2.ethicsScoreDescription' })
-                      .split('\n\n')
-                      .map((paragraph, index) => (
-                        <div key={index} className="p-2 bg-gray-50 rounded-md border-l-2 border-blue-200">
-                          <p className="whitespace-pre-line">{paragraph}</p>
-                        </div>
-                      ))
-                    }
-                  </div>
-                </div>
-              </TooltipContent>
-            </Tooltip>
-          )}
-        </div>
-
-        <FormField
-          control={control}
-          name="ethicsScore"
-          render={({ field }: any) => (
-            <FormItem>
-              <FormControl>
-                <div className="space-y-2">
-                  <Slider
-                    min={0}
-                    max={10}
-                    step={1}
-                    value={[field.value || 5]}
-                    onValueChange={(value: number[]) =>
-                      field.onChange(value[0])
-                    }
-                    className="w-full"
-                  />
-                  <div className="flex justify-between text-xs text-gray-500">
-                    <span>{intl.formatMessage({ id: 'becomeGuide.step2.ethicsRange0' })}</span>
-                    <span className="font-medium">
-                      {intl.formatMessage({ id: 'becomeGuide.step2.currentScore' }, { value: field.value })}/10
-                    </span>
-                    <span>{intl.formatMessage({ id: 'becomeGuide.step2.ethicsRange10' })}</span>
-                  </div>
-                </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={control}
-          name="ethicsDescription"
-          render={({ field }: any) => (
-            <FormItem>
-              <FormLabel>{intl.formatMessage({ id: 'becomeGuide.step2.ethicsDescription' })}</FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder={intl.formatMessage({ id: 'becomeGuide.step2.ethicsDescriptionPlaceholder' })}
-                  value={field.value || ""}
-                  onChange={field.onChange}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+    <div className="space-y-[30px]">
+      <div className="text-center">
+        <h3 className="mb-2 text-lg font-semibold text-gray-900 dark:text-white">
+          {translate('becomeGuide.step2.title')}
+        </h3>
+        <p className="text-sm text-gray-600 dark:text-white">
+          {translate('becomeGuide.step2.subtitle')}
+        </p>
       </div>
 
-      {/* 边界感评分 */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-2">
-          <FormLabel className="text-base font-medium">
-            {intl.formatMessage({ id: 'becomeGuide.step2.boundaryScore' })}
-          </FormLabel>
-          {Tooltip && Info && (
-            <Tooltip>
-              <TooltipTrigger>
-                <Info className="h-4 w-4 text-gray-400" />
-              </TooltipTrigger>
-              <TooltipContent>
-                <div className="max-w-sm">
-                  <div className="text-sm space-y-2">
-                    {intl.formatMessage({ id: 'becomeGuide.step2.boundaryScoreDescription' })
-                      .split('\n\n')
-                      .map((paragraph, index) => (
-                        <div key={index} className="p-2 bg-gray-50 rounded-md border-l-2 border-blue-200">
-                          <p className="whitespace-pre-line">{paragraph}</p>
-                        </div>
-                      ))
-                    }
-                  </div>
-                </div>
-              </TooltipContent>
-            </Tooltip>
-          )}
-        </div>
-
+      <QuestionCard>
         <FormField
           control={control}
-          name="boundaryScore"
+          name="assessmentQ1"
           render={({ field }: any) => (
             <FormItem>
-              <FormControl>
-                <div className="space-y-2">
-                  <Slider
-                    min={0}
-                    max={10}
-                    step={1}
-                    value={[field.value || 5]}
-                    onValueChange={(value: number[]) =>
-                      field.onChange(value[0])
-                    }
-                    className="w-full"
-                  />
-                  <div className="flex justify-between text-xs text-gray-500">
-                    <span>{intl.formatMessage({ id: 'becomeGuide.step2.boundaryRange0' })}</span>
-                    <span className="font-medium">
-                      {intl.formatMessage({ id: 'becomeGuide.step2.currentScore' }, { value: field.value })}/10
-                    </span>
-                    <span>{intl.formatMessage({ id: 'becomeGuide.step2.boundaryRange10' })}</span>
-                  </div>
-                </div>
-              </FormControl>
+              <FormLabel className="text-lg font-semibold text-gray-900 dark:text-white">
+                {translate('becomeGuide.step2.q1Question')}
+              </FormLabel>
+              <div className="space-y-3 pt-1">
+                {Q1_OPTIONS.map((option) => {
+                  const id = `assessment-q1-${option}`;
+                  const selected = (field.value || []).includes(option);
+                  return (
+                    <div key={option} className="flex items-start gap-3">
+                      <FormControl>
+                        <Checkbox
+                          id={id}
+                          checked={selected}
+                          onCheckedChange={(checked: boolean) =>
+                            field.onChange(
+                              checked
+                                ? [...(field.value || []), option]
+                                : (field.value || []).filter((value: string) => value !== option)
+                            )
+                          }
+                        />
+                      </FormControl>
+                      <label htmlFor={id} className="cursor-pointer text-sm leading-6 text-gray-700 dark:text-gray-200">
+                        {translate(`becomeGuide.step2.q1Options.${option}`)}
+                      </label>
+                    </div>
+                  );
+                })}
+              </div>
               <FormMessage />
             </FormItem>
           )}
         />
-
         <FormField
           control={control}
-          name="boundaryDescription"
+          name="assessmentQ1Slider"
+          render={({ field }: any) => (
+            <EvaluationSlider
+              ui={ui}
+              title={translate('becomeGuide.step2.q1SliderTitle')}
+              tooltip={translate('becomeGuide.step2.q1SliderTooltip')}
+              instruction={translate('becomeGuide.step2.sliderInstruction')}
+              unselectedLabel={translate('becomeGuide.step2.sliderUnselected')}
+              rangeStart={translate('becomeGuide.step2.q1Range1')}
+              rangeEnd={translate('becomeGuide.step2.q1Range9')}
+              value={field.value}
+              onChange={field.onChange}
+            />
+          )}
+        />
+      </QuestionCard>
+
+      <QuestionCard>
+        <FormField
+          control={control}
+          name="assessmentQ2"
           render={({ field }: any) => (
             <FormItem>
-              <FormLabel>
-                {intl.formatMessage({ id: 'becomeGuide.step2.boundaryDescription' })}
+              <FormLabel className="text-lg font-semibold text-gray-900 dark:text-white">
+                {translate('becomeGuide.step2.q2Question')}
               </FormLabel>
               <FormControl>
-                <Textarea
-                  placeholder={intl.formatMessage({ id: 'becomeGuide.step2.boundaryDescriptionPlaceholder' })}
-                  value={field.value || ""}
-                  onChange={field.onChange}
-                />
+                <RadioGroup value={field.value || ''} onValueChange={field.onChange} className="pt-1">
+                  {Q2_OPTIONS.map((option) => {
+                    const id = `assessment-q2-${option}`;
+                    return (
+                      <div key={option} className="flex items-center gap-3">
+                        <RadioGroupItem id={id} value={option} />
+                        <label htmlFor={id} className="cursor-pointer text-sm text-gray-700 dark:text-gray-200">
+                          {translate(`becomeGuide.step2.q2Options.${option}`)}
+                        </label>
+                      </div>
+                    );
+                  })}
+                </RadioGroup>
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-      </div>
+      </QuestionCard>
 
-      {/* 应变力评分 */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-2">
-          <FormLabel className="text-base font-medium">
-            {intl.formatMessage({ id: 'becomeGuide.step2.supportiveScore' })}
-          </FormLabel>
-          {Tooltip && Info && (
-            <Tooltip>
-              <TooltipTrigger>
-                <Info className="h-4 w-4 text-gray-400" />
-              </TooltipTrigger>
-              <TooltipContent>
-                <div className="max-w-sm">
-                  <div className="text-sm space-y-2">
-                    {intl.formatMessage({ id: 'becomeGuide.step2.supportiveScoreDescription' })
-                      .split('\n\n')
-                      .map((paragraph, index) => (
-                        <div key={index} className="p-2 bg-gray-50 rounded-md border-l-2 border-blue-200">
-                          <p className="whitespace-pre-line">{paragraph}</p>
-                        </div>
-                      ))
-                    }
-                  </div>
-                </div>
-              </TooltipContent>
-            </Tooltip>
-          )}
-        </div>
-
+      <QuestionCard>
         <FormField
           control={control}
-          name="supportiveScore"
+          name="assessmentQ3"
           render={({ field }: any) => (
             <FormItem>
-              <FormControl>
-                <div className="space-y-2">
-                  <Slider
-                    min={0}
-                    max={10}
-                    step={1}
-                    value={[field.value || 5]}
-                    onValueChange={(value: number[]) =>
-                      field.onChange(value[0])
-                    }
-                    className="w-full"
-                  />
-                  <div className="flex justify-between text-xs text-gray-500">
-                    <span>{intl.formatMessage({ id: 'becomeGuide.step2.supportiveRange0' })}</span>
-                    <span className="font-medium">
-                      {intl.formatMessage({ id: 'becomeGuide.step2.currentScore' }, { value: field.value })}/10
-                    </span>
-                    <span>{intl.formatMessage({ id: 'becomeGuide.step2.supportiveRange10' })}</span>
-                  </div>
-                </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={control}
-          name="supportiveDescription"
-          render={({ field }: any) => (
-            <FormItem>
-              <FormLabel>
-                {intl.formatMessage({ id: 'becomeGuide.step2.supportiveDescription' })}
+              <FormLabel className="text-lg font-semibold text-gray-900 dark:text-white">
+                {translate('becomeGuide.step2.q3Question')}
               </FormLabel>
               <FormControl>
-                <Textarea
-                  placeholder={intl.formatMessage({ id: 'becomeGuide.step2.supportiveDescriptionPlaceholder' })}
-                  value={field.value || ""}
-                  onChange={field.onChange}
-                />
+                <RadioGroup value={field.value || ''} onValueChange={field.onChange} className="pt-1">
+                  {Q3_OPTIONS.map((option) => {
+                    const id = `assessment-q3-${option}`;
+                    return (
+                      <div key={option} className="flex items-center gap-3">
+                        <RadioGroupItem id={id} value={option} />
+                        <label htmlFor={id} className="cursor-pointer text-sm leading-6 text-gray-700 dark:text-gray-200">
+                          {translate(`becomeGuide.step2.q3Options.${option}`)}
+                        </label>
+                      </div>
+                    );
+                  })}
+                </RadioGroup>
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-      </div>
+        <FormField
+          control={control}
+          name="assessmentQ3Slider"
+          render={({ field }: any) => (
+            <EvaluationSlider
+              ui={ui}
+              title={translate('becomeGuide.step2.q3SliderTitle')}
+              tooltip={translate('becomeGuide.step2.q3SliderTooltip')}
+              instruction={translate('becomeGuide.step2.sliderInstruction')}
+              unselectedLabel={translate('becomeGuide.step2.sliderUnselected')}
+              rangeStart={translate('becomeGuide.step2.q3Range1')}
+              rangeEnd={translate('becomeGuide.step2.q3Range9')}
+              value={field.value}
+              onChange={field.onChange}
+            />
+          )}
+        />
+      </QuestionCard>
+
+      <QuestionCard>
+        <FormField
+          control={control}
+          name="assessmentQ4"
+          render={({ field }: any) => (
+            <FormItem>
+              <FormLabel className="text-lg font-semibold text-gray-900 dark:text-white">
+                {translate('becomeGuide.step2.q4Question')}
+              </FormLabel>
+              <div className="space-y-3 pt-1">
+                {Q4_OPTIONS.map((option) => {
+                  const id = `assessment-q4-${option}`;
+                  const selected = (field.value || []).includes(option);
+                  return (
+                    <div key={option} className="flex items-start gap-3">
+                      <FormControl>
+                        <Checkbox
+                          id={id}
+                          checked={selected}
+                          onCheckedChange={(checked: boolean) =>
+                            field.onChange(
+                              checked
+                                ? [...(field.value || []), option]
+                                : (field.value || []).filter((value: string) => value !== option)
+                            )
+                          }
+                        />
+                      </FormControl>
+                      <label htmlFor={id} className="cursor-pointer text-sm leading-6 text-gray-700 dark:text-gray-200">
+                        {translate(`becomeGuide.step2.q4Options.${option}`)}
+                      </label>
+                    </div>
+                  );
+                })}
+              </div>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={control}
+          name="assessmentQ4Slider"
+          render={({ field }: any) => (
+            <EvaluationSlider
+              ui={ui}
+              title={translate('becomeGuide.step2.q4SliderTitle')}
+              tooltip={translate('becomeGuide.step2.q4SliderTooltip')}
+              instruction={translate('becomeGuide.step2.sliderInstruction')}
+              unselectedLabel={translate('becomeGuide.step2.sliderUnselected')}
+              rangeStart={translate('becomeGuide.step2.q4Range1')}
+              rangeEnd={translate('becomeGuide.step2.q4Range9')}
+              value={field.value}
+              onChange={field.onChange}
+            />
+          )}
+        />
+      </QuestionCard>
     </div>
   );
 };

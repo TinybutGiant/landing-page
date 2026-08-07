@@ -1,5 +1,38 @@
 import { FormData } from "../types/schema";
 
+export const validateEvaluationQuestions = (formData: Partial<FormData>): string[] => {
+  const missingFields: string[] = [];
+
+  if (!formData.assessmentQ1?.length) missingFields.push("becomeGuide.step2.q1Question");
+  if (formData.assessmentQ1Slider == null)
+    missingFields.push("becomeGuide.step2.q1SliderTitle");
+  if (!formData.assessmentQ2) missingFields.push("becomeGuide.step2.q2Question");
+  if (!formData.assessmentQ3) missingFields.push("becomeGuide.step2.q3Question");
+  if (formData.assessmentQ3Slider == null)
+    missingFields.push("becomeGuide.step2.q3SliderTitle");
+  if (!formData.assessmentQ4?.length) missingFields.push("becomeGuide.step2.q4Question");
+  if (formData.assessmentQ4Slider == null)
+    missingFields.push("becomeGuide.step2.q4SliderTitle");
+  if (!formData.personalizedQ5?.length) missingFields.push("becomeGuide.step3.q5Question");
+  if (formData.personalizedQ5Slider == null)
+    missingFields.push("becomeGuide.step3.q5SliderTitle");
+  if (!formData.personalizedQ6?.length) missingFields.push("becomeGuide.step3.q6Question");
+  if (formData.personalizedQ6Slider == null)
+    missingFields.push("becomeGuide.step3.q6SliderTitle");
+  if (!formData.personalizedQ7) missingFields.push("becomeGuide.step3.q7Question");
+  if (formData.personalizedQ7Slider == null)
+    missingFields.push("becomeGuide.step3.q7SliderTitle");
+  if (!formData.personalizedQ8Strengths?.length)
+    missingFields.push("becomeGuide.step3.q8Question");
+  if (formData.personalizedQ8Slider == null)
+    missingFields.push("becomeGuide.step3.q8SliderTitle");
+  if (!formData.personalizedQ8Example?.trim())
+    missingFields.push("becomeGuide.step3.q8ExampleQuestion");
+  if (!formData.personalizedQ9?.trim()) missingFields.push("becomeGuide.step3.q9Question");
+
+  return missingFields;
+};
+
 // 验证表单完整性
 export const validateFormCompleteness = (formData: FormData): string[] => {
   const missingFields: string[] = [];
@@ -32,16 +65,7 @@ export const validateFormCompleteness = (formData: FormData): string[] => {
   if (!formData.experienceSession)
     missingFields.push("地陪次数");
 
-  // 个性化提问验证
-  if (!formData.q1Interaction?.trim())
-    missingFields.push("希望的客人互动方式");
-  if (!formData.q2FavSpot?.trim()) missingFields.push("最喜欢的日本城市角落");
-  if (!formData.q3BoundaryResponse?.trim())
-    missingFields.push("边界情况处理方式");
-  if (!formData.q4EmotionalHandling?.trim())
-    missingFields.push("情绪处理方式");
-  if (!formData.q5SelfSymbol?.trim())
-    missingFields.push("代表性的物品或符号");
+  missingFields.push(...validateEvaluationQuestions(formData));
 
   // 服务类型与偏好验证
   if (!formData.serviceSelections || formData.serviceSelections.length === 0)

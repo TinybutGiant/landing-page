@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { formSchema, type FormData, type GuideFormConfig } from "../types/schema";
 import { validateFormCompleteness } from "../utils/validation";
 import { processFormDataForDatabase, processDatabaseDataForForm } from "../utils/currencyUtils";
+import { prepareEvaluationPayload } from "../utils/evaluationPayload";
 
 export const useGuideForm = (
   config: GuideFormConfig,
@@ -30,12 +31,13 @@ export const useGuideForm = (
       sex: "Male" as const,
       mbti: "ENFJ" as const,
       socialProfile: "",
-      ethicsScore: 5,
-      ethicsDescription: "",
-      boundaryScore: 5,
-      boundaryDescription: "",
-      supportiveScore: 5,
-      supportiveDescription: "",
+      assessmentQ1: [],
+      assessmentQ1Slider: undefined,
+      assessmentQ2: "",
+      assessmentQ3: "",
+      assessmentQ3Slider: undefined,
+      assessmentQ4: [],
+      assessmentQ4Slider: undefined,
       serviceCity: "",
       residenceInfo: "",
       residenceZipcode: "",
@@ -48,11 +50,16 @@ export const useGuideForm = (
       languages: [],
       experienceDuration: "",
       experienceSession: "",
-      q1Interaction: "",
-      q2FavSpot: "",
-      q3BoundaryResponse: "",
-      q4EmotionalHandling: "",
-      q5SelfSymbol: "",
+      personalizedQ5: [],
+      personalizedQ5Slider: undefined,
+      personalizedQ6: [],
+      personalizedQ6Slider: undefined,
+      personalizedQ7: "",
+      personalizedQ7Slider: undefined,
+      personalizedQ8Strengths: [],
+      personalizedQ8Slider: undefined,
+      personalizedQ8Example: "",
+      personalizedQ9: "",
       serviceSelections: [],
       targetGroup: [],
       minPeople: 1,
@@ -61,8 +68,8 @@ export const useGuideForm = (
       maxDuration: 8,
       basicPricePerHour: 30.00,
       additionalPricePerPerson: 5.00,
-      currency: "JPY" as const,
       ...savedData,
+      currency: "USD" as const,
     },
   });
 
@@ -75,6 +82,7 @@ export const useGuideForm = (
         form.reset({
           ...form.getValues(),
           ...localData,
+          currency: "USD" as const,
         });
         console.log('已从localStorage恢复数据');
       }
@@ -187,11 +195,13 @@ export const useGuideForm = (
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(processFormDataForDatabase({
-          ...processedData,
-          userId: userId,
-          applicationStatus: "pending"
-        }))
+        body: JSON.stringify(processFormDataForDatabase(
+          prepareEvaluationPayload({
+            ...processedData,
+            userId: userId,
+            applicationStatus: "pending"
+          })
+        ))
       });
 
       if (!response.ok) {

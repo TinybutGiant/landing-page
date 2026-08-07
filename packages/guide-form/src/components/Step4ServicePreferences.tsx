@@ -1,7 +1,6 @@
 import { Control } from "react-hook-form";
 import { useState, useEffect } from "react";
 import { FormData } from "../types/schema";
-import { CURRENCY_OPTIONS } from "../constants";
 import { useIntl } from "react-intl";
 import { formatCurrency } from "../utils/currencyUtils";
 
@@ -381,33 +380,12 @@ export const Step4ServicePreferences = ({
               />
             </div>
 
-            <FormField
-              control={control}
-              name="currency"
-              render={({ field }: any) => (
-                <FormItem>
-                  <FormLabel>{intl.formatMessage({ id: 'becomeGuide.step4.currency' })}</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value || "JPY"}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder={intl.formatMessage({ id: 'becomeGuide.step4.currencyPlaceholder' })} />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {CURRENCY_OPTIONS.map((currency) => (
-                        <SelectItem key={currency.value} value={currency.value}>
-                          {currency.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="space-y-2">
+              <FormLabel>{intl.formatMessage({ id: 'becomeGuide.step4.currency' })}</FormLabel>
+              <div className="flex h-10 items-center rounded-md border border-input bg-muted/40 px-3 text-sm">
+                USD ($)
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>

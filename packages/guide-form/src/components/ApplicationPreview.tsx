@@ -38,6 +38,11 @@ export const ApplicationPreview = ({
   intl
 }: ApplicationPreviewProps) => {
   const { Card, CardContent, Button, Checkbox } = ui;
+  const translate = (key: string) => intl?.formatMessage({ id: key }) ?? key;
+  const optionLabels = (step: 2 | 3, question: string, values?: string[]) =>
+    values?.length
+      ? values.map((value) => translate(`becomeGuide.step${step}.${question}Options.${value}`)).join(", ")
+      : "-";
 
   const handleSubmit = () => {
     if (!confirmationChecked) {
@@ -261,94 +266,128 @@ export const ApplicationPreview = ({
               </div>
             </div>
 
-            {/* 自我认知评估 */}
+            {/* Page 2 evaluation questions */}
             <div>
               <h3 className="text-lg font-semibold text-gray-900 mb-4 border-b pb-2">
-                自我认知评估
+                {translate("becomeGuide.step2.title")}
               </h3>
               <div className="space-y-4">
                 <div>
                   <label className="text-sm font-medium text-gray-500">
-                    道德评分
-                  </label>
-                  <p className="text-gray-900">{formData.ethicsScore}/10</p>
-                  {formData.ethicsDescription && (
-                    <p className="text-sm text-gray-600 mt-1">
-                      {formData.ethicsDescription}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-500">
-                    边界意识评分
-                  </label>
-                  <p className="text-gray-900">{formData.boundaryScore}/10</p>
-                  {formData.boundaryDescription && (
-                    <p className="text-sm text-gray-600 mt-1">
-                      {formData.boundaryDescription}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-500">
-                    支持性评分
+                    {translate("becomeGuide.step2.q1Question")}
                   </label>
                   <p className="text-gray-900">
-                    {formData.supportiveScore}/10
+                    {optionLabels(2, "q1", formData.assessmentQ1)}
                   </p>
-                  {formData.supportiveDescription && (
-                    <p className="text-sm text-gray-600 mt-1">
-                      {formData.supportiveDescription}
-                    </p>
-                  )}
+                  <p className="text-sm text-gray-600 mt-1">
+                    {translate("becomeGuide.step2.q1SliderTitle")}:{" "}
+                    {formData.assessmentQ1Slider ?? "-"}
+                  </p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-500">
+                    {translate("becomeGuide.step2.q2Question")}
+                  </label>
+                  <p className="text-gray-900">
+                    {formData.assessmentQ2
+                      ? translate(`becomeGuide.step2.q2Options.${formData.assessmentQ2}`)
+                      : "-"}
+                  </p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-500">
+                    {translate("becomeGuide.step2.q3Question")}
+                  </label>
+                  <p className="text-gray-900">
+                    {formData.assessmentQ3
+                      ? translate(`becomeGuide.step2.q3Options.${formData.assessmentQ3}`)
+                      : "-"}
+                  </p>
+                  <p className="text-sm text-gray-600 mt-1">
+                    {translate("becomeGuide.step2.q3SliderTitle")}:{" "}
+                    {formData.assessmentQ3Slider ?? "-"}
+                  </p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-500">
+                    {translate("becomeGuide.step2.q4Question")}
+                  </label>
+                  <p className="text-gray-900">
+                    {optionLabels(2, "q4", formData.assessmentQ4)}
+                  </p>
+                  <p className="text-sm text-gray-600 mt-1">
+                    {translate("becomeGuide.step2.q4SliderTitle")}:{" "}
+                    {formData.assessmentQ4Slider ?? "-"}
+                  </p>
                 </div>
               </div>
             </div>
 
-            {/* 个性化提问 */}
+            {/* Page 3 evaluation questions */}
             <div>
               <h3 className="text-lg font-semibold text-gray-900 mb-4 border-b pb-2">
-                个性化提问
+                {translate("becomeGuide.step3.title")}
               </h3>
               <div className="space-y-4">
                 <div>
                   <label className="text-sm font-medium text-gray-500">
-                    互动风格
+                    {translate("becomeGuide.step3.q5Question")}
                   </label>
                   <p className="text-gray-900 whitespace-pre-wrap">
-                    {formData.q1Interaction || "-"}
+                    {optionLabels(3, "q5", formData.personalizedQ5)}
+                  </p>
+                  <p className="text-sm text-gray-600 mt-1">
+                    {translate("becomeGuide.step3.q5SliderTitle")}:{" "}
+                    {formData.personalizedQ5Slider ?? "-"}
                   </p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-500">
-                    最喜欢的景点
+                    {translate("becomeGuide.step3.q6Question")}
                   </label>
                   <p className="text-gray-900 whitespace-pre-wrap">
-                    {formData.q2FavSpot || "-"}
+                    {optionLabels(3, "q6", formData.personalizedQ6)}
+                  </p>
+                  <p className="text-sm text-gray-600 mt-1">
+                    {translate("becomeGuide.step3.q6SliderTitle")}:{" "}
+                    {formData.personalizedQ6Slider ?? "-"}
                   </p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-500">
-                    边界处理
+                    {translate("becomeGuide.step3.q7Question")}
                   </label>
                   <p className="text-gray-900 whitespace-pre-wrap">
-                    {formData.q3BoundaryResponse || "-"}
+                    {formData.personalizedQ7
+                      ? translate(`becomeGuide.step3.q7Options.${formData.personalizedQ7}`)
+                      : "-"}
+                  </p>
+                  <p className="text-sm text-gray-600 mt-1">
+                    {translate("becomeGuide.step3.q7SliderTitle")}:{" "}
+                    {formData.personalizedQ7Slider ?? "-"}
                   </p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-500">
-                    情感处理
+                    {translate("becomeGuide.step3.q8Question")}
                   </label>
                   <p className="text-gray-900 whitespace-pre-wrap">
-                    {formData.q4EmotionalHandling || "-"}
+                    {optionLabels(3, "q8", formData.personalizedQ8Strengths)}
+                  </p>
+                  <p className="text-sm text-gray-600 mt-1">
+                    {formData.personalizedQ8Example || "-"}
+                  </p>
+                  <p className="text-sm text-gray-600 mt-1">
+                    {translate("becomeGuide.step3.q8SliderTitle")}:{" "}
+                    {formData.personalizedQ8Slider ?? "-"}
                   </p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-500">
-                    代表性符号
+                    {translate("becomeGuide.step3.q9Question")}
                   </label>
                   <p className="text-gray-900 whitespace-pre-wrap">
-                    {formData.q5SelfSymbol || "-"}
+                    {formData.personalizedQ9 || "-"}
                   </p>
                 </div>
               </div>
@@ -410,9 +449,9 @@ export const ApplicationPreview = ({
                   </label>
                     <p className="text-gray-900">
                       {formData.basicPricePerHour !== undefined
-                        ? formatCurrency(formData.basicPricePerHour, formData.currency || 'JPY') + "/小时"
+                        ? formatCurrency(formData.basicPricePerHour, formData.currency || 'USD') + "/小时"
                         : formData.basicPricePerHourCents !== undefined
-                        ? formatCurrency(formData.basicPricePerHourCents / 100, formData.currency || 'JPY') + "/小时"
+                        ? formatCurrency(formData.basicPricePerHourCents / 100, formData.currency || 'USD') + "/小时"
                         : "未填写"}
                     </p>
                   </div>
@@ -422,9 +461,9 @@ export const ApplicationPreview = ({
                   </label>
                     <p className="text-gray-900">
                       {formData.additionalPricePerPerson !== undefined
-                        ? formatCurrency(formData.additionalPricePerPerson, formData.currency || 'JPY') + "/人/小时"
+                        ? formatCurrency(formData.additionalPricePerPerson, formData.currency || 'USD') + "/人/小时"
                         : formData.additionalPricePerPersonCents !== undefined
-                        ? formatCurrency(formData.additionalPricePerPersonCents / 100, formData.currency || 'JPY') + "/人/小时"
+                        ? formatCurrency(formData.additionalPricePerPersonCents / 100, formData.currency || 'USD') + "/人/小时"
                         : "未填写"}
                     </p>
                   </div>
