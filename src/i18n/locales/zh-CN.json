@@ -45,18 +45,23 @@
     "hero": {
       "title": "与专业当地地陪一起探索日本",
       "subtitle": "与知识渊博的当地人联系，分享您的兴趣并创造难忘的体验",
+      "tagline": "连接经过认证的当地人，匹配你的兴趣、旅行风格与时间安排。",
+      "ctaIntro": "旅客或地陪都可以从这里开始 — 提前加入，一起塑造成长之路。",
+      "waitlistCta": "加入候补名单，探索地陪",
+      "guideCta": "成为本地地陪",
       "cta": "开始您的旅程"
     },
     "features": {
       "title": "为什么选择曜途（YaoTu）？",
+      "subtitle": "和真正了解这座城市的当地人一起探索。",
       "expertGuides": "专业地陪",
-      "expertGuidesDesc": "经过验证的具有学术资历和当地专业知识的专业人士",
+      "expertGuidesDesc": "经过认证的当地人，对城市有深入了解。",
       "authenticExperiences": "真实体验",
-      "authenticExperiencesDesc": "超越传统旅游，体验真正的文化沉浸",
+      "authenticExperiencesDesc": "体验超越导览书的城市另一面。",
       "safeSecure": "安全可靠",
-      "safeSecureDesc": "全面的安全措施和经过验证的档案",
+      "safeSecureDesc": "每位当地人都经过认证，每次预订都内置安全保障。",
       "flexibleBooking": "灵活预订",
-      "flexibleBookingDesc": "简单预订，安全支付处理"
+      "flexibleBookingDesc": "省去反复沟通，放心直接预订。"
     },
     "howItWorks": {
       "title": "使用流程",
@@ -69,6 +74,50 @@
       "step4": "享受体验",
       "step4Desc": "与您的地陪会面并创造持久回忆"
     },
+    "howTraveler": {
+      "title": "旅行者如何使用",
+      "subtitle": "三步完成一次本地体验预订",
+      "step1": "找到当地人",
+      "step2": "即时预订",
+      "step3": "一起探索"
+    },
+    "howGuide": {
+      "title": "地陪如何使用",
+      "subtitle": "三步开启接待与探索",
+      "step1": "开放时段",
+      "step2": "即时接单",
+      "step3": "一起探索"
+    },
+    "team": {
+      "title": "来自我们的团队",
+      "subtitle": "由在意更好旅行体验的人打造。",
+      "designName": "设计团队",
+      "design": "好的设计应当隐形。我们简化每一次交互，让你专注探索，而不是琢磨怎么用 App。",
+      "engineeringName": "工程团队",
+      "engineering": "我们打造快速、可靠、安全的平台——让你可以放心出行。",
+      "researchName": "研究团队",
+      "research": "我们先倾听。每个功能都源于真实旅客与地陪的洞见。"
+    },
+    "faq": {
+      "title": "常见问题",
+      "q1": "Ahhh Yaotu 是什么？",
+      "a1": "Ahhh Yaotu 连接旅客与经过认证的本地地陪，提供贴合兴趣与行程的真实灵活体验。",
+      "q2": "地陪如何完成认证？",
+      "a2": "每位当地人都会经过认证流程，确保每次预订都建立在安全与信任之上。",
+      "q3": "如何加入候补名单？",
+      "a3": "点击「加入候补名单，探索地陪」，留下姓名与邮箱，开放预订时我们会通知你。",
+      "q4": "如何成为本地地陪？",
+      "a4": "点击「成为本地地陪」，在页面底部申请，分享专长并为旅客开放时段。"
+    },
+    "waitlist": {
+      "title": "加入候补名单",
+      "subtitle": "留下姓名和邮箱，我们会在可探索地陪时通知你。",
+      "name": "姓名",
+      "email": "邮箱",
+      "submit": "加入候补",
+      "successTitle": "已加入名单",
+      "successBody": "谢谢！可探索地陪时我们会联系你。"
+    },
     "testimonials": {
       "title": "游客评价",
       "testimonial1": "曜途（YaoTu）为我联系了东京一位出色的艺术史地陪。这次体验令人难忘！",
@@ -77,9 +126,9 @@
     },
     "cta": {
       "title": "准备探索日本了吗？",
-      "subtitle": "加入数千名信任曜途（YaoTu）获得真实体验的游客",
+      "subtitle": "分享你的专长，连接充满好奇的旅客",
       "startNow": "立即开始",
-      "becomeGuide": "成为地陪",
+      "becomeGuide": "申请成为地陪",
       "viewApplicationStatus": "已申请？查看您的申请状态"
     }
   },

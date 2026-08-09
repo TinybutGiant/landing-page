@@ -2,6 +2,33 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: "Open Runde";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url("https://cdn.jsdelivr.net/fontsource/fonts/open-runde@5.2.1/latin-400-normal.woff2") format("woff2"),
+    url("https://cdn.jsdelivr.net/fontsource/fonts/open-runde@5.2.1/latin-400-normal.woff") format("woff");
+}
+
+@font-face {
+  font-family: "Open Runde";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 600;
+  src: url("https://cdn.jsdelivr.net/fontsource/fonts/open-runde@5.2.1/latin-600-normal.woff2") format("woff2"),
+    url("https://cdn.jsdelivr.net/fontsource/fonts/open-runde@5.2.1/latin-600-normal.woff") format("woff");
+}
+
+@font-face {
+  font-family: "Open Runde";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 700;
+  src: url("https://cdn.jsdelivr.net/fontsource/fonts/open-runde@5.2.1/latin-700-normal.woff2") format("woff2"),
+    url("https://cdn.jsdelivr.net/fontsource/fonts/open-runde@5.2.1/latin-700-normal.woff") format("woff");
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -94,4 +121,73 @@ html {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #FFA500;
+}
+
+.hero-blob {
+  filter: blur(24px);
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+.hero-blob-float-a {
+  animation: hero-blob-float-a 22s ease-in-out infinite;
+}
+.hero-blob-float-b {
+  animation: hero-blob-float-b 26s ease-in-out infinite;
+}
+.hero-blob-float-c {
+  animation: hero-blob-float-c 24s ease-in-out infinite;
+}
+
+html.is-scrolling .hero-blob-float-a,
+html.is-scrolling .hero-blob-float-b,
+html.is-scrolling .hero-blob-float-c {
+  animation-play-state: paused;
+}
+
+.landing-blend-cursor,
+.landing-blend-cursor * {
+  cursor: none;
+}
+
+.landing-blend-cursor input,
+.landing-blend-cursor textarea,
+.landing-blend-cursor select,
+.landing-blend-cursor [contenteditable="true"] {
+  cursor: text;
+}
+
+.landing-blend-cursor .scroll-to-top-btn,
+.landing-blend-cursor .scroll-to-top-btn * {
+  cursor: pointer;
+}
+
+@keyframes hero-blob-float-a {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(80px, -60px, 0) scale(1.1);
+  }
+}
+
+@keyframes hero-blob-float-b {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(-70px, 70px, 0) scale(0.92);
+  }
+}
+
+@keyframes hero-blob-float-c {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(60px, -50px, 0) scale(1.08);
+  }
 }
