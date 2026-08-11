@@ -181,6 +181,12 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, redirectTo }) => {
           // 默认跳转到申请页面
           setLocation('/become-guide');
         }
+      } else {
+        toast({
+          title: intl.formatMessage({ id: 'signup.error.title' }),
+          description: intl.formatMessage({ id: 'signup.error.description' }),
+          variant: "destructive"
+        });
       }
     } catch (error) {
       console.error('Signup error:', error);

@@ -89,10 +89,19 @@ export function getUserData(): AuthUser | null {
   }
 }
 
-/**
- * API base URL - use relative paths with vite proxy
- */
-const API_BASE_URL = '';
+function normalizeAuthResponse(data: any): AuthUser | null {
+  const token = data?.token || data?.accessToken || data?.data?.token;
+  const user = data?.user || data?.data?.user || data;
+
+  if (!token || !user?.id) {
+    return null;
+  }
+
+  return {
+    ...user,
+    token,
+  };
+}
 
 /**
  * Sign up a new user
@@ -101,10 +110,11 @@ export async function signUp(userData: SignupData): Promise<{ success: boolean; 
   try {
     const data = await api.post('/api/auth/signup', userData);
     
-    if (data.token) {
+    const user = normalizeAuthResponse(data);
+    if (user) {
       // Store authentication data
-      storeAuthData(data.token, data);
-      return { success: true, user: data };
+      storeAuthData(user.token, user);
+      return { success: true, user };
     } else {
       return { success: false, error: "No authentication token received" };
     }
@@ -121,10 +131,11 @@ export async function login(username: string, password: string): Promise<{ succe
   try {
     const data = await api.post('/api/auth/login', { username, password });
     
-    if (data.token) {
+    const user = normalizeAuthResponse(data);
+    if (user) {
       // Store authentication data
-      storeAuthData(data.token, data);
-      return { success: true, user: data };
+      storeAuthData(user.token, user);
+      return { success: true, user };
     } else {
       return { success: false, error: "No authentication token received" };
     }
