@@ -1,16 +1,29 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { AuthUser, signUp, login, logout, getUserData, isAuthenticated } from "@/lib/auth";
+import type { SignInSuccess } from "@yaotu/auth";
+import { AuthUser, logout, getUserData, isAuthenticated, storeAuthData } from "@/lib/auth";
 
 interface AuthContextType {
   user: AuthUser | null;
   loading: boolean;
   isAuthenticated: boolean;
-  login: (username: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
-  signUp: (userData: any) => Promise<boolean>;
+  completeAuthSession: (result: SignInSuccess) => Promise<AuthUser>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+function normalizePackageAuthUser(result: SignInSuccess): AuthUser {
+  return {
+    ...result,
+    fullName: result.fullName ?? "",
+    isGuide: result.isGuide ?? result.role === "guide",
+    role: result.role,
+    profilePicture: result.profilePicture ?? undefined,
+    readReceiptsEnabled: result.readReceiptsEnabled ?? true,
+    joinedDate: result.joinedDate ?? "",
+    token: result.token,
+  };
+}
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
@@ -37,45 +50,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     checkAuth();
   }, []);
 
-  const handleLogin = async (username: string, password: string): Promise<{ success: boolean; error?: string }> => {
-    try {
-      setLoading(true);
-      const result = await login(username, password);
-      
-      if (result.success && result.user) {
-        setUser(result.user);
-        return { success: true };
-      }
-      return { success: false, error: result.error };
-    } catch (error) {
-      console.error("Login error:", error);
-      return { success: false, error: error instanceof Error ? error.message : "Network error occurred" };
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSignUp = async (userData: any): Promise<boolean> => {
-    try {
-      setLoading(true);
-      const result = await signUp(userData);
-      
-      if (result.success && result.user) {
-        setUser(result.user);
-        return true;
-      }
-      return false;
-    } catch (error) {
-      console.error("Signup error:", error);
-      return false;
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleLogout = () => {
     logout();
     setUser(null);
+  };
+
+  const completeAuthSession = async (result: SignInSuccess): Promise<AuthUser> => {
+    try {
+      setLoading(true);
+      const authUser = normalizePackageAuthUser(result);
+      storeAuthData(result.token, authUser);
+      setUser(authUser);
+      return authUser;
+    } finally {
+      setLoading(false);
+    }
   };
 
   // 计算认证状态，优先使用user状态，如果没有则检查localStorage
@@ -92,9 +81,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       user, 
       loading, 
       isAuthenticated: authStatus,
-      login: handleLogin,
       logout: handleLogout,
-      signUp: handleSignUp
+      completeAuthSession
     }}>
       {children}
     </AuthContext.Provider>

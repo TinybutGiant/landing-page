@@ -1,32 +1,16 @@
-// Authentication utilities for landing-page project
-// Based on the main project's authentication system
-
-import { api } from './apiClient';
+// Authentication persistence utilities for the landing-page project.
 
 export interface AuthUser {
   id: number;
   username: string;
   email: string;
-  fullName: string;
+  fullName: string | null;
   isGuide: boolean;
-  role: 'traveler' | 'guide';
-  profilePicture?: string;
+  role: 'traveler' | 'guide' | string;
+  profilePicture?: string | null;
   readReceiptsEnabled: boolean;
-  joinedDate: string;
+  joinedDate: string | null;
   token: string;
-}
-
-export interface SignupData {
-  username: string;
-  email: string;
-  password: string;
-  fullName: string;
-  emailUpdates?: boolean;
-}
-
-export interface LoginData {
-  username: string;
-  password: string;
 }
 
 /**
@@ -89,119 +73,10 @@ export function getUserData(): AuthUser | null {
   }
 }
 
-function normalizeAuthResponse(data: any): AuthUser | null {
-  const token = data?.token || data?.accessToken || data?.data?.token;
-  const user = data?.user || data?.data?.user || data;
-
-  if (!token || !user?.id) {
-    return null;
-  }
-
-  return {
-    ...user,
-    token,
-  };
-}
-
-/**
- * Sign up a new user
- */
-export async function signUp(userData: SignupData): Promise<{ success: boolean; user?: AuthUser; error?: string }> {
-  try {
-    const data = await api.post('/api/auth/signup', userData);
-    
-    const user = normalizeAuthResponse(data);
-    if (user) {
-      // Store authentication data
-      storeAuthData(user.token, user);
-      return { success: true, user };
-    } else {
-      return { success: false, error: "No authentication token received" };
-    }
-  } catch (error: any) {
-    console.error("Signup error:", error);
-    return { success: false, error: error.message || "Network error occurred" };
-  }
-}
-
-/**
- * Log in a user
- */
-export async function login(username: string, password: string): Promise<{ success: boolean; user?: AuthUser; error?: string }> {
-  try {
-    const data = await api.post('/api/auth/login', { username, password });
-    
-    const user = normalizeAuthResponse(data);
-    if (user) {
-      // Store authentication data
-      storeAuthData(user.token, user);
-      return { success: true, user };
-    } else {
-      return { success: false, error: "No authentication token received" };
-    }
-  } catch (error: any) {
-    console.error("Login error:", error);
-    return { success: false, error: error.message || "Network error occurred" };
-  }
-}
-
 /**
  * Log out the current user
  */
 export function logout(): void {
   clearAuthData();
   console.log("User logged out successfully");
-}
-
-/**
- * Check username availability
- */
-export async function checkUsernameAvailability(username: string): Promise<{ available: boolean; error?: string }> {
-  try {
-    const data = await api.get(`/api/auth/check-username?username=${encodeURIComponent(username)}`);
-    return { available: data.available };
-  } catch (error: any) {
-    console.error("Error checking username:", error);
-    return { available: false, error: error.message || "Network error occurred" };
-  }
-}
-
-/**
- * Validate username format
- */
-export function validateUsername(username: string): boolean {
-  const usernameRegex = /^[a-z0-9]+$/;
-  return usernameRegex.test(username) && username.length >= 3;
-}
-
-/**
- * Calculate password strength
- */
-export function calculatePasswordStrength(password: string): {
-  score: number;
-  label: string;
-  color: string;
-} {
-  let score = 0;
-  let label = "";
-  let color = "";
-
-  if (password.length >= 8) score += 1;
-  if (/[a-z]/.test(password)) score += 1;
-  if (/[A-Z]/.test(password)) score += 1;
-  if (/[0-9]/.test(password)) score += 1;
-  if (/[^a-zA-Z0-9]/.test(password)) score += 1;
-
-  if (score <= 2) {
-    label = "Weak";
-    color = "text-red-500";
-  } else if (score <= 3) {
-    label = "Medium";
-    color = "text-yellow-500";
-  } else {
-    label = "Strong";
-    color = "text-green-500";
-  }
-
-  return { score, label, color };
 }
