@@ -28,6 +28,7 @@ interface LoginFormProps {
 
 const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, redirectTo }) => {
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
   const { login, user } = useAuth();
   const { toast } = useToast();
   const intl = useIntl();
@@ -56,6 +57,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, redirectTo }) => {
   }, [user, onSuccess, redirectTo, setLocation]);
 
   const onSubmit = async (data: LoginFormData) => {
+    setIsLoggingIn(true);
     try {
       console.log('LoginForm: 开始登录流程');
       
@@ -110,6 +112,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, redirectTo }) => {
         description: intl.formatMessage({ id: 'login.error.networkError' }),
         variant: "destructive"
       });
+    } finally {
+      setIsLoggingIn(false);
     }
   };
 
@@ -160,7 +164,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, redirectTo }) => {
                             {...field}
                             placeholder={intl.formatMessage({ id: 'login.usernamePlaceholder' })}
                             className="pl-10"
-                            disabled={form.formState.isSubmitting}
+                            disabled={isLoggingIn}
                           />
                         </div>
                       </FormControl>
@@ -194,7 +198,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, redirectTo }) => {
                             type={showPassword ? "text" : "password"}
                             placeholder={intl.formatMessage({ id: 'login.passwordPlaceholder' })}
                             className="pl-10 pr-10"
-                            disabled={form.formState.isSubmitting}
+                            disabled={isLoggingIn}
                           />
                           <button
                             type="button"
@@ -213,9 +217,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, redirectTo }) => {
                 <Button
                   type="submit"
                   className="w-full bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-300"
-                  disabled={form.formState.isSubmitting}
+                  disabled={isLoggingIn}
                 >
-                  {form.formState.isSubmitting ? intl.formatMessage({ id: 'login.loggingIn' }) : intl.formatMessage({ id: 'login.loginButton' })}
+                  {isLoggingIn ? intl.formatMessage({ id: 'login.loggingIn' }) : intl.formatMessage({ id: 'login.loginButton' })}
                 </Button>
               </form>
             </Form>

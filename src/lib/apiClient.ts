@@ -1,9 +1,14 @@
 // 统一的API客户端模块
 // 支持环境自动切换和集中配置
 
+const isLocalHost =
+  window.location.hostname === "localhost" ||
+  window.location.hostname === "127.0.0.1" ||
+  window.location.hostname === "::1";
+
 const API_BASE =
   import.meta.env.VITE_API_URL ||
-  (window.location.hostname.includes("localhost")
+  (isLocalHost
     ? "" // 本地开发使用相对路径，通过Vite代理
     : window.location.hostname.includes("ahhh-yaotu.com")
     ? "https://ahhh-yaotu.onrender.com" // 如果域名是ahhh-yaotu.com，使用Render API
