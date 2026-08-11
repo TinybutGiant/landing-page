@@ -28,16 +28,16 @@ export const SEX_OPTIONS = [
 // 页面配置 - 使用翻译键
 export const PAGE_TITLES = {
   1: "becomeGuide.step1.step1PageTitle",
-  2: "becomeGuide.step2.step2PageTitle", 
-  3: "becomeGuide.step3.step3PageTitle",
+  2: "becomeGuide.step2.title",
+  3: "becomeGuide.step3.title",
   4: "becomeGuide.step4.step4PageTitle"
 } as const;
 
 export const TOTAL_PAGES = 4;
 
 // 评分相关常量
-export const SCORE_MIN = 0;
-export const SCORE_MAX = 10;
+export const SCORE_MIN = 1;
+export const SCORE_MAX = 9;
 
 // 年龄限制
 export const MIN_AGE = 18;
@@ -53,9 +53,7 @@ export const MAX_DURATION = 48;
 
 // 货币选项
 export const CURRENCY_OPTIONS = [
-  { value: "JPY", label: "日元 (JPY)" },
   { value: "USD", label: "美元 (USD)" },
-  { value: "CNY", label: "人民币 (CNY)" },
 ] as const;
 
 // 评分说明 - 使用翻译键

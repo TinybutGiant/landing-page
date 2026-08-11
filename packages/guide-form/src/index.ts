@@ -1,5 +1,7 @@
 // 主要组件
 export { GuideForm } from "./components/GuideForm";
+export { Step2SelfAssessment } from "./components/Step2SelfAssessment";
+export { Step3PersonalizedQuestions } from "./components/Step3PersonalizedQuestions";
 export { useGuideForm } from "./hooks/useGuideForm";
 export { ApplicationPreview } from "./components/ApplicationPreview";
 
@@ -24,9 +26,32 @@ export type { UIComponents as ApplicationPreviewUIComponents } from "./component
 export type { PrintAndSaveProps } from "./components/PrintAndSave";
 export type { UsePDFGenerationOptions } from "./hooks/usePDFGeneration";
 export type { ApprovalTimelineEntry } from "./hooks/useApprovalTimeline";
+export type {
+  EvaluationQuestionUI,
+  Step2SelfAssessmentProps,
+} from "./components/Step2SelfAssessment";
+export type { Step3PersonalizedQuestionsProps } from "./components/Step3PersonalizedQuestions";
+export type { EvaluationSliderUI } from "./components/EvaluationSlider";
+export type { GuideFormLocale, TranslationFunction } from "./i18n";
 
 // 工具函数
-export { validateFormCompleteness } from "./utils/validation";
+export {
+  validateEvaluationQuestions,
+  validateFormCompleteness,
+} from "./utils/validation";
+export {
+  evaluationStorageFieldsFromForm,
+  prepareEvaluationPayload,
+} from "./utils/evaluationPayload";
+export type {
+  EvaluationFormValues,
+  StoredEvaluationAnswersV2,
+} from "./utils/evaluationPayload";
+export {
+  createGuideFormTranslator,
+  guideFormChineseMessages,
+  guideFormEnglishMessages,
+} from "./i18n";
 export { sanitizePostalCode, formatPostalCode, isValidPostalCode, POSTAL_CODE_REGEX } from "./utils/postalCode";
 
 // 货币转换工具函数

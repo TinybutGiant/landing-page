@@ -29,13 +29,14 @@ export const formSchema = z.object({
     .optional(),
   socialProfile: z.string().optional(),
   
-  // 自我评估
-  ethicsScore: z.number().min(SCORE_MIN).max(SCORE_MAX),
-  ethicsDescription: z.string().optional(),
-  boundaryScore: z.number().min(SCORE_MIN).max(SCORE_MAX),
-  boundaryDescription: z.string().optional(),
-  supportiveScore: z.number().min(SCORE_MIN).max(SCORE_MAX),
-  supportiveDescription: z.string().optional(),
+  // Page 2: guide evaluation questions
+  assessmentQ1: z.array(z.string()).default([]),
+  assessmentQ1Slider: z.number().min(SCORE_MIN).max(SCORE_MAX).nullable().optional(),
+  assessmentQ2: z.string().default(""),
+  assessmentQ3: z.string().default(""),
+  assessmentQ3Slider: z.number().min(SCORE_MIN).max(SCORE_MAX).nullable().optional(),
+  assessmentQ4: z.array(z.string()).default([]),
+  assessmentQ4Slider: z.number().min(SCORE_MIN).max(SCORE_MAX).nullable().optional(),
   
   // 服务信息
   serviceCity: z.string().optional(),
@@ -67,12 +68,17 @@ export const formSchema = z.object({
   experienceDuration: z.string().optional(),
   experienceSession: z.string().optional(),
   
-  // 个性化问题
-  q1Interaction: z.string().optional(),
-  q2FavSpot: z.string().optional(),
-  q3BoundaryResponse: z.string().optional(),
-  q4EmotionalHandling: z.string().optional(),
-  q5SelfSymbol: z.string().optional(),
+  // Page 3: personalized evaluation questions
+  personalizedQ5: z.array(z.string()).default([]),
+  personalizedQ5Slider: z.number().min(SCORE_MIN).max(SCORE_MAX).nullable().optional(),
+  personalizedQ6: z.array(z.string()).default([]),
+  personalizedQ6Slider: z.number().min(SCORE_MIN).max(SCORE_MAX).nullable().optional(),
+  personalizedQ7: z.string().default(""),
+  personalizedQ7Slider: z.number().min(SCORE_MIN).max(SCORE_MAX).nullable().optional(),
+  personalizedQ8Strengths: z.array(z.string()).max(3).default([]),
+  personalizedQ8Slider: z.number().min(SCORE_MIN).max(SCORE_MAX).nullable().optional(),
+  personalizedQ8Example: z.string().max(100).default(""),
+  personalizedQ9: z.string().max(50).default(""),
   
   // 服务类型与偏好
   serviceSelections: z.array(z.coerce.number().int()).min(1, "请至少选择一个服务类型").default([]),
@@ -85,7 +91,7 @@ export const formSchema = z.object({
   additionalPricePerPerson: z.coerce.number().min(0, "额外人员费用不能为负数").optional(),
   basicPricePerHourCents: z.coerce.number().int().min(0, "基础时薪不能为负数").optional(),
   additionalPricePerPersonCents: z.coerce.number().int().min(0, "额外人员费用不能为负数").optional(),
-  currency: z.enum(["JPY", "USD", "CNY"]).default("JPY"),
+  currency: z.literal("USD").default("USD"),
 })
 .refine((data) => !data.maxPeople || !data.minPeople || data.maxPeople >= data.minPeople, {
   message: "最多人数必须大于或等于最少人数",

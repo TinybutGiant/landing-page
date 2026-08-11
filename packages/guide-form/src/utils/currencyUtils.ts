@@ -27,7 +27,7 @@ export const convertCentsToYuan = (cents: number): number => {
  * @param currency 货币代码
  * @returns 格式化后的货币字符串
  */
-export const formatCurrency = (amount: number, currency: string = 'JPY'): string => {
+export const formatCurrency = (amount: number, currency: string = 'USD'): string => {
   const currencySymbols: Record<string, string> = {
     'CNY': '¥',
     'JPY': '¥',
@@ -56,6 +56,7 @@ export const formatCurrency = (amount: number, currency: string = 'JPY'): string
 export const processFormDataForDatabase = (formData: any) => {
   return {
     ...formData,
+    currency: 'USD',
     basicPricePerHourCents: formData.basicPricePerHour !== undefined 
       ? convertYuanToCents(formData.basicPricePerHour) 
       : undefined,

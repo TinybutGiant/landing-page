@@ -29,6 +29,8 @@ export interface UIComponents {
   SelectValue: any;
   Textarea: any;
   Checkbox: any;
+  RadioGroup: any;
+  RadioGroupItem: any;
   Button: any;
   Progress: any;
   Slider: any;
@@ -45,6 +47,7 @@ export interface UIComponents {
   QualificationUploader?: any;
   Tooltip?: any;
   TooltipContent?: any;
+  TooltipProvider?: any;
   TooltipTrigger?: any;
   Info?: any;
   ChevronLeft?: any;
@@ -236,6 +239,7 @@ export const GuideForm: React.FC<GuideFormProps> = ({
                   <Step2SelfAssessment 
                     control={form.control} 
                     ui={ui}
+                    t={(key) => intl.formatMessage({ id: key })}
                   />
                 )}
 
@@ -243,6 +247,7 @@ export const GuideForm: React.FC<GuideFormProps> = ({
                   <Step3PersonalizedQuestions 
                     control={form.control} 
                     ui={ui}
+                    t={(key) => intl.formatMessage({ id: key })}
                   />
                 )}
 

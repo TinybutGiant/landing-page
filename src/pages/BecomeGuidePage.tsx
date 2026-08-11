@@ -9,6 +9,7 @@ import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 // import { Label } from '@/components/ui/label';
 import { 
   Card, 
@@ -309,7 +310,7 @@ const BecomeGuidePage: React.FC = () => {
   const loadServiceCategories = async () => {
     try {
       console.log('BecomeGuidePage: 开始加载服务类别数据...');
-      const data = await api.get('/api/v2/service-categories');
+      const data = await api.get('/api/v2/service-categories/with-subcategories');
       console.log('BecomeGuidePage: 服务类别数据加载成功:', data);
       return data;
     } catch (error) {
@@ -642,6 +643,8 @@ const BecomeGuidePage: React.FC = () => {
     Input, 
     Textarea, 
     Checkbox, 
+    RadioGroup,
+    RadioGroupItem,
     Button, 
     Card, 
     CardContent, 
@@ -666,6 +669,7 @@ const BecomeGuidePage: React.FC = () => {
     Tooltip,
     TooltipContent,
     TooltipTrigger,
+    TooltipProvider,
     
     // 自定义组件
     QualificationUploader,
