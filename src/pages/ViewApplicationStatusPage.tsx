@@ -62,32 +62,22 @@ export default function ViewApplicationStatusPage() {
   
   // 检查是否是提交后跳转过来的
   const isJustSubmitted = new URLSearchParams(location.split('?')[1]).get('submitted') === 'true';
+  const isUserAuthenticated = isAuthenticated();
 
   // 认证检查
   useEffect(() => {
-    if (!isAuthenticated()) {
+    if (!isUserAuthenticated) {
       console.log('用户未认证，重定向到登录页面');
       setLocation('/login?redirect=/view-application-status');
     }
-  }, [setLocation]);
+  }, [isUserAuthenticated, setLocation]);
 
   // 如果用户未认证，显示加载状态
-  if (!isAuthenticated()) {
-    return (
-      <div className="min-h-screen bg-yellow-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">{intl.formatMessage({ id: 'viewApplicationStatus.verifyingIdentity' })}</p>
-        </div>
-      </div>
-    );
-  }
-
   // Fetch application details
   const { data: application, isLoading, error } = useQuery<ApplicationDetails>({
     queryKey: ['/api/v2/guide-applications/my-application'],
     queryFn: () => apiRequest("GET", "/api/v2/guide-applications/my-application"),
-    enabled: !!localStorage.getItem('yaotu_token'),
+    enabled: isUserAuthenticated && !!localStorage.getItem('yaotu_token'),
   });
 
   // 获取完整申请数据
@@ -101,7 +91,7 @@ export default function ViewApplicationStatusPage() {
   const { data: timelineData, isLoading: timelineLoading, refetch: refetchTimeline } = useQuery<{ timeline: ApprovalTimelineEntry[] }>({
     queryKey: [`/api/v2/guide-application-approvals-v2/timeline/${application?.id}`],
     queryFn: () => apiRequest("GET", `/api/v2/guide-application-approvals-v2/timeline/${application?.id}`),
-    enabled: !!application?.id && !!localStorage.getItem('yaotu_token'),
+    enabled: isUserAuthenticated && !!application?.id && !!localStorage.getItem('yaotu_token'),
     retry: false,
     staleTime: 5 * 60 * 1000,
   });
@@ -109,7 +99,7 @@ export default function ViewApplicationStatusPage() {
   // Lazy evaluation for approved applications
   useEffect(() => {
     const triggerLazyEvaluation = async () => {
-      if (!application || !isAuthenticated() || lazyEvaluationTriggered) {
+      if (!application || !isUserAuthenticated || lazyEvaluationTriggered) {
         return;
       }
 
@@ -171,7 +161,7 @@ export default function ViewApplicationStatusPage() {
     };
 
     triggerLazyEvaluation();
-  }, [application, lazyEvaluationTriggered, toast]);
+  }, [application, intl, isUserAuthenticated, lazyEvaluationTriggered, toast]);
 
   // 文件上传处理
   const handleFileUpload = async (file: File) => {
@@ -256,6 +246,17 @@ export default function ViewApplicationStatusPage() {
   const handleNavigateToBecomeGuide = () => {
     window.location.href = "/become-guide";
   };
+
+  if (!isUserAuthenticated) {
+    return (
+      <div className="min-h-screen bg-yellow-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">{intl.formatMessage({ id: 'viewApplicationStatus.verifyingIdentity' })}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <ApplicationStatus
