@@ -589,6 +589,10 @@
   "signup": {
     "title": "注册账号",
     "subtitle": "创建您的YaoTu账号，开始您的导游之旅",
+    "guideApplicationNotice": {
+      "title": "创建账号后即可提交地陪申请",
+      "description": "您刚填写的申请内容已保存在当前浏览器中。创建账号后，我们会带您回到申请预览页，确认无误后再以该账号提交申请。"
+    },
     "backToHome": "返回首页",
     "firstName": "名字",
     "firstNamePlaceholder": "名字",

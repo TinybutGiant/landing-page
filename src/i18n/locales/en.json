@@ -593,6 +593,10 @@
   "signup": {
     "title": "Create Account",
     "subtitle": "Create your YaoTu account and start your guide journey",
+    "guideApplicationNotice": {
+      "title": "Create an account to submit your guide application",
+      "description": "Your application answers are saved in this browser. After your account is created, we will take you back to the preview page so you can confirm and submit the application under your account."
+    },
     "backToHome": "Back to Home",
     "firstName": "First Name",
     "firstNamePlaceholder": "First Name",

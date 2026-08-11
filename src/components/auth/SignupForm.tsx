@@ -44,6 +44,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, redirectTo }) => {
   const intl = useIntl();
   const { locale } = useLanguage();
   const [, setLocation] = useLocation();
+  const isGuideApplicationRedirect = redirectTo?.includes('/become-guide') ?? false;
   
   // Username validation state
   const [usernameError, setUsernameError] = useState<string>("");
@@ -218,6 +219,16 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, redirectTo }) => {
             <p className="text-gray-600 mt-2">
               {intl.formatMessage({ id: 'signup.subtitle' })}
             </p>
+            {isGuideApplicationRedirect && (
+              <div className="mt-4 rounded-md border border-yellow-200 bg-yellow-50 px-4 py-3 text-left">
+                <p className="text-sm font-medium text-yellow-900">
+                  {intl.formatMessage({ id: 'signup.guideApplicationNotice.title' })}
+                </p>
+                <p className="mt-1 text-sm text-yellow-800">
+                  {intl.formatMessage({ id: 'signup.guideApplicationNotice.description' })}
+                </p>
+              </div>
+            )}
           </CardHeader>
           
           <CardContent>
