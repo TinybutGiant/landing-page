@@ -557,6 +557,7 @@
     "error": {
       "title": "Login Failed",
       "invalidCredentials": "Please check your username and password",
+      "emailVerificationRequired": "Please verify your email before signing in. Check your inbox or spam folder for the verification email.",
       "networkError": "Please check your network connection"
     },
     "validation": {

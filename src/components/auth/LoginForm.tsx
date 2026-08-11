@@ -75,8 +75,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, redirectTo }) => {
       }
       console.log('LoginForm: 登录前localStorage状态:', beforeLoginData);
       
-      const success = await login(data.username, data.password);
-      if (success) {
+      const result = await login(data.username, data.password);
+      if (result.success) {
         console.log('LoginForm: 登录成功');
         toast({
           title: intl.formatMessage({ id: 'login.success.title' }),
@@ -99,9 +99,13 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, redirectTo }) => {
         console.log('LoginForm: 登录后localStorage状态:', afterLoginData);
         
       } else {
+        const description = result.error?.toLowerCase().includes('verify')
+          ? intl.formatMessage({ id: 'login.error.emailVerificationRequired' })
+          : result.error || intl.formatMessage({ id: 'login.error.invalidCredentials' });
+
         toast({
           title: intl.formatMessage({ id: 'login.error.title' }),
-          description: intl.formatMessage({ id: 'login.error.invalidCredentials' }),
+          description,
           variant: "destructive"
         });
       }

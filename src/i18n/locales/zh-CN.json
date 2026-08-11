@@ -553,6 +553,7 @@
     "error": {
       "title": "登录失败",
       "invalidCredentials": "请检查用户名和密码",
+      "emailVerificationRequired": "请先完成邮箱验证后再登录。请检查收件箱或垃圾邮件文件夹中的验证邮件。",
       "networkError": "请检查网络连接"
     },
     "validation": {

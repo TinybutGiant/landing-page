@@ -5,7 +5,7 @@ interface AuthContextType {
   user: AuthUser | null;
   loading: boolean;
   isAuthenticated: boolean;
-  login: (username: string, password: string) => Promise<boolean>;
+  login: (username: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
   signUp: (userData: any) => Promise<boolean>;
 }
@@ -37,19 +37,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     checkAuth();
   }, []);
 
-  const handleLogin = async (username: string, password: string): Promise<boolean> => {
+  const handleLogin = async (username: string, password: string): Promise<{ success: boolean; error?: string }> => {
     try {
       setLoading(true);
       const result = await login(username, password);
       
       if (result.success && result.user) {
         setUser(result.user);
-        return true;
+        return { success: true };
       }
-      return false;
+      return { success: false, error: result.error };
     } catch (error) {
       console.error("Login error:", error);
-      return false;
+      return { success: false, error: error instanceof Error ? error.message : "Network error occurred" };
     } finally {
       setLoading(false);
     }
