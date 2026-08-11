@@ -6,7 +6,7 @@ const isLocalHost =
   window.location.hostname === "127.0.0.1" ||
   window.location.hostname === "::1";
 
-const API_BASE =
+export const API_BASE =
   import.meta.env.VITE_API_URL ||
   (isLocalHost
     ? "" // 本地开发使用相对路径，通过Vite代理

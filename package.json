@@ -24,6 +24,7 @@
     "@radix-ui/react-tooltip": "^1.2.8",
     "@replit/guide-form": "file:./packages/guide-form",
     "@tanstack/react-query": "^5.90.2",
+    "@yaotu/auth": "file:artifacts/npm/yaotu-auth-0.1.0.tgz",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cors": "^2.8.5",

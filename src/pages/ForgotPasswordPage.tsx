@@ -1,8 +1,10 @@
-import React from 'react';
-import ForgotPasswordForm from '@/components/auth/ForgotPasswordForm';
+import { ForgotPasswordForm } from '@yaotu/auth';
 
-const ForgotPasswordPage: React.FC = () => {
-  return <ForgotPasswordForm />;
+import { useYaoTuAuthRuntime } from '@/lib/yaotuAuthRuntime';
+
+const ForgotPasswordPage = () => {
+  const runtime = useYaoTuAuthRuntime();
+  return <ForgotPasswordForm {...runtime} loginPath="/login" />;
 };
 
 export default ForgotPasswordPage;
