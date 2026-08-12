@@ -24,6 +24,26 @@ interface ApplicationPreviewProps {
   intl?: any;
 }
 
+const MISSING_FIELD_LABELS: Record<string, string> = {
+  "becomeGuide.step2.q1Question": "第 2 步 Q1 回答",
+  "becomeGuide.step2.q1SliderTitle": "第 2 步 Q1 评分",
+  "becomeGuide.step2.q2Question": "第 2 步 Q2 回答",
+  "becomeGuide.step2.q3Question": "第 2 步 Q3 回答",
+  "becomeGuide.step2.q3SliderTitle": "第 2 步 Q3 评分",
+  "becomeGuide.step2.q4Question": "第 2 步 Q4 回答",
+  "becomeGuide.step2.q4SliderTitle": "第 2 步 Q4 评分",
+  "becomeGuide.step3.q5Question": "第 3 步 Q5 回答",
+  "becomeGuide.step3.q5SliderTitle": "第 3 步 Q5 评分",
+  "becomeGuide.step3.q6Question": "第 3 步 Q6 回答",
+  "becomeGuide.step3.q6SliderTitle": "第 3 步 Q6 评分",
+  "becomeGuide.step3.q7Question": "第 3 步 Q7 回答",
+  "becomeGuide.step3.q7SliderTitle": "第 3 步 Q7 评分",
+  "becomeGuide.step3.q8Question": "第 3 步 Q8 优势选择",
+  "becomeGuide.step3.q8SliderTitle": "第 3 步 Q8 评分",
+  "becomeGuide.step3.q8ExampleQuestion": "第 3 步 Q8 示例说明",
+  "becomeGuide.step3.q9Question": "第 3 步 Q9 描述",
+};
+
 export const ApplicationPreview = ({
   formData,
   missingFields,
@@ -39,6 +59,8 @@ export const ApplicationPreview = ({
 }: ApplicationPreviewProps) => {
   const { Card, CardContent, Button, Checkbox } = ui;
   const translate = (key: string) => intl?.formatMessage({ id: key }) ?? key;
+  const formatMissingField = (field: string) =>
+    MISSING_FIELD_LABELS[field] ?? translate(field);
   const optionLabels = (step: 2 | 3, question: string, values?: string[]) =>
     values?.length
       ? values.map((value) => translate(`becomeGuide.step${step}.${question}Options.${value}`)).join(", ")
@@ -500,9 +522,9 @@ export const ApplicationPreview = ({
                   </div>
                   <div className="ml-3">
                     <p className="text-sm text-red-700">
-                      <strong>缺失字段</strong>
+                      <strong>以下信息尚未完善</strong>
                       <br />
-                      {missingFields.join("、")}
+                      请返回编辑并补充：{missingFields.map(formatMissingField).join("、")}
                     </p>
                   </div>
                 </div>
