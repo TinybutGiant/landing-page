@@ -56,6 +56,8 @@ const BecomeGuidePage: React.FC = () => {
   
   // localStorage 相关功能
   const STORAGE_KEY = 'yaotu_guide_form_draft';
+  const normalizeSexValue = (sex: unknown) =>
+    sex === 'Prefer not to say' || sex === 'preferNotToSay' ? 'prefer_not_to_say' : sex;
   
   // 状态管理localStorage数据（用于调试）
   const [, setInitialDraft] = React.useState<any>(null);
@@ -79,6 +81,9 @@ const BecomeGuidePage: React.FC = () => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       const data = saved ? JSON.parse(saved) : null;
+      if (data && typeof data === 'object') {
+        data.sex = normalizeSexValue(data.sex);
+      }
       console.log('BecomeGuidePage: 从localStorage加载数据:', data);
       return data;
     } catch (error) {
@@ -97,7 +102,7 @@ const BecomeGuidePage: React.FC = () => {
         savedAt: new Date().toISOString(),
         // 确保基本字段存在
         name: data.name || data.fullName || '',
-        sex: data.sex || 'preferNotToSay',
+        sex: normalizeSexValue(data.sex) || 'prefer_not_to_say',
         // 确保数组字段存在
         serviceSelections: data.serviceSelections || [],
         targetGroup: data.targetGroup || [],

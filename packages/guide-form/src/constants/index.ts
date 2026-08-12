@@ -22,7 +22,7 @@ export const MBTI_OPTIONS = [
 export const SEX_OPTIONS = [
   { value: "Male", labelKey: "becomeGuide.step1.genderOptions.male" },
   { value: "Female", labelKey: "becomeGuide.step1.genderOptions.female" },
-  { value: "preferNotToSay", labelKey: "becomeGuide.step1.genderOptions.preferNotToSay" },
+  { value: "prefer_not_to_say", labelKey: "becomeGuide.step1.genderOptions.preferNotToSay" },
 ];
 
 // 页面配置 - 使用翻译键
@@ -59,18 +59,18 @@ export const CURRENCY_OPTIONS = [
 // 评分说明 - 使用翻译键
 export const SCORE_EXPLANATIONS = {
   ethics: {
-    title: "becomeGuide.step2.ethicsScore",
-    description: "becomeGuide.step2.ethicsDescription",
-    ranges: "becomeGuide.step2.ethicsRange0 | becomeGuide.step2.ethicsRange10",
+    titleKey: "becomeGuide.scoreExplanations.ethics.title",
+    descriptionKey: "becomeGuide.scoreExplanations.ethics.description",
+    rangesKey: "becomeGuide.scoreExplanations.ethics.ranges",
   },
   boundary: {
-    title: "becomeGuide.step2.boundaryScore",
-    description: "becomeGuide.step2.boundaryDescription",
-    ranges: "becomeGuide.step2.boundaryRange0 | becomeGuide.step2.boundaryRange10",
+    titleKey: "becomeGuide.scoreExplanations.boundary.title",
+    descriptionKey: "becomeGuide.scoreExplanations.boundary.description",
+    rangesKey: "becomeGuide.scoreExplanations.boundary.ranges",
   },
   supportive: {
-    title: "becomeGuide.step2.supportiveScore",
-    description: "becomeGuide.step2.supportiveDescription",
-    ranges: "becomeGuide.step2.supportiveRange0 | becomeGuide.step2.supportiveRange10",
+    titleKey: "becomeGuide.scoreExplanations.supportive.title",
+    descriptionKey: "becomeGuide.scoreExplanations.supportive.description",
+    rangesKey: "becomeGuide.scoreExplanations.supportive.ranges",
   },
 };

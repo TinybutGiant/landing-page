@@ -1,10 +1,11 @@
 // Adapted from: https://github.com/shadcn-ui/ui/blob/main/apps/www/registry/default/ui/use-toast.ts
 import * as React from "react"
 
-import type { Toast, ToastAction } from "../components/ui/toast"
-
-type ToastProps = React.ComponentProps<typeof Toast>
-type ToastActionElement = React.ComponentProps<typeof ToastAction>
+type ToastProps = React.ComponentPropsWithoutRef<"div"> & {
+  variant?: "default" | "destructive" | "success"
+  onOpenChange?: (open: boolean) => void
+}
+type ToastActionElement = React.ReactElement<React.ButtonHTMLAttributes<HTMLButtonElement>>
 
 const TOAST_LIMIT = 1
 const TOAST_REMOVE_DELAY = 2500
