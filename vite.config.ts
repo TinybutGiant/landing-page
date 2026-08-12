@@ -15,20 +15,6 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: true,
-    rollupOptions: {
-      output: {
-        manualChunks(id) {
-          // 不要单独分离 React，否则某些懒加载模块会找不到它
-          if (id.includes('node_modules')) {
-            if (id.includes('@radix-ui')) return 'ui';
-            if (id.includes('date-fns') || id.includes('clsx') || id.includes('tailwind-merge')) return 'utils';
-            if (id.includes('framer-motion')) return 'motion';
-            if (id.includes('lucide-react')) return 'ui';
-            return 'vendor';
-          }
-        },
-      },
-    }
   },
   server: {
     host: '127.0.0.1',
