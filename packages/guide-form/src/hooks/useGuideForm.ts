@@ -13,6 +13,7 @@ export const useGuideForm = (
   onClearLocalStorage?: () => void,
   initialStep?: 'preview'
 ) => {
+  const resolveApiUrl = config.resolveApiUrl ?? ((path: string) => path);
   const [currentPage, setCurrentPage] = useState(1);
   const [showPreview, setShowPreview] = useState(false);
   const [confirmationChecked, setConfirmationChecked] = useState(false);
@@ -154,7 +155,10 @@ export const useGuideForm = (
               formData.append('file', blob, file.name);
               
               // 上传到R2 - 使用主项目的资质文件上传API（相对路径，vite代理处理）
-              const uploadResponse = await fetch('/api/v2/guide-applications/qualification-upload', {
+              const uploadResponse = await fetch(resolveApiUrl(
+                config.apiEndpoints.qualificationUpload ||
+                  '/api/v2/guide-applications/qualification-upload'
+              ), {
                 method: 'POST',
                 headers: {
                   'Authorization': `Bearer ${token}`
@@ -189,7 +193,7 @@ export const useGuideForm = (
       
       console.log('提交数据大小:', JSON.stringify(processedData).length, 'bytes');
       
-      const response = await fetch(config.apiEndpoints.submitApplication, {
+      const response = await fetch(resolveApiUrl(config.apiEndpoints.submitApplication), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

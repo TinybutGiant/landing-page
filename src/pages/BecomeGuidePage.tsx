@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { useLocation, useRoute } from 'wouter';
 import { GuideForm, GuideFormConfig, UIComponents } from '@replit/guide-form';
 import { usePDFGeneration, generatePDFBlob } from '@replit/guide-form';
-import { api, authApi } from '@/lib/apiClient';
+import { api, authApi, resolveApiUrl } from '@/lib/apiClient';
 import { Button } from '@/components/ui/button';
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -281,7 +281,7 @@ const BecomeGuidePage: React.FC = () => {
       
       console.log('📤 开始上传PDF到R2，申请ID:', applicationId);
       // 上传到R2
-      const uploadResponse = await fetch(`/api/v2/guide-applications/${applicationId}/archive-pdf`, {
+      const uploadResponse = await fetch(resolveApiUrl(`/api/v2/guide-applications/${applicationId}/archive-pdf`), {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -326,6 +326,7 @@ const BecomeGuidePage: React.FC = () => {
 
   // 配置表单
   const config: GuideFormConfig = {
+    resolveApiUrl,
     apiEndpoints: {
       saveDraft: '', // 不使用数据库保存草稿
       submitApplication: '/api/v2/guide-applications', // 数据库提交端点

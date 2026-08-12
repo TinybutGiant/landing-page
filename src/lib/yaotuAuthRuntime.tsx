@@ -14,7 +14,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { API_BASE } from '@/lib/apiClient';
 
-const DEFAULT_AUTH_ORIGIN = 'https://ahhh-yaotu.onrender.com';
+const DEFAULT_MARKETPLACE_ORIGIN = 'https://www.ahhh-yaotu.com';
 
 const authApiClient = createAuthApiClient({
   apiBaseUrl: API_BASE,
@@ -85,11 +85,25 @@ function trimTrailingSlash(value: string): string {
 }
 
 export function getCanonicalAuthOrigin(): string {
-  return trimTrailingSlash(import.meta.env.VITE_AUTH_ORIGIN || DEFAULT_AUTH_ORIGIN);
+  return trimTrailingSlash(
+    import.meta.env.VITE_AUTH_ORIGIN ||
+      import.meta.env.VITE_MARKETPLACE_ORIGIN ||
+      DEFAULT_MARKETPLACE_ORIGIN
+  );
 }
 
 export function getCanonicalVerifyEmailPath(): string {
   return `${getCanonicalAuthOrigin()}/verify-email`;
+}
+
+export function getMarketplaceOrigin(): string {
+  return trimTrailingSlash(
+    import.meta.env.VITE_MARKETPLACE_ORIGIN || DEFAULT_MARKETPLACE_ORIGIN
+  );
+}
+
+export function getMarketplaceUrl(path: string): string {
+  return `${getMarketplaceOrigin()}/${path.replace(/^\/+/, '')}`;
 }
 
 export function useYaoTuAuthRuntime(): Pick<

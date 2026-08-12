@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useIntl } from 'react-intl';
 import { useLanguage } from '@/i18n/LanguageProvider';
 import { authApi } from '@/lib/apiClient';
+import { getMarketplaceUrl } from '@/lib/yaotuAuthRuntime';
 import { 
   ApplicationStatus,
   ApprovalTimeline,
@@ -240,7 +241,7 @@ export default function ViewApplicationStatusPage() {
   // 导航处理
   const handleNavigateToGuide = () => {
     // Redirect to main project's guide dashboard
-    window.location.href = "https://ahhh-yaotu.onrender.com/guide-dashboard";
+    window.location.href = getMarketplaceUrl('/guide-dashboard');
   };
 
   const handleNavigateToBecomeGuide = () => {

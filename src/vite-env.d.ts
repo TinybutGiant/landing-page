@@ -4,6 +4,7 @@ interface ImportMetaEnv {
   readonly VITE_APP_TITLE: string
   readonly VITE_API_URL?: string
   readonly VITE_AUTH_ORIGIN?: string
+  readonly VITE_MARKETPLACE_ORIGIN?: string
   // 更多环境变量...
 }
 

@@ -115,7 +115,10 @@ export interface GuideFormConfig {
     submitApplication: string;
     loadDraft?: string;
     serviceCategories?: string;
+    qualificationUpload?: string;
   };
+
+  resolveApiUrl?: (path: string) => string;
   
   // 身份验证配置
   auth: {
