@@ -18,6 +18,7 @@ interface ApplicationPreviewProps {
   onBackToForm: () => void;
   onSubmit: () => void;
   isSubmitting: boolean;
+  requiresAccountBeforeSubmit?: boolean;
   validateFormCompleteness: (formData: FormData) => string[];
   setMissingFields: (fields: string[]) => void;
   ui: UIComponents;
@@ -52,6 +53,7 @@ export const ApplicationPreview = ({
   onBackToForm,
   onSubmit,
   isSubmitting,
+  requiresAccountBeforeSubmit = false,
   validateFormCompleteness,
   setMissingFields,
   ui,
@@ -552,6 +554,15 @@ export const ApplicationPreview = ({
             </div>
 
             {/* 底部按钮 */}
+            {requiresAccountBeforeSubmit && (
+              <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+                <p className="font-semibold">提交前需要先创建并验证账号</p>
+                <p className="mt-1 leading-relaxed">
+                  点击“确认提交申请”后，我们会先带你去创建账号并完成邮箱验证，用于之后查询申请进度。当前申请内容已保存在这个浏览器中；请不要关闭浏览器，验证后回到申请预览页继续提交。
+                </p>
+              </div>
+            )}
+
             <div className="flex justify-between items-center pt-6 border-t">
               <Button type="button" variant="outline" onClick={onBackToForm}>
                 <ChevronLeft className="h-4 w-4 mr-1" />

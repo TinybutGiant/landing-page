@@ -134,6 +134,7 @@ export const GuideForm: React.FC<GuideFormProps> = ({
   } = useGuideForm(config, onLoadLocalStorage, onSaveLocalStorage, onClearLocalStorage, initialStep);
 
   const { Form } = ui;
+  const requiresAccountBeforeSubmit = !config.auth.getToken() || !config.auth.getUserId();
 
   // PDF生成功能 - 必须在组件顶层调用
   const { downloadPDF, isProcessing } = usePDFGeneration({
@@ -162,6 +163,7 @@ export const GuideForm: React.FC<GuideFormProps> = ({
         onBackToForm={backToForm}
         onSubmit={onSubmit}
         isSubmitting={isLoading || isSubmitting}
+        requiresAccountBeforeSubmit={requiresAccountBeforeSubmit}
         validateFormCompleteness={validateForm}
         setMissingFields={setMissingFields}
         ui={ui}

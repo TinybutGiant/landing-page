@@ -256,6 +256,7 @@ export const useGuideForm = (
       const userId = config.auth.getUserId();
       
       if (!token || !userId) {
+        await saveDraft(data);
         // 未登录，跳转到注册页面，确保包含step=preview参数
         const currentUrl = window.location.pathname + window.location.search;
         // 如果是become-guide页面，确保包含step=preview参数
