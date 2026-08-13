@@ -94,22 +94,9 @@ const LandingPage = () => {
     }
   };
 
-  // Handle become guide navigation with auth and application status check
+  // Handle become guide navigation
   const handleBecomeGuide = () => {
-    if (isAuthenticated) {
-      // Check if user already has an application
-      const applicationId = localStorage.getItem('yaotu_application_id');
-      if (applicationId) {
-        // User already has an application, redirect to status page
-        window.location.href = '/view-application-status';
-      } else {
-        // User is logged in but no application, allow access
-        window.location.href = '/become-guide';
-      }
-    } else {
-      // User is not logged in, allow access to become-guide page
-      window.location.href = '/become-guide';
-    }
+    window.location.href = '/become-guide';
   };
 
   return (
