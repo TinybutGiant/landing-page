@@ -327,6 +327,7 @@ export const useGuideForm = (
   };
 
   const backToForm = () => {
+    setMissingFields([]);
     setShowPreview(false);
   };
 
