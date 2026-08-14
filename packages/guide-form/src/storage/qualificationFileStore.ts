@@ -16,6 +16,16 @@ export interface StagedQualificationFile {
   uploaded?: boolean;
   publicUrl?: string;
   serverFileId?: string;
+  uploadedMetadata?: StagedQualificationUploadedMetadata;
+}
+
+export interface StagedQualificationUploadedMetadata {
+  fileId?: string;
+  r2Key?: string;
+  publicUrl?: string;
+  originalName?: string;
+  size?: number;
+  mimetype?: string;
 }
 
 interface StagedQualificationFileRecord extends StagedQualificationFile {
@@ -137,7 +147,7 @@ export const clearStagedQualificationFiles = async (clientDraftId: string): Prom
 
 export const markStagedQualificationFileUploaded = async (
   fileId: string,
-  data: { publicUrl?: string; serverFileId?: string }
+  data: StagedQualificationUploadedMetadata
 ): Promise<StagedQualificationFile | null> => {
   const record = await getStagedQualificationFile(fileId);
   if (!record) return null;
@@ -146,7 +156,8 @@ export const markStagedQualificationFileUploaded = async (
     ...record,
     uploaded: true,
     publicUrl: data.publicUrl,
-    serverFileId: data.serverFileId,
+    serverFileId: data.fileId,
+    uploadedMetadata: data,
   };
 
   await withStore("readwrite", (store) => store.put(next));

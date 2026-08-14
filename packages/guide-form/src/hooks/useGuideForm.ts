@@ -23,6 +23,7 @@ import {
   getStagedQualificationFile,
   listStagedQualificationFiles,
   markStagedQualificationFileUploaded,
+  type StagedQualificationUploadedMetadata,
 } from "../storage/qualificationFileStore";
 import {
   getResumePath,
@@ -279,37 +280,63 @@ export const useGuideForm = (
       const stagedFiles = await listStagedQualificationFiles(clientDraftId);
 
       for (const staged of stagedFiles) {
-        if (staged.uploaded && staged.publicUrl) continue;
+        let uploadedMetadata =
+          staged.uploadedMetadata ??
+          (staged.uploaded && staged.publicUrl
+            ? ({
+                fileId: staged.serverFileId,
+                publicUrl: staged.publicUrl,
+                originalName: staged.name,
+                size: staged.size,
+                mimetype: staged.type,
+              } satisfies StagedQualificationUploadedMetadata)
+            : null);
 
         const stored = await getStagedQualificationFile(staged.fileId);
-        if (!stored?.blob) continue;
+        uploadedMetadata = uploadedMetadata ?? stored?.uploadedMetadata ?? null;
 
-        const body = new globalThis.FormData();
-        body.append("file", stored.blob, stored.name);
+        if (!uploadedMetadata) {
+          if (!stored?.blob) {
+            throw new Error(`Staged qualification file is missing local data: ${staged.name}`);
+          }
 
-        const response = await fetch(resolveApiUrl(uploadEndpoint), {
-          method: "POST",
-          headers: toAuthHeaders(token),
-          body,
-          credentials: "include",
-        });
+          const body = new globalThis.FormData();
+          body.append("file", stored.blob, stored.name);
 
-        if (!response.ok) {
-          throw await responseJsonOrText(response);
+          const response = await fetch(resolveApiUrl(uploadEndpoint), {
+            method: "POST",
+            headers: toAuthHeaders(token),
+            body,
+            credentials: "include",
+          });
+
+          if (!response.ok) {
+            throw await responseJsonOrText(response);
+          }
+
+          const result = await response.json();
+          uploadedMetadata = {
+            fileId: result.fileId,
+            r2Key: result.r2Key,
+            publicUrl: result.publicUrl,
+            originalName: result.originalName,
+            size: result.size,
+            mimetype: result.mimetype,
+          };
+          await markStagedQualificationFileUploaded(staged.fileId, uploadedMetadata);
         }
 
-        const result = await response.json();
-        await markStagedQualificationFileUploaded(staged.fileId, {
-          publicUrl: result.publicUrl,
-          serverFileId: result.fileId,
-        });
-
-        certifications[result.fileId ?? staged.fileId] = {
+        const persistedFileId = String(uploadedMetadata.fileId ?? staged.fileId);
+        certifications[persistedFileId] = {
           description: staged.description,
-          proof: result.publicUrl,
+          proof: uploadedMetadata.publicUrl,
           visible: staged.visible !== false,
           uploaded: true,
-          publicUrl: result.publicUrl,
+          publicUrl: uploadedMetadata.publicUrl,
+          r2Key: uploadedMetadata.r2Key,
+          originalName: uploadedMetadata.originalName,
+          size: uploadedMetadata.size,
+          mimetype: uploadedMetadata.mimetype,
         };
       }
 
@@ -385,20 +412,28 @@ export const useGuideForm = (
 
     const application = extractApplication(result);
     const applicationId = extractApplicationId(result);
-    setDbDraftId(applicationId ?? null);
-    setDraftSource("server");
-
     let hydrated = processDatabaseDataForForm(application ?? data);
     try {
-      hydrated = await uploadPendingQualificationFiles(draft.clientDraftId, hydrated);
-      if (applicationId) {
-        await saveServerDraft(hydrated);
-        await clearStagedQualificationFiles(draft.clientDraftId);
+      if (!applicationId) {
+        throw new Error("Guide draft handoff did not return an application id.");
       }
+      hydrated = await uploadPendingQualificationFiles(draft.clientDraftId, hydrated);
+      await saveServerDraft(hydrated);
+      await clearStagedQualificationFiles(draft.clientDraftId);
     } catch (error) {
+      upsertAnonymousDraft(hydrated, {
+        lastCompletedStep: 3,
+        authCheckpointReached: true,
+        migrationStatus: "local",
+      });
+      setDbDraftId(applicationId ?? null);
+      setFunnelState("resume_after_auth");
       config.callbacks.onError?.(error);
+      return null;
     }
 
+    setDbDraftId(applicationId);
+    setDraftSource("server");
     resetForm(hydrated);
     markAnonymousDraftMigrated(applicationId);
     onClearLocalStorage?.();
