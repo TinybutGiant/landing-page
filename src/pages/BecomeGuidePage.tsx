@@ -59,6 +59,18 @@ const readInitialStep = (): "preview" | "resume" | undefined => {
 const extractApplicationId = (payload: any) =>
   payload?.application?.id ?? payload?.applicationId ?? payload?.id;
 
+const isTokenExpiredError = (error: unknown): boolean => {
+  if (!error || typeof error !== "object") return false;
+
+  const errorRecord = error as Record<string, unknown>;
+  const code = typeof errorRecord.code === "string" ? errorRecord.code : "";
+  const message = [errorRecord.error, errorRecord.message]
+    .filter((value): value is string => typeof value === "string")
+    .join(" ");
+
+  return code === "TOKEN_EXPIRED" || /token expired|expired token|log in again/i.test(message);
+};
+
 const guideUrl = (path: string): string => {
   const origin = typeof window !== "undefined" ? window.location.origin : "https://guide.ahhh-yaotu.com";
   return new URL(path, origin).toString();
@@ -72,7 +84,7 @@ const QualificationUploader = (props: any) => (
 );
 
 const BecomeGuidePage = () => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const { toast } = useToast();
   const intl = useIntl();
   const [, setLocation] = useLocation();
@@ -179,6 +191,23 @@ const BecomeGuidePage = () => {
           });
         },
         onError: (error) => {
+          if (isTokenExpiredError(error)) {
+            console.info("Guide application session expired; continuing with anonymous draft.");
+            logout();
+            toast({
+              title: intl.formatMessage({
+                id: "becomeGuide.toast.sessionExpiredTitle",
+                defaultMessage: "Session expired",
+              }),
+              description: intl.formatMessage({
+                id: "becomeGuide.toast.sessionExpiredDesc",
+                defaultMessage:
+                  "We signed you out. You can keep editing this draft and sign in again when prompted.",
+              }),
+            });
+            return;
+          }
+
           console.error("Guide application error:", error);
           toast({
             title: intl.formatMessage({
@@ -212,7 +241,7 @@ const BecomeGuidePage = () => {
         resumePath: RESUME_PATH,
       },
     }),
-    [archiveApplicationPdf, intl, setLocation, toast, user]
+    [archiveApplicationPdf, intl, logout, setLocation, toast, user]
   );
 
   const uiComponents = useMemo<UIComponents>(
