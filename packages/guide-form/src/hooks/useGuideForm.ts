@@ -354,13 +354,11 @@ export const useGuideForm = (
   const handoffAnonymousDraft = useCallback(async () => {
     if (!isAuthenticated(config)) {
       setFunnelState("auth_required");
-      navigateToAuth(config);
       return null;
     }
 
     if (!isEmailVerified(config)) {
       setFunnelState("verification_required");
-      navigateToVerification(config);
       return null;
     }
 

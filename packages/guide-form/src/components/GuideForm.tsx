@@ -11,7 +11,12 @@ import { validateFormCompleteness } from "../utils/validation";
 import { PAGE_TITLES, TOTAL_PAGES } from "../constants";
 import { usePDFGeneration } from "../hooks/usePDFGeneration";
 import { useIntl } from "react-intl";
-import { isAuthenticated, isEmailVerified } from "../utils/guideFunnel";
+import {
+  isAuthenticated,
+  isEmailVerified,
+  navigateToAuth,
+  navigateToVerification,
+} from "../utils/guideFunnel";
 
 // 统一的 UI 组件接口
 export interface UIComponents {
@@ -139,6 +144,11 @@ export const GuideForm: React.FC<GuideFormProps> = ({
 
   const { Form } = ui;
   const requiresAccountBeforeSubmit = !isAuthenticated(config) || !isEmailVerified(config);
+  const isVerificationCheckpoint = isAuthenticated(config) && !isEmailVerified(config);
+  const shouldShowAuthCheckpoint =
+    (currentPage === 3 && requiresAccountBeforeSubmit) ||
+    funnelState === "auth_required" ||
+    funnelState === "verification_required";
 
   // PDF生成功能 - 必须在组件顶层调用
   const { downloadPDF, isProcessing } = usePDFGeneration({
@@ -288,6 +298,50 @@ export const GuideForm: React.FC<GuideFormProps> = ({
                 )}
 
                 {/* 导航组件 */}
+                {shouldShowAuthCheckpoint && (
+                  <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4 text-sm text-slate-900">
+                    <p className="font-semibold">
+                      {intl.formatMessage({
+                        id: isVerificationCheckpoint
+                          ? "becomeGuide.checkpoint.verifyTitle"
+                          : "becomeGuide.checkpoint.authTitle",
+                        defaultMessage: isVerificationCheckpoint
+                          ? "Verify your email to continue"
+                          : "Create or sign in to continue",
+                      })}
+                    </p>
+                    <p className="mt-1 leading-relaxed text-slate-700">
+                      {intl.formatMessage({
+                        id: isVerificationCheckpoint
+                          ? "becomeGuide.checkpoint.verifyDescription"
+                          : "becomeGuide.checkpoint.authDescription",
+                        defaultMessage: isVerificationCheckpoint
+                          ? "Your answers and selected files are saved in this browser. Please verify your email before we upload files or save the application to your account."
+                          : "Your answers and selected files are saved in this browser. Next, create or sign in to a YaoTu account so this application can be attached to you. Keep this browser open; after verification you will return here to continue.",
+                      })}
+                    </p>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <ui.Button
+                        type="button"
+                        onClick={() =>
+                          isVerificationCheckpoint
+                            ? navigateToVerification(config)
+                            : navigateToAuth(config)
+                        }
+                      >
+                        {intl.formatMessage({
+                          id: isVerificationCheckpoint
+                            ? "becomeGuide.checkpoint.verifyCta"
+                            : "becomeGuide.checkpoint.authCta",
+                          defaultMessage: isVerificationCheckpoint
+                            ? "Continue to email verification"
+                            : "Continue to account setup",
+                        })}
+                      </ui.Button>
+                    </div>
+                  </div>
+                )}
+
                 <FormNavigation
                   currentPage={currentPage}
                   onPrevPage={prevPage}
