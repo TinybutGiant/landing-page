@@ -188,6 +188,8 @@ export interface GuideDraftConflict {
 }
 
 export interface GuideFormConfig {
+  draftOwnershipMode?: "anonymous_until_checkpoint" | "authenticated_from_start";
+
   apiEndpoints: {
     saveDraft?: string;
     submitApplication: string;

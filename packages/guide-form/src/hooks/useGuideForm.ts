@@ -147,6 +147,7 @@ export const useGuideForm = (
   initialStep?: InitialStep
 ) => {
   const resolveApiUrl = config.resolveApiUrl ?? ((path: string) => path);
+  const isServerOwnedFromStart = config.draftOwnershipMode === "authenticated_from_start";
   const [currentPage, setCurrentPage] = useState(1);
   const [showPreview, setShowPreview] = useState(false);
   const [confirmationChecked, setConfirmationChecked] = useState(false);
@@ -155,9 +156,13 @@ export const useGuideForm = (
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [draftSource, setDraftSource] = useState<DraftSource>("anonymous");
+  const [draftSource, setDraftSource] = useState<DraftSource>(
+    isServerOwnedFromStart ? "server" : "anonymous"
+  );
   const [dbDraftId, setDbDraftId] = useState<string | number | null>(null);
-  const [funnelState, setFunnelState] = useState<GuideFunnelState>("anonymous_editing");
+  const [funnelState, setFunnelState] = useState<GuideFunnelState>(
+    isServerOwnedFromStart ? "authenticated_editing" : "anonymous_editing"
+  );
   const [draftConflict, setDraftConflict] = useState<GuideDraftConflict | null>(null);
   const submitRequestIdRef = useRef<string | null>(null);
   const resumeHandledRef = useRef(false);
@@ -183,19 +188,21 @@ export const useGuideForm = (
   );
 
   useEffect(() => {
-    const anonymousDraft = loadAnonymousDraft();
-    const hostDraft = onLoadLocalStorage?.();
-    const localData = anonymousDraft?.formData ?? hostDraft;
+    if (!isServerOwnedFromStart) {
+      const anonymousDraft = loadAnonymousDraft();
+      const hostDraft = onLoadLocalStorage?.();
+      const localData = anonymousDraft?.formData ?? hostDraft;
 
-    if (localData && hasMeaningfulLocalDraft(localData)) {
-      resetForm(localData);
+      if (localData && hasMeaningfulLocalDraft(localData)) {
+        resetForm(localData);
+      }
     }
 
     if (initialStep === "preview") {
       setShowPreview(true);
       setFunnelState("preview");
     }
-  }, [initialStep, onLoadLocalStorage, resetForm]);
+  }, [initialStep, isServerOwnedFromStart, onLoadLocalStorage, resetForm]);
 
   const loadServerDraft = useCallback(async () => {
     if (!config.apiEndpoints.loadDraft || !isAuthenticated(config) || !isEmailVerified(config)) {
@@ -456,29 +463,63 @@ export const useGuideForm = (
 
     void (async () => {
       try {
+        if (isServerOwnedFromStart) {
+          if (!isAuthenticated(config)) {
+            setFunnelState("auth_required");
+            navigateToAuth(config);
+            return;
+          }
+          if (!isEmailVerified(config)) {
+            setFunnelState("verification_required");
+            navigateToVerification(config);
+            return;
+          }
+          serverDraftLoadedRef.current = true;
+          const serverDraft = await loadServerDraft();
+          if (serverDraft) {
+            setCurrentPage(4);
+          }
+          return;
+        }
         await handoffAnonymousDraft();
       } catch (error) {
         config.callbacks.onError?.(error);
       }
     })();
-  }, [config.callbacks, handoffAnonymousDraft, initialStep]);
+  }, [config, handoffAnonymousDraft, initialStep, isServerOwnedFromStart, loadServerDraft]);
 
   useEffect(() => {
     if (serverDraftLoadedRef.current) return;
     if (!isAuthenticated(config) || !isEmailVerified(config)) return;
-    if (hasMeaningfulLocalDraft(loadAnonymousDraft()?.formData)) return;
+    if (!isServerOwnedFromStart && hasMeaningfulLocalDraft(loadAnonymousDraft()?.formData)) return;
 
     serverDraftLoadedRef.current = true;
     void loadServerDraft().catch((error) => {
       config.callbacks.onError?.(error);
     });
-  }, [config, loadServerDraft]);
+  }, [config, isServerOwnedFromStart, loadServerDraft]);
 
   const saveDraft = async (data: FormData) => {
     try {
       setIsSaving(true);
-      if (draftSource === "server" && isAuthenticated(config) && isEmailVerified(config)) {
+      if (
+        (isServerOwnedFromStart || draftSource === "server") &&
+        isAuthenticated(config) &&
+        isEmailVerified(config)
+      ) {
         return await saveServerDraft(data);
+      }
+      if (isServerOwnedFromStart) {
+        if (!isAuthenticated(config)) {
+          setFunnelState("auth_required");
+          navigateToAuth(config);
+          return null;
+        }
+        if (!isEmailVerified(config)) {
+          setFunnelState("verification_required");
+          navigateToVerification(config);
+          return null;
+        }
       }
       return saveAnonymousDraft(data, currentPage > 0 ? ((currentPage - 1) as 0 | 1 | 2 | 3) : 0);
     } catch (error) {
@@ -496,6 +537,16 @@ export const useGuideForm = (
 
   const nextPage = async () => {
     const data = form.getValues();
+
+    if (isServerOwnedFromStart) {
+      if (currentPage < 4) {
+        const result = await saveDraft(data);
+        if (result !== null) {
+          setCurrentPage(currentPage + 1);
+        }
+      }
+      return;
+    }
 
     if (currentPage < 3) {
       saveAnonymousDraft(data, currentPage as 1 | 2);
@@ -526,7 +577,7 @@ export const useGuideForm = (
 
   const goToPreview = async () => {
     const data = form.getValues();
-    if (draftSource !== "server") {
+    if (!isServerOwnedFromStart && draftSource !== "server") {
       const result = await handoffAnonymousDraft();
       if (!result) return;
     } else {
@@ -539,7 +590,11 @@ export const useGuideForm = (
   const backToForm = () => {
     setMissingFields([]);
     setShowPreview(false);
-    setFunnelState(draftSource === "server" ? "authenticated_editing" : "anonymous_editing");
+    setFunnelState(
+      isServerOwnedFromStart || draftSource === "server"
+        ? "authenticated_editing"
+        : "anonymous_editing"
+    );
   };
 
   const submitToDatabase = async (data: FormData) => {
@@ -590,20 +645,24 @@ export const useGuideForm = (
     }
 
     if (!isAuthenticated(config)) {
-      saveAnonymousDraft(data, 3, true);
+      if (!isServerOwnedFromStart) {
+        saveAnonymousDraft(data, 3, true);
+      }
       setFunnelState("auth_required");
       navigateToAuth(config);
       return;
     }
 
     if (!isEmailVerified(config)) {
-      saveAnonymousDraft(data, 3, true);
+      if (!isServerOwnedFromStart) {
+        saveAnonymousDraft(data, 3, true);
+      }
       setFunnelState("verification_required");
       navigateToVerification(config);
       return;
     }
 
-    if (draftSource !== "server") {
+    if (!isServerOwnedFromStart && draftSource !== "server") {
       const result = await handoffAnonymousDraft();
       if (!result) return;
     }
