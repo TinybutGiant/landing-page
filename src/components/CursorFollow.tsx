@@ -9,6 +9,11 @@ import { ImagePreloader } from "@/lib/imagePreloader";
 
 const SPAWN_DISTANCE_PX = 170;
 const HOLD_MS = 700;
+const IMAGE_W = 256;
+const IMAGE_H = 144;
+const TRAIL_OPACITY = 0.72;
+const TRAIL_FILTER =
+  "sepia(0.45) saturate(1.25) hue-rotate(-12deg) brightness(1.04)";
 
 interface Trail {
   id: number;
@@ -44,7 +49,6 @@ function isTouchPrimaryDevice() {
     /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
       navigator.userAgent
     );
-  // Don't use maxTouchPoints — Windows touch laptops would be blocked.
   const touchPrimary = window.matchMedia(
     "(hover: none) and (pointer: coarse)"
   ).matches;
@@ -94,7 +98,6 @@ const CursorFollow = ({
       ? document.querySelector(containerSelector)
       : null;
     const rect = container?.getBoundingClientRect();
-    // Position relative to hero container (not viewport)
     const x = rect ? clientX - rect.left : clientX;
     const y = rect ? clientY - rect.top : clientY;
 
@@ -170,7 +173,7 @@ const CursorFollow = ({
             alt=""
             initial={{ opacity: 0, scale: 0.92 }}
             animate={{
-              opacity: 1,
+              opacity: TRAIL_OPACITY,
               scale: 1,
               transition: { duration: 0.18, ease: [0.22, 1, 0.36, 1] },
             }}
@@ -181,10 +184,11 @@ const CursorFollow = ({
             }}
             className="absolute pointer-events-none select-none object-cover"
             style={{
-              width: 256,
-              height: 144,
-              left: t.x - 128,
-              top: t.y - 72,
+              width: IMAGE_W,
+              height: IMAGE_H,
+              left: t.x - IMAGE_W / 2,
+              top: t.y - IMAGE_H / 2,
+              filter: TRAIL_FILTER,
             }}
             onError={(e) => {
               (e.target as HTMLImageElement).style.display = "none";

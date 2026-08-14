@@ -46,7 +46,8 @@
       "title": "Discover Japan with Expert Local Guides",
       "subtitle": "Connect with knowledgeable locals who share your interests and create unforgettable experiences",
       "tagline": "Connect with verified locals who match your interests, travel style, and schedule.",
-      "ctaIntro": "Start as a traveler or a local — join early and shape the journey with us.",
+      "ctaIntro": "Start as a traveler or a local",
+      "ctaIntroSub": "Join early and shape the journey with us.",
       "waitlistCta": "Join the Waitlist to Explore Guides",
       "guideCta": "Become a Local Guide",
       "cta": "Start Your Journey"
@@ -57,36 +58,32 @@
       "expertGuides": "Expert Guides",
       "expertGuidesDesc": "Verified locals with deep knowledge of the city.",
       "authenticExperiences": "Authentic Experiences",
-      "authenticExperiencesDesc": "Experience the city beyond the guidebooks.",
+      "authenticExperiencesDesc": "Go beyond the guidebooks and see the city like a local.",
       "safeSecure": "Safe & Secure",
       "safeSecureDesc": "Every local is verified, with safety features built into every booking.",
       "flexibleBooking": "Flexible Booking",
-      "flexibleBookingDesc": "Skip the back-and-forth and book with confidence."
-    },
-    "howItWorks": {
-      "title": "How It Works",
-      "step1": "Find Your Guide",
-      "step1Desc": "Browse verified guides and filter by expertise",
-      "step2": "Connect & Plan",
-      "step2Desc": "Message your guide to discuss your interests",
-      "step3": "Book & Pay",
-      "step3Desc": "Secure your experience with easy booking",
-      "step4": "Enjoy",
-      "step4Desc": "Meet your guide and create lasting memories"
+      "flexibleBookingDesc": "Skip the back-and-forth and book with\u00A0confidence."
     },
     "howTraveler": {
-      "title": "How It Works as Traveler",
-      "subtitle": "Book a local experience in just three simple steps",
+      "sectionTitle": "How It Works",
+      "title": "For Travelers",
+      "subtitle": "Book a local experience in three simple steps",
       "step1": "Find a Local",
+      "step1Desc": "Browse verified locals nearby and pick someone whose style fits your trip.",
       "step2": "Book Instantly",
-      "step3": "Explore Together"
+      "step2Desc": "Choose a time that works, confirm in a few taps, and pay securely.",
+      "step3": "Explore Together",
+      "step3Desc": "Meet up and see the city the way someone who lives there sees it."
     },
     "howGuide": {
-      "title": "How It Works as Guide",
-      "subtitle": "Book a local experience in just three simple steps",
+      "title": "For Guides",
+      "subtitle": "Start hosting travelers in three simple steps",
       "step1": "Open a Slot",
+      "step1Desc": "Pick the days and hours you're free. No fixed schedule required.",
       "step2": "Book Instantly",
-      "step3": "Explore Together"
+      "step2Desc": "Travelers book your slot directly, and payment runs through the platform.",
+      "step3": "Explore Together",
+      "step3Desc": "Take them to your favorite spots and share the city you know best."
     },
     "team": {
       "title": "From Our Team",
@@ -100,6 +97,7 @@
     },
     "faq": {
       "title": "FAQ",
+      "subtitle": "Everything you need to know.",
       "q1": "What is Ahhh Yaotu?",
       "a1": "Ahhh Yaotu connects travelers with verified local guides for authentic, flexible experiences that match your interests and schedule.",
       "q2": "How are local guides verified?",

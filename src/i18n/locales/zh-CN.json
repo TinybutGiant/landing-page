@@ -46,7 +46,8 @@
       "title": "与专业当地地陪一起探索日本",
       "subtitle": "与知识渊博的当地人联系，分享您的兴趣并创造难忘的体验",
       "tagline": "连接经过认证的当地人，匹配你的兴趣、旅行风格与时间安排。",
-      "ctaIntro": "旅客或地陪都可以从这里开始 — 提前加入，一起塑造成长之路。",
+      "ctaIntro": "旅客或地陪都可以从这里开始",
+      "ctaIntroSub": "提前加入，一起塑造成长之路。",
       "waitlistCta": "加入候补名单，探索地陪",
       "guideCta": "成为本地地陪",
       "cta": "开始您的旅程"
@@ -57,36 +58,32 @@
       "expertGuides": "专业地陪",
       "expertGuidesDesc": "经过认证的当地人，对城市有深入了解。",
       "authenticExperiences": "真实体验",
-      "authenticExperiencesDesc": "体验超越导览书的城市另一面。",
+      "authenticExperiencesDesc": "跳出导览书，像当地人一样看这座城市。",
       "safeSecure": "安全可靠",
       "safeSecureDesc": "每位当地人都经过认证，每次预订都内置安全保障。",
       "flexibleBooking": "灵活预订",
       "flexibleBookingDesc": "省去反复沟通，放心直接预订。"
     },
-    "howItWorks": {
-      "title": "使用流程",
-      "step1": "寻找地陪",
-      "step1Desc": "浏览经过验证的地陪并按专业领域筛选",
-      "step2": "联系规划",
-      "step2Desc": "与您的地陪发消息讨论您的兴趣",
-      "step3": "预订支付",
-      "step3Desc": "通过简单预订确保您的体验",
-      "step4": "享受体验",
-      "step4Desc": "与您的地陪会面并创造持久回忆"
-    },
     "howTraveler": {
-      "title": "旅行者如何使用",
+      "sectionTitle": "使用流程",
+      "title": "旅行者",
       "subtitle": "三步完成一次本地体验预订",
       "step1": "找到当地人",
+      "step1Desc": "浏览身边经过验证的当地人，挑一个和你气场合拍的。",
       "step2": "即时预订",
-      "step3": "一起探索"
+      "step2Desc": "选一个合适的时间，几步确认，安全支付。",
+      "step3": "一起探索",
+      "step3Desc": "碰面出发，用真正住在这里的人的方式逛这座城市。"
     },
     "howGuide": {
-      "title": "地陪如何使用",
+      "title": "地陪",
       "subtitle": "三步开启接待与探索",
       "step1": "开放时段",
+      "step1Desc": "自己决定哪天、哪几个小时有空，不用固定排班。",
       "step2": "即时接单",
-      "step3": "一起探索"
+      "step2Desc": "旅行者直接预订你的时段，款项通过平台结算。",
+      "step3": "一起探索",
+      "step3Desc": "带他们去你常去的地方，分享你最熟悉的城市。"
     },
     "team": {
       "title": "来自我们的团队",
@@ -100,6 +97,7 @@
     },
     "faq": {
       "title": "常见问题",
+      "subtitle": "你需要了解的一切。",
       "q1": "Ahhh Yaotu 是什么？",
       "a1": "Ahhh Yaotu 连接旅客与经过认证的本地地陪，提供贴合兴趣与行程的真实灵活体验。",
       "q2": "地陪如何完成认证？",

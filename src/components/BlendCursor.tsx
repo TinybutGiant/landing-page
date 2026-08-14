@@ -3,7 +3,6 @@ import { motion, useMotionValue, useSpring } from "framer-motion";
 
 const SIZE = 22;
 
-/** White fill + mix-blend difference → dark on light, light on dark. */
 const BlendCursor = ({ enabled = true }: { enabled?: boolean }) => {
   const [visible, setVisible] = useState(false);
   const [isFinePointer, setIsFinePointer] = useState(false);

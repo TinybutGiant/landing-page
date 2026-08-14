@@ -1,13 +1,22 @@
-import { useRef, useState, FormEvent, useEffect, type ReactNode } from "react";
+import {
+  useRef,
+  useState,
+  FormEvent,
+  useEffect,
+  type ReactNode,
+  type CSSProperties,
+} from "react";
+import { createPortal } from "react-dom";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
   ArrowRight,
+  ArrowLeft,
   MapPin,
   Heart,
   Globe,
   Shield,
-  ChevronDown,
+  Plus,
   X,
 } from "lucide-react";
 import CursorFollow from "@/components/CursorFollow";
@@ -20,45 +29,249 @@ import LanguageSwitcher from "@/components/LanguageSwitcher";
 const DISPLAY_FONT =
   '"Open Runde", "Helvetica Neue", Helvetica, Arial, sans-serif';
 
-type StepItem = { step: string; title: string; image: string };
+type StepItem = {
+  step: string;
+  title: string;
+  image: string;
+  description: string;
+};
 
-const StepFlow = ({ steps }: { steps: StepItem[] }) => (
-  <div className="mx-auto flex w-full max-w-md flex-col items-center gap-4 sm:gap-5">
-    {steps.map((item, index) => (
-      <div
-        key={`${item.step}-${item.title}`}
-        className="flex w-full flex-col items-center"
-      >
+const CLOSE_DELAY_MS = 180;
+
+const StepFlow = ({ steps, label }: { steps: StepItem[]; label: string }) => {
+  const [active, setActive] = useState(0);
+  const [direction, setDirection] = useState(1);
+  const [panelOpen, setPanelOpen] = useState(false);
+  const [openedByTouch, setOpenedByTouch] = useState(false);
+  const isTouchRef = useRef(false);
+  const closeTimerRef = useRef<number | null>(null);
+
+  const cancelClose = () => {
+    if (closeTimerRef.current !== null) {
+      window.clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+  };
+
+  const scheduleClose = () => {
+    cancelClose();
+    closeTimerRef.current = window.setTimeout(
+      () => setPanelOpen(false),
+      CLOSE_DELAY_MS
+    );
+  };
+
+  const closePanel = () => {
+    cancelClose();
+    setPanelOpen(false);
+  };
+
+  useEffect(() => () => cancelClose(), []);
+
+  useEffect(() => {
+    if (!panelOpen) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") closePanel();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [panelOpen]);
+
+  const goTo = (next: number) => {
+    const clamped = ((next % steps.length) + steps.length) % steps.length;
+    if (clamped === active) return;
+    if (active === steps.length - 1 && clamped === 0) setDirection(1);
+    else if (active === 0 && clamped === steps.length - 1) setDirection(-1);
+    else setDirection(clamped > active ? 1 : -1);
+    setActive(clamped);
+  };
+
+  const current = steps[active];
+
+  const navControls = (
+    <div className="flex w-full items-center justify-between gap-4">
+      <div className="flex items-center gap-3">
+        <button
+          type="button"
+          onClick={() => goTo(active - 1)}
+          aria-label={`${label}: previous step`}
+          className="flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-700 transition-colors hover:border-[#FFD511] hover:bg-[#FFD511] hover:text-gray-900"
+          data-cursor-hover
+        >
+          <ArrowLeft className="h-5 w-5" />
+        </button>
+        <button
+          type="button"
+          onClick={() => goTo(active + 1)}
+          aria-label={`${label}: next step`}
+          className="flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-700 transition-colors hover:border-[#FFD511] hover:bg-[#FFD511] hover:text-gray-900"
+          data-cursor-hover
+        >
+          <ArrowRight className="h-5 w-5" />
+        </button>
+      </div>
+
+      <div className="flex items-center gap-2.5">
+        {steps.map((item, index) => (
+          <button
+            key={item.title}
+            type="button"
+            onClick={() => goTo(index)}
+            aria-label={`${label}: step ${index + 1}`}
+            aria-current={index === active}
+            className={`h-2.5 rounded-full transition-all ${
+              index === active
+                ? "w-6 bg-[#FFD511]"
+                : "w-2.5 bg-gray-300 hover:bg-gray-400"
+            }`}
+            data-cursor-hover
+          />
+        ))}
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="w-full">
+      <AnimatePresence mode="wait">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.45, delay: index * 0.06 }}
-          viewport={{ once: true }}
+          key={current.title}
+          initial={{ opacity: 0, x: direction * 24 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: direction * -24 }}
+          transition={{ duration: 0.3, ease: "easeOut" }}
+          onPointerDown={(event) => {
+            isTouchRef.current = event.pointerType !== "mouse";
+          }}
+          onPointerEnter={(event) => {
+            if (event.pointerType !== "mouse") return;
+            cancelClose();
+            setOpenedByTouch(false);
+            setPanelOpen(true);
+          }}
+          onPointerLeave={(event) => {
+            if (event.pointerType === "mouse") scheduleClose();
+          }}
+          onTap={() => {
+            if (!isTouchRef.current) return;
+            setOpenedByTouch(true);
+            setPanelOpen((open) => !open);
+          }}
           className="w-full"
         >
-          <div className="mb-2 flex h-7 items-center justify-center text-center">
+          <div className="mb-3 flex h-7 items-center justify-center text-center">
             <span className="text-base font-semibold text-gray-900 sm:text-lg">
-              {item.step} {item.title}
+              {current.step} {current.title}
             </span>
           </div>
           <motion.div
-            className="aspect-[16/10] w-full overflow-hidden rounded-2xl bg-gray-100 shadow-md"
             whileHover={{ scale: 1.02, y: -2 }}
             transition={{ duration: 0.3 }}
+            className="aspect-[16/10] w-full overflow-hidden rounded-2xl bg-gray-100 shadow-md"
+            data-cursor-hover
           >
             <img
-              src={item.image}
-              alt={item.title}
+              src={current.image}
+              alt={current.title}
               className="h-full w-full object-cover"
               loading="lazy"
+              draggable={false}
             />
           </motion.div>
         </motion.div>
-        {index < steps.length - 1 && <div className="h-6" aria-hidden />}
-      </div>
-    ))}
-  </div>
-);
+      </AnimatePresence>
+
+      <div className="mt-6">{navControls}</div>
+
+      {createPortal(
+        <AnimatePresence>
+          {panelOpen && (
+            <motion.div
+              className="pointer-events-none fixed inset-0 z-[90] flex items-center justify-center p-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div
+                className={`absolute inset-0 bg-black/40 backdrop-blur-sm ${
+                  openedByTouch ? "pointer-events-auto" : ""
+                }`}
+                onClick={openedByTouch ? closePanel : undefined}
+                aria-hidden
+              />
+              <motion.div
+                role="dialog"
+                aria-label={`${label}: ${current.title}`}
+                initial={{ opacity: 0, y: 20, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 12, scale: 0.98 }}
+                transition={{ duration: 0.25, ease: "easeOut" }}
+                onMouseEnter={cancelClose}
+                onMouseLeave={() => {
+                  if (!openedByTouch) scheduleClose();
+                }}
+                className="pointer-events-auto relative grid w-full max-w-4xl overflow-hidden rounded-3xl bg-white text-left shadow-2xl md:grid-cols-2"
+              >
+                <button
+                  type="button"
+                  onClick={closePanel}
+                  aria-label="Close"
+                  className="absolute right-4 top-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-gray-500 shadow-sm transition-colors hover:text-gray-900 md:hidden"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+
+                <div className="order-2 flex flex-col justify-between p-6 sm:p-8 md:order-1 md:p-10">
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={current.title}
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -8 }}
+                      transition={{ duration: 0.25, ease: "easeOut" }}
+                    >
+                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">
+                        {label}
+                      </p>
+                      <h4 className="mt-4 text-2xl font-bold text-gray-900 sm:text-3xl">
+                        {current.step} {current.title}
+                      </h4>
+                      <p className="mt-4 text-base leading-relaxed text-gray-600 sm:text-lg">
+                        {current.description}
+                      </p>
+                    </motion.div>
+                  </AnimatePresence>
+
+                  <div className="mt-8 border-t border-gray-200 pt-5 md:mt-10">
+                    {navControls}
+                  </div>
+                </div>
+
+                <div className="relative order-1 aspect-[4/3] bg-gray-100 md:order-2 md:aspect-auto md:min-h-[26rem]">
+                  <AnimatePresence mode="wait">
+                    <motion.img
+                      key={current.image + current.title}
+                      src={current.image}
+                      alt={current.title}
+                      initial={{ opacity: 0, scale: 1.04 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.35, ease: "easeOut" }}
+                      className="absolute inset-0 h-full w-full object-cover"
+                      draggable={false}
+                    />
+                  </AnimatePresence>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
+    </div>
+  );
+};
 
 const LandingPage = () => {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -122,7 +335,7 @@ const LandingPage = () => {
       title: t("landing.features.flexibleBooking", "Flexible Booking"),
       description: t(
         "landing.features.flexibleBookingDesc",
-        "Skip the back-and-forth and book with confidence."
+        "Skip the back-and-forth and book with\u00A0confidence."
       ),
     },
     {
@@ -130,7 +343,7 @@ const LandingPage = () => {
       title: t("landing.features.authenticExperiences", "Authentic Experiences"),
       description: t(
         "landing.features.authenticExperiencesDesc",
-        "Experience the city beyond the guidebooks."
+        "Go beyond the guidebooks and see the city like a local."
       ),
     },
     {
@@ -147,16 +360,28 @@ const LandingPage = () => {
     {
       step: "①",
       title: t("landing.howTraveler.step1", "Find a Local"),
+      description: t(
+        "landing.howTraveler.step1Desc",
+        "Browse verified locals nearby and pick someone whose style fits your trip."
+      ),
       image: "/3.jpg",
     },
     {
       step: "②",
       title: t("landing.howTraveler.step2", "Book Instantly"),
+      description: t(
+        "landing.howTraveler.step2Desc",
+        "Choose a time that works, confirm in a few taps, and pay securely."
+      ),
       image: "/5.jpg",
     },
     {
       step: "③",
       title: t("landing.howTraveler.step3", "Explore Together"),
+      description: t(
+        "landing.howTraveler.step3Desc",
+        "Meet up and see the city the way someone who lives there sees it."
+      ),
       image: "/6.jpg",
     },
   ];
@@ -165,16 +390,28 @@ const LandingPage = () => {
     {
       step: "①",
       title: t("landing.howGuide.step1", "Open a Slot"),
+      description: t(
+        "landing.howGuide.step1Desc",
+        "Pick the days and hours you're free. No fixed schedule required."
+      ),
       image: "/3.jpg",
     },
     {
       step: "②",
       title: t("landing.howGuide.step2", "Book Instantly"),
+      description: t(
+        "landing.howGuide.step2Desc",
+        "Travelers book your slot directly, and payment runs through the platform."
+      ),
       image: "/5.jpg",
     },
     {
       step: "③",
       title: t("landing.howGuide.step3", "Explore Together"),
+      description: t(
+        "landing.howGuide.step3Desc",
+        "Take them to your favorite spots and share the city you know best."
+      ),
       image: "/6.jpg",
     },
   ];
@@ -295,6 +532,13 @@ const LandingPage = () => {
         ref={heroRef}
         id="hero-section"
         className="relative flex min-h-screen items-center overflow-hidden"
+        style={
+          {
+            "--hero-title-size": "clamp(30px, 9vw, 170px)",
+            "--hero-tagline-size":
+              "clamp(0.95rem, calc(var(--hero-title-size) * 0.185), 1.6rem)",
+          } as CSSProperties
+        }
       >
         <motion.div
           className="pointer-events-none absolute inset-0 overflow-hidden will-change-transform"
@@ -324,117 +568,134 @@ const LandingPage = () => {
           className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center px-5 sm:px-8"
           style={{ opacity: heroOpacity }}
         >
-          <motion.h1
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.5 }}
-            className="flex max-w-full cursor-default select-none items-baseline justify-center font-bold text-gray-900"
-            style={{
-              fontFamily: DISPLAY_FONT,
-              fontSize: "clamp(48px, 10vw, 180px)",
-              lineHeight: "0.9",
-              fontWeight: 700,
-              letterSpacing: "-0.01em",
-            }}
-            aria-label="Ahhh Yaotu"
-          >
-            <motion.span
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.55, delay: 0.7 }}
-              className="shrink-0 text-gray-900"
+          <div className="relative max-w-full">
+            <div
+              className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[46vh] w-[96vw] max-w-6xl -translate-x-1/2 -translate-y-1/2"
               style={{
-                fontSize: "0.58em",
-                fontWeight: 600,
-                letterSpacing: "0.04em",
-                marginRight: "0.28em",
+                background:
+                  "radial-gradient(closest-side, rgba(255,255,255,0.92) 35%, rgba(255,255,255,0.55) 65%, rgba(255,255,255,0))",
+              }}
+              aria-hidden
+            />
+            <motion.h1
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.8, delay: 0.5 }}
+              className="flex max-w-full cursor-default select-none items-baseline justify-center whitespace-nowrap font-bold text-gray-900"
+              style={{
+                fontFamily: DISPLAY_FONT,
+                fontSize: "var(--hero-title-size)",
+                lineHeight: "0.9",
+                fontWeight: 700,
+                letterSpacing: "-0.02em",
+                textShadow:
+                  "0 0 16px rgba(255,255,255,0.95), 0 0 40px rgba(255,255,255,0.8)",
+              }}
+              aria-label="www.ahhh-yaotu.com"
+            >
+              <motion.span
+                initial={{ opacity: 0, y: 18 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.55, delay: 0.7 }}
+                className="shrink-0 text-gray-900"
+                style={{ fontSize: "0.47em", fontWeight: 500 }}
+              >
+                www.
+              </motion.span>
+              <motion.span
+                initial={{ opacity: 0, y: 18 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.55, delay: 0.85 }}
+                className="shrink-0 text-gray-900"
+              >
+                ahhh-yaotu
+              </motion.span>
+              <motion.span
+                initial={{ opacity: 0, y: 18 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.55, delay: 1 }}
+                className="shrink-0 text-gray-900"
+                style={{ fontSize: "0.47em", fontWeight: 500 }}
+              >
+                .com
+              </motion.span>
+            </motion.h1>
+
+            <motion.p
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.65, delay: 1.15 }}
+              className="absolute left-0 right-0 top-full mx-auto text-center text-gray-700"
+              style={{
+                fontFamily: DISPLAY_FONT,
+                fontWeight: 500,
+                lineHeight: 1.5,
+                letterSpacing: "0.01em",
+                fontSize: "var(--hero-tagline-size)",
+                width: "min(44rem, 92vw)",
+                marginTop: "calc(var(--hero-title-size) * 0.3)",
+                textShadow:
+                  "0 0 14px rgba(255,255,255,0.95), 0 0 32px rgba(255,255,255,0.75)",
               }}
             >
-              Ahhh
-            </motion.span>
-            <motion.span
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.55, delay: 0.85 }}
-              className="shrink-0 text-gray-900"
-            >
-              Yaotu
-            </motion.span>
-          </motion.h1>
-        </motion.div>
-
-        <motion.div
-          className="pointer-events-none absolute left-0 right-0 z-10"
-          style={{
-            bottom: "clamp(1.25rem, 4vh, 2.5rem)",
-            opacity: heroOpacity,
-            paddingLeft: "clamp(1.25rem, 4vw, 2rem)",
-            paddingRight: "clamp(1.25rem, 4vw, 2rem)",
-          }}
-        >
-          <motion.p
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.65, delay: 1 }}
-            className="mx-auto text-center text-gray-700"
-            style={{
-              fontFamily: DISPLAY_FONT,
-              fontWeight: 500,
-              lineHeight: 1.5,
-              letterSpacing: "0.01em",
-              fontSize: "clamp(0.8125rem, 1.4vw + 0.55rem, 1.125rem)",
-              maxWidth: "min(36rem, 92vw)",
-            }}
-          >
-            {t(
-              "landing.hero.tagline",
-              "Connect with verified locals who match your interests, travel style, and schedule."
-            )}
-          </motion.p>
+              {t(
+                "landing.hero.tagline",
+                "Connect with verified locals who match your interests, travel style, and schedule."
+              )}
+            </motion.p>
+          </div>
         </motion.div>
       </div>
 
       {/* Mid CTAs */}
-      <section className="relative z-10 px-4 py-20 sm:py-24 lg:py-28">
+      <section className="relative z-10 py-20 sm:py-24 lg:py-28">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="relative mx-auto flex max-w-3xl flex-col items-center text-center"
+          className="relative flex flex-col items-center text-center"
         >
-          <motion.p
+          <motion.div
             initial={{ opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.05 }}
-            className="mb-10 max-w-2xl text-gray-900 sm:mb-12"
-            style={{
-              fontFamily: DISPLAY_FONT,
-              fontWeight: 700,
-              lineHeight: 1.25,
-              letterSpacing: "-0.02em",
-              fontSize: "clamp(1.35rem, 2.5vw + 0.6rem, 2.25rem)",
-            }}
+            className="mb-14 w-full text-center sm:mb-16"
           >
-            {t(
-              "landing.hero.ctaIntro",
-              "Start as a traveler or a local — join early and shape the journey with us."
-            )}
-          </motion.p>
-          <div className="flex w-full max-w-2xl flex-col items-center gap-4 sm:flex-row sm:justify-center sm:gap-5">
+            <p
+              className="mb-4 text-gray-900"
+              style={{
+                fontFamily: DISPLAY_FONT,
+                fontWeight: 700,
+                lineHeight: 1.25,
+                letterSpacing: "-0.02em",
+                fontSize: "clamp(1.35rem, 2.5vw + 0.6rem, 2.25rem)",
+              }}
+            >
+              {t("landing.hero.ctaIntro", "Start as a traveler or a local")}
+            </p>
+            <p className="text-xl text-gray-600 dark:text-gray-300">
+              {t(
+                "landing.hero.ctaIntroSub",
+                "Join early and shape the journey with us."
+              )}
+            </p>
+          </motion.div>
+          <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
             <motion.div
               initial={{ opacity: 0, y: 12 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.45, delay: 0.12 }}
-              whileHover={{ scale: 1.03, y: -2 }}
+              whileHover={{ scale: 1.02, y: -2 }}
               whileTap={{ scale: 0.98 }}
-              className="w-full sm:w-auto"
+              className="w-full"
             >
               <Button
                 size="lg"
-                className="h-auto min-h-[3.25rem] w-full rounded-full px-8 py-4 text-base font-semibold shadow-md sm:w-auto sm:px-10 sm:text-lg"
+                className="h-auto min-h-[3.5rem] w-full whitespace-normal rounded-full px-5 py-4 text-center text-sm font-semibold leading-snug shadow-md sm:px-8 sm:text-base lg:text-lg"
                 onClick={() => setWaitlistOpen(true)}
                 data-cursor-hover
               >
@@ -449,14 +710,14 @@ const LandingPage = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.45, delay: 0.2 }}
-              whileHover={{ scale: 1.03, y: -2 }}
+              whileHover={{ scale: 1.02, y: -2 }}
               whileTap={{ scale: 0.98 }}
-              className="w-full sm:w-auto"
+              className="w-full"
             >
               <Button
                 size="lg"
                 variant="outline"
-                className="h-auto min-h-[3.25rem] w-full rounded-full border-2 px-8 py-4 text-base font-semibold sm:w-auto sm:px-10 sm:text-lg"
+                className="h-auto min-h-[3.5rem] w-full whitespace-normal rounded-full border-2 px-5 py-4 text-center text-sm font-semibold leading-snug sm:px-8 sm:text-base lg:text-lg"
                 onClick={scrollToCta}
                 data-cursor-hover
               >
@@ -465,6 +726,7 @@ const LandingPage = () => {
             </motion.div>
           </div>
         </motion.div>
+        </div>
       </section>
 
       {/* Features */}
@@ -486,7 +748,7 @@ const LandingPage = () => {
             <h2 className="mb-4 text-3xl font-bold text-gray-900 dark:text-white sm:text-4xl">
               {t("landing.features.title", "Why Choose YaoTu?")}
             </h2>
-            <p className="mx-auto max-w-3xl text-xl text-gray-600 dark:text-gray-300">
+            <p className="text-xl text-gray-600 dark:text-gray-300">
               {t(
                 "landing.features.subtitle",
                 "Explore the city with locals who know it best."
@@ -550,24 +812,39 @@ const LandingPage = () => {
       {/* How it works */}
       <section className="relative overflow-hidden bg-white/40 py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 lg:items-start">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="mb-16 text-center"
+          >
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white sm:text-4xl">
+              {t("landing.howTraveler.sectionTitle", "How It Works")}
+            </h2>
+          </motion.div>
+
+          <div className="grid grid-cols-1 gap-14 lg:grid-cols-2 lg:items-start lg:gap-0">
             <motion.div
               initial={{ opacity: 0, x: -16 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.55 }}
-              className="flex flex-col items-center px-2 text-center sm:px-6 lg:px-10 lg:pr-12"
+              className="flex flex-col items-center text-center lg:pr-12"
             >
-              <h2 className="mb-3 flex min-h-[2.5rem] items-end justify-center text-2xl font-bold text-gray-900 sm:min-h-[2.75rem] sm:text-3xl">
-                {t("landing.howTraveler.title", "How It Works as Traveler")}
-              </h2>
-              <p className="mb-8 min-h-[3rem] max-w-sm text-base text-gray-600 sm:min-h-[3.25rem] sm:text-lg">
+              <h3 className="mb-3 text-2xl font-bold text-gray-900 sm:text-3xl">
+                {t("landing.howTraveler.title", "For Travelers")}
+              </h3>
+              <p className="mb-8 w-full text-base text-gray-600 sm:text-lg">
                 {t(
                   "landing.howTraveler.subtitle",
-                  "Book a local experience in just three simple steps"
+                  "Book a local experience in three simple steps"
                 )}
               </p>
-              <StepFlow steps={travelerSteps} />
+              <StepFlow
+                steps={travelerSteps}
+                label={t("landing.howTraveler.title", "For Travelers")}
+              />
             </motion.div>
 
             <motion.div
@@ -575,18 +852,21 @@ const LandingPage = () => {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.55 }}
-              className="mt-14 flex flex-col items-center px-2 text-center sm:px-6 lg:mt-0 lg:border-l lg:border-gray-200 lg:px-10 lg:pl-12"
+              className="flex flex-col items-center text-center lg:border-l lg:border-gray-200 lg:pl-12"
             >
-              <h2 className="mb-3 flex min-h-[2.5rem] items-end justify-center text-2xl font-bold text-gray-900 sm:min-h-[2.75rem] sm:text-3xl">
-                {t("landing.howGuide.title", "How It Works as Guide")}
-              </h2>
-              <p className="mb-8 min-h-[3rem] max-w-sm text-base text-gray-600 sm:min-h-[3.25rem] sm:text-lg">
+              <h3 className="mb-3 text-2xl font-bold text-gray-900 sm:text-3xl">
+                {t("landing.howGuide.title", "For Guides")}
+              </h3>
+              <p className="mb-8 w-full text-base text-gray-600 sm:text-lg">
                 {t(
                   "landing.howGuide.subtitle",
-                  "Book a local experience in just three simple steps"
+                  "Start hosting travelers in three simple steps"
                 )}
               </p>
-              <StepFlow steps={guideSteps} />
+              <StepFlow
+                steps={guideSteps}
+                label={t("landing.howGuide.title", "For Guides")}
+              />
             </motion.div>
           </div>
         </div>
@@ -650,62 +930,67 @@ const LandingPage = () => {
 
       {/* FAQ */}
       <section className="bg-white/50 py-20 backdrop-blur-sm">
-        <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.55 }}
-            viewport={{ once: true }}
-            className="mb-12 text-center"
-          >
-            <h2 className="mb-4 text-3xl font-bold text-gray-900 sm:text-4xl">
-              {t("landing.faq.title", "FAQ")}
-            </h2>
-          </motion.div>
-          <div className="space-y-3">
-            {faqs.map((item, index) => {
-              const isOpen = openFaq === index;
-              return (
-                <motion.div
-                  key={item.q}
-                  initial={{ opacity: 0, y: 12 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: index * 0.05 }}
-                  className="overflow-hidden rounded-xl border border-gray-200 bg-white/90"
-                >
-                  <button
-                    type="button"
-                    className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left font-medium text-gray-900 transition-colors hover:bg-yellow-50/80"
-                    onClick={() => setOpenFaq(isOpen ? null : index)}
-                    aria-expanded={isOpen}
-                    data-cursor-hover
-                  >
-                    <span>{item.q}</span>
-                    <ChevronDown
-                      className={`h-5 w-5 shrink-0 text-gray-500 transition-transform ${
-                        isOpen ? "rotate-180" : ""
-                      }`}
-                    />
-                  </button>
-                  <AnimatePresence initial={false}>
-                    {isOpen && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.25 }}
-                        className="overflow-hidden"
-                      >
-                        <p className="px-5 pb-4 leading-relaxed text-gray-600">
-                          {item.a}
-                        </p>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </motion.div>
-              );
-            })}
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-16">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.55 }}
+              viewport={{ once: true }}
+              className="lg:col-span-4 lg:sticky lg:top-24 lg:self-start"
+            >
+              <h2 className="mb-4 text-3xl font-bold text-gray-900 sm:text-4xl">
+                {t("landing.faq.title", "FAQ")}
+              </h2>
+              <p className="text-xl text-gray-600 dark:text-gray-300">
+                {t("landing.faq.subtitle", "Everything you need to know.")}
+              </p>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.55, delay: 0.1 }}
+              viewport={{ once: true }}
+              className="divide-y divide-gray-200 overflow-hidden rounded-2xl border border-gray-200 bg-white/90 lg:col-span-8"
+            >
+              {faqs.map((item, index) => {
+                const isOpen = openFaq === index;
+                return (
+                  <div key={item.q}>
+                    <button
+                      type="button"
+                      className="flex w-full items-center justify-between gap-6 px-5 py-5 text-left font-medium text-gray-900 transition-colors hover:bg-yellow-50/60 sm:px-6"
+                      onClick={() => setOpenFaq(isOpen ? null : index)}
+                      aria-expanded={isOpen}
+                      data-cursor-hover
+                    >
+                      <span>{item.q}</span>
+                      <Plus
+                        className={`h-5 w-5 shrink-0 text-gray-400 transition-transform duration-300 ${
+                          isOpen ? "rotate-45" : ""
+                        }`}
+                      />
+                    </button>
+                    <AnimatePresence initial={false}>
+                      {isOpen && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.25 }}
+                          className="overflow-hidden"
+                        >
+                          <p className="px-5 pb-5 leading-relaxed text-gray-600 sm:px-6">
+                            {item.a}
+                          </p>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                );
+              })}
+            </motion.div>
           </div>
         </div>
       </section>
@@ -731,7 +1016,7 @@ const LandingPage = () => {
           <div className="absolute left-1/4 top-1/2 h-16 w-16 rounded-full bg-white blur-xl" />
         </motion.div>
 
-        <div className="relative z-10 mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
+        <div className="relative z-10 mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -772,7 +1057,7 @@ const LandingPage = () => {
             >
               <Button
                 size="lg"
-                className="group relative overflow-hidden rounded-full bg-white px-8 py-3 font-semibold shadow-lg transition-all duration-300 hover:bg-gray-100 hover:shadow-2xl"
+                className="group relative h-auto max-w-full overflow-hidden whitespace-normal rounded-full bg-white px-6 py-3 text-center text-sm font-semibold leading-snug shadow-lg transition-all duration-300 hover:bg-gray-100 hover:shadow-2xl sm:px-8 sm:text-base"
                 style={{ color: "#FFD511" }}
                 onClick={handleBecomeGuide}
                 data-cursor-hover
