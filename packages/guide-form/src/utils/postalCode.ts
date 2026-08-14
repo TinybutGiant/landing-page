@@ -36,4 +36,3 @@ export const formatPostalCode = (value: string): string => {
 export const isValidPostalCode = (value: string): boolean => {
   return POSTAL_CODE_REGEX.test(value);
 };
-

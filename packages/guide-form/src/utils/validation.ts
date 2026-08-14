@@ -33,54 +33,49 @@ export const validateEvaluationQuestions = (formData: Partial<FormData>): string
   return missingFields;
 };
 
-// 验证表单完整性
-export const validateFormCompleteness = (formData: FormData): string[] => {
+export const validateFormCompleteness = (formData: Partial<FormData>): string[] => {
   const missingFields: string[] = [];
 
-  // 基本信息验证
-  if (!formData.name?.trim()) missingFields.push("姓名");
+  if (!formData.name?.trim()) missingFields.push("becomeGuide.preview.name");
   if (!formData.age || formData.age < 18 || formData.age > 120)
-    missingFields.push("年龄");
-  if (!formData.sex) missingFields.push("性别");
-  if (!formData.mbti) missingFields.push("MBTI人格类型");
+    missingFields.push("becomeGuide.preview.age");
+  if (!formData.sex) missingFields.push("becomeGuide.preview.gender");
+  if (!formData.mbti) missingFields.push("becomeGuide.preview.mbti");
 
-  // 服务信息验证
-  if (!formData.serviceCity?.trim()) missingFields.push("服务城市");
+  if (!formData.serviceCity?.trim()) missingFields.push("becomeGuide.preview.serviceCity");
   if (!formData.residenceStartDate)
-    missingFields.push("在日本生活的起始时间");
-  if (!formData.residenceInfo?.trim()) missingFields.push("住址/常驻区域");
-  if (!formData.residenceZipcode?.trim()) missingFields.push("邮政编码");
-  if (!formData.occupation?.trim()) missingFields.push("当前职业");
-  if (!formData.bio?.trim()) missingFields.push("自我介绍");
+    missingFields.push("becomeGuide.preview.residenceStartDate");
+  if (!formData.residenceInfo?.trim()) missingFields.push("becomeGuide.preview.residenceInfo");
+  if (!formData.residenceZipcode?.trim())
+    missingFields.push("becomeGuide.preview.residenceZipcode");
+  if (!formData.occupation?.trim()) missingFields.push("becomeGuide.preview.occupation");
+  if (!formData.bio?.trim()) missingFields.push("becomeGuide.preview.bio");
 
-  // 资质与经验验证
-  if (
-    !formData.languages ||
-    formData.languages.length === 0
-  ) {
-    missingFields.push("语言能力");
-  }
-  if (!formData.experienceDuration)
-    missingFields.push("地陪时长");
-  if (!formData.experienceSession)
-    missingFields.push("地陪次数");
+  if (!formData.languages?.length) missingFields.push("becomeGuide.preview.languages");
+  if (!formData.experienceDuration) missingFields.push("becomeGuide.preview.guideExperience");
+  if (!formData.experienceSession) missingFields.push("becomeGuide.preview.guideSessions");
 
   missingFields.push(...validateEvaluationQuestions(formData));
 
-  // 服务类型与偏好验证
-  if (!formData.serviceSelections || formData.serviceSelections.length === 0)
-    missingFields.push("服务项目选择");
-  if (!formData.targetGroup || formData.targetGroup.length === 0)
-    missingFields.push("服务对象");
-  if (!formData.minPeople) missingFields.push("最少人数");
-  if (!formData.maxPeople) missingFields.push("最多人数");
-  if (!formData.minDuration) missingFields.push("最短时长");
-  if (!formData.maxDuration) missingFields.push("最长时长");
-  if (formData.basicPricePerHour === undefined || formData.basicPricePerHour === null || formData.basicPricePerHour < 0)
-    missingFields.push("基础时薪");
-  if (formData.additionalPricePerPerson === undefined || formData.additionalPricePerPerson === null || formData.additionalPricePerPerson < 0)
-    missingFields.push("额外人员费用");
-  if (!formData.currency) missingFields.push("货币类型");
+  if (!formData.serviceSelections?.length) missingFields.push("becomeGuide.preview.serviceItems");
+  if (!formData.targetGroup?.length) missingFields.push("becomeGuide.preview.targetGroup");
+  if (!formData.minPeople || !formData.maxPeople) missingFields.push("becomeGuide.preview.serviceRange");
+  if (!formData.minDuration || !formData.maxDuration)
+    missingFields.push("becomeGuide.preview.serviceDuration");
+  if (
+    formData.basicPricePerHour === undefined ||
+    formData.basicPricePerHour === null ||
+    formData.basicPricePerHour < 0
+  ) {
+    missingFields.push("becomeGuide.preview.basicPrice");
+  }
+  if (
+    formData.additionalPricePerPerson === undefined ||
+    formData.additionalPricePerPerson === null ||
+    formData.additionalPricePerPerson < 0
+  ) {
+    missingFields.push("becomeGuide.preview.additionalPrice");
+  }
 
-  return missingFields;
+  return Array.from(new Set(missingFields));
 };

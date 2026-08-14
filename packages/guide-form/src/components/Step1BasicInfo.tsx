@@ -31,14 +31,14 @@ interface Step1BasicInfoProps {
   cities?: Array<{ value: string; label: string }>;
 }
 
-export const Step1BasicInfo = ({ 
-  control, 
-  handleQualificationFilesChange, 
+export const Step1BasicInfo = ({
+  control,
+  handleQualificationFilesChange,
   ui,
   cities = []
 }: Step1BasicInfoProps) => {
   const intl = useIntl();
-  
+
   const {
     FormField,
     FormItem,
@@ -284,7 +284,7 @@ export const Step1BasicInfo = ({
           />
 
 
-          {YearMonthPicker && (
+          {YearMonthPicker ? (
             <FormField
               control={control}
               name="residenceStartDate"
@@ -306,6 +306,26 @@ export const Step1BasicInfo = ({
                         );
                       }}
                       placeholder={intl.formatMessage({ id: 'becomeGuide.step1.residenceStartDatePlaceholder' })}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          ) : (
+            <FormField
+              control={control}
+              name="residenceStartDate"
+              render={({ field }: any) => (
+                <FormItem>
+                  <FormLabel>{intl.formatMessage({ id: 'becomeGuide.step1.residenceStartDate' })}</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="month"
+                      value={field.value ? String(field.value).slice(0, 7) : ""}
+                      onChange={(event: any) => {
+                        field.onChange(event.target.value ? `${event.target.value}-01` : "");
+                      }}
                     />
                   </FormControl>
                   <FormMessage />
@@ -480,4 +500,3 @@ export const Step1BasicInfo = ({
     </div>
   );
 };
-

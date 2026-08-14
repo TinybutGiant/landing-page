@@ -92,8 +92,12 @@ export function getCanonicalAuthOrigin(): string {
   );
 }
 
-export function getCanonicalVerifyEmailPath(): string {
-  return `${getCanonicalAuthOrigin()}/verify-email`;
+export function getCanonicalVerifyEmailPath(redirectTo?: string | null): string {
+  const url = new URL("/verify-email", getCanonicalAuthOrigin());
+  if (redirectTo?.trim()) {
+    url.searchParams.set("redirect", redirectTo.trim());
+  }
+  return url.toString();
 }
 
 export function getMarketplaceOrigin(): string {

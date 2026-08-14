@@ -17,9 +17,12 @@ export { useApprovalTimeline } from "./hooks/useApprovalTimeline";
 export { useApplicationStatus } from "./hooks/useApplicationStatus";
 
 // 类型定义
-export type { 
-  FormData, 
-  GuideFormConfig 
+export type {
+  FormData,
+  GuideDraftConflict,
+  GuideDraftConflictReason,
+  GuideFormConfig,
+  GuideFunnelState,
 } from "./types/schema";
 export type { UIComponents } from "./components/GuideForm";
 export type { UIComponents as ApplicationPreviewUIComponents } from "./components/ApplicationPreview";
@@ -53,6 +56,43 @@ export {
   guideFormEnglishMessages,
 } from "./i18n";
 export { sanitizePostalCode, formatPostalCode, isValidPostalCode, POSTAL_CODE_REGEX } from "./utils/postalCode";
+export {
+  ANONYMOUS_DRAFT_STORAGE_KEY,
+  ANONYMOUS_DRAFT_VERSION,
+  LEGACY_GUIDE_FORM_DRAFT_KEY,
+  LEGACY_QUALIFICATION_FILES_KEY,
+  clearAnonymousDraft,
+  createAnonymousDraft,
+  loadAnonymousDraft,
+  loadOrCreateAnonymousDraft,
+  markAnonymousDraftConflict,
+  markAnonymousDraftMigrated,
+  markAnonymousDraftMigrating,
+  saveAnonymousDraft,
+  upsertAnonymousDraft,
+} from "./storage/anonymousDraftStorage";
+export type {
+  AnonymousDraftMigrationStatus,
+  AnonymousGuideDraft,
+} from "./storage/anonymousDraftStorage";
+export {
+  clearStagedQualificationFiles,
+  getStagedQualificationFile,
+  indexedDbQualificationStorageAvailable,
+  listStagedQualificationFiles,
+  markStagedQualificationFileUploaded,
+  removeStagedQualificationFile,
+  stageQualificationFile,
+} from "./storage/qualificationFileStore";
+export type { StagedQualificationFile } from "./storage/qualificationFileStore";
+export {
+  DEFAULT_RESUME_PATH,
+  getAuthRedirectUrl,
+  getResumePath,
+  getVerificationRedirectUrl,
+  isAuthenticated,
+  isEmailVerified,
+} from "./utils/guideFunnel";
 
 // 货币转换工具函数
 export {

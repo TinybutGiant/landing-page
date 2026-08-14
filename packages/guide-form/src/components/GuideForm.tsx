@@ -11,6 +11,7 @@ import { validateFormCompleteness } from "../utils/validation";
 import { PAGE_TITLES, TOTAL_PAGES } from "../constants";
 import { usePDFGeneration } from "../hooks/usePDFGeneration";
 import { useIntl } from "react-intl";
+import { isAuthenticated, isEmailVerified } from "../utils/guideFunnel";
 
 // 统一的 UI 组件接口
 export interface UIComponents {
@@ -41,9 +42,9 @@ export interface UIComponents {
   Badge: any;
   Separator: any;
   YearMonthPicker: any;
-  
+
   // 可选组件
-  
+
   QualificationUploader?: any;
   Tooltip?: any;
   TooltipContent?: any;
@@ -90,7 +91,7 @@ interface GuideFormProps {
   onLoadLocalStorage?: () => any;
   onSaveLocalStorage?: (data: any) => void;
   onClearLocalStorage?: () => void;
-  initialStep?: 'preview';
+  initialStep?: 'preview' | 'resume';
 }
 
 export const GuideForm: React.FC<GuideFormProps> = ({
@@ -109,7 +110,7 @@ export const GuideForm: React.FC<GuideFormProps> = ({
   initialStep
 }) => {
   const intl = useIntl();
-  
+
   const {
     currentPage,
     setCurrentPage,
@@ -123,6 +124,9 @@ export const GuideForm: React.FC<GuideFormProps> = ({
     isLoading,
     isSaving,
     isSubmitting,
+    funnelState,
+    draftConflict,
+    acceptServerDraft,
     saveCurrentPageData,
     handleQualificationFilesChange,
     nextPage,
@@ -134,7 +138,7 @@ export const GuideForm: React.FC<GuideFormProps> = ({
   } = useGuideForm(config, onLoadLocalStorage, onSaveLocalStorage, onClearLocalStorage, initialStep);
 
   const { Form } = ui;
-  const requiresAccountBeforeSubmit = !config.auth.getToken() || !config.auth.getUserId();
+  const requiresAccountBeforeSubmit = !isAuthenticated(config) || !isEmailVerified(config);
 
   // PDF生成功能 - 必须在组件顶层调用
   const { downloadPDF, isProcessing } = usePDFGeneration({
@@ -222,6 +226,26 @@ export const GuideForm: React.FC<GuideFormProps> = ({
             )}
           </ui.CardHeader>
           <ui.CardContent className="p-6">
+            {draftConflict && (
+              <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+                <p className="font-semibold">Saved application found</p>
+                <p className="mt-1 leading-relaxed">
+                  We found an existing saved application for this account. To avoid overwriting
+                  server data, the existing saved application remains authoritative. Your local
+                  draft is preserved in this browser until you decide what to do.
+                </p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <ui.Button type="button" onClick={() => void acceptServerDraft()}>
+                    Continue existing saved application
+                  </ui.Button>
+                </div>
+              </div>
+            )}
+            {funnelState === "resume_after_auth" && !draftConflict && (
+              <div className="mb-6 rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900">
+                Restoring your saved application draft...
+              </div>
+            )}
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(() => {})}
@@ -230,7 +254,7 @@ export const GuideForm: React.FC<GuideFormProps> = ({
                 {/* 渲染当前步骤 */}
                 {currentPage === 1 && (
                   <Step1BasicInfo
-                    control={form.control}
+                    control={form.control as any}
                     handleQualificationFilesChange={handleQualificationFilesChange}
                     ui={ui}
                     cities={cities}
@@ -238,24 +262,24 @@ export const GuideForm: React.FC<GuideFormProps> = ({
                 )}
 
                 {currentPage === 2 && (
-                  <Step2SelfAssessment 
-                    control={form.control} 
+                  <Step2SelfAssessment
+                    control={form.control as any}
                     ui={ui}
                     t={(key) => intl.formatMessage({ id: key })}
                   />
                 )}
 
                 {currentPage === 3 && (
-                  <Step3PersonalizedQuestions 
-                    control={form.control} 
+                  <Step3PersonalizedQuestions
+                    control={form.control as any}
                     ui={ui}
                     t={(key) => intl.formatMessage({ id: key })}
                   />
                 )}
 
                 {currentPage === 4 && (
-                  <Step4ServicePreferences 
-                    control={form.control} 
+                  <Step4ServicePreferences
+                    control={form.control as any}
                     ui={ui}
                     serviceCategories={serviceCategories}
                     targetGroups={targetGroups}
@@ -267,8 +291,8 @@ export const GuideForm: React.FC<GuideFormProps> = ({
                 <FormNavigation
                   currentPage={currentPage}
                   onPrevPage={prevPage}
-                  onNextPage={nextPage}
-                  onGoToPreview={goToPreview}
+                  onNextPage={() => void nextPage()}
+                  onGoToPreview={() => void goToPreview()}
                   onSaveDraft={saveCurrentPageData}
                   isSavingDraft={isSaving}
                   ui={ui}

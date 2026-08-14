@@ -1,5 +1,8 @@
 {
   "becomeGuide": {
+    "step1": {
+      "step1PageTitle": "Basic Information & Service Info"
+    },
     "step2": {
       "title": "Self-Assessment",
       "subtitle": "For matching 'Chosen Guide' tags, please evaluate yourself honestly",
@@ -53,6 +56,9 @@
       "q4SliderTooltip": "What level of interaction feels most natural to you during an experience?",
       "q4Range1": "1 — I prefer an active, social, and shared experience",
       "q4Range9": "9 — I prefer a quieter experience with more independence and personal space"
+    },
+    "step4": {
+      "step4PageTitle": "Service Types & Preferences"
     },
     "step3": {
       "title": "Personalized Questions",

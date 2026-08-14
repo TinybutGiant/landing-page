@@ -1,5 +1,8 @@
 {
   "becomeGuide": {
+    "step1": {
+      "step1PageTitle": "基本信息与服务信息"
+    },
     "step2": {
       "title": "自我认知评估",
       "subtitle": "用于匹配\"天选地陪\"标签，请诚实评价自己",
@@ -53,6 +56,9 @@
       "q4SliderTooltip": "在行程中，哪种互动程度对你来说更自然？",
       "q4Range1": "1 — 我更喜欢主动、热闹且共同参与的体验",
       "q4Range9": "9 — 我更喜欢安静、独立且保留更多个人空间的体验"
+    },
+    "step4": {
+      "step4PageTitle": "服务类型与偏好"
     },
     "step3": {
       "title": "个性化提问",

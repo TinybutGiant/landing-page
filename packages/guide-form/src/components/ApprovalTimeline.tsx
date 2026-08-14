@@ -20,14 +20,14 @@ interface ApprovalTimelineProps {
   Upload: any;
 }
 
-export function ApprovalTimeline({ 
-  timeline, 
-  CheckCircle, 
-  Clock, 
-  AlertCircle, 
-  XCircle, 
-  FileCheck, 
-  Upload 
+export function ApprovalTimeline({
+  timeline,
+  CheckCircle,
+  Clock,
+  AlertCircle,
+  XCircle,
+  FileCheck,
+  Upload
 }: ApprovalTimelineProps) {
   const intl = useIntl();
   const getTimelineItemInfo = (entry: ApprovalTimelineEntry) => {
@@ -39,7 +39,7 @@ export function ApprovalTimeline({
           description: intl.formatMessage({ id: 'approvalTimeline.applicationSubmittedDescription' }),
           color: "text-blue-600"
         };
-      
+
       case 'admin_action':
         switch (entry.adminAction) {
           case 'review':
@@ -78,7 +78,7 @@ export function ApprovalTimeline({
               color: "text-gray-600"
             };
         }
-      
+
       case 'user_response':
         return {
           icon: <FileCheck className="h-5 w-5 text-blue-500" />,
@@ -86,7 +86,7 @@ export function ApprovalTimeline({
           description: intl.formatMessage({ id: 'approvalTimeline.supplementalMaterialsUploadedDescription' }),
           color: "text-blue-600"
         };
-      
+
       default:
         return {
           icon: <Clock className="h-5 w-5 text-gray-500" />,
@@ -103,13 +103,13 @@ export function ApprovalTimeline({
     const lastRequireMoreInfo = timeline
       .filter(entry => entry.type === 'admin_action' && entry.adminAction === 'require_more_info')
       .pop();
-    
+
     if (!lastRequireMoreInfo) return null;
 
     // 检查在这个动作之后是否有用户回复
     const lastRequireMoreInfoTime = new Date(lastRequireMoreInfo.timestamp).getTime();
-    const hasUserResponseAfter = timeline.some(entry => 
-      entry.type === 'user_response' && 
+    const hasUserResponseAfter = timeline.some(entry =>
+      entry.type === 'user_response' &&
       new Date(entry.timestamp).getTime() > lastRequireMoreInfoTime
     );
 
@@ -124,23 +124,23 @@ export function ApprovalTimeline({
   return (
     <div className="space-y-6">
       <h3 className="text-lg font-semibold text-gray-900">{intl.formatMessage({ id: 'approvalTimeline.title' })}</h3>
-      
+
       <div className="relative">
         {/* Timeline line */}
         <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-gray-200"></div>
-        
+
         <div className="space-y-6">
           {timeline.map((entry, index) => {
             const itemInfo = getTimelineItemInfo(entry);
             const isLast = index === timeline.length - 1;
-            
+
             return (
               <div key={`${entry.type}-${entry.id}`} className="relative flex items-start">
                 {/* Timeline dot */}
                 <div className="relative z-10 flex items-center justify-center w-12 h-12 bg-white border-2 border-gray-200 rounded-full">
                   {itemInfo.icon}
                 </div>
-                
+
                 {/* Content */}
                 <div className="ml-4 flex-1 min-w-0">
                   <div className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
@@ -172,14 +172,14 @@ export function ApprovalTimeline({
               </div>
             );
           })}
-          
+
           {/* 显示补充材料状态 */}
           {supplementaryStatus?.needsResponse && (
             <div className="relative flex items-start">
               <div className="relative z-10 flex items-center justify-center w-12 h-12 bg-white border-2 border-orange-200 rounded-full">
                 <Upload className="h-5 w-5 text-orange-500" />
               </div>
-              
+
               <div className="ml-4 flex-1 min-w-0">
                 <div className="bg-orange-50 rounded-lg border border-orange-200 p-4 shadow-sm">
                   <h4 className="font-medium text-orange-600">

@@ -90,8 +90,9 @@ export const Step3PersonalizedQuestions = ({
     Textarea,
   } = ui;
   const translate = t ?? createGuideFormTranslator(locale);
-  const q8Example = useWatch({ control, name: 'personalizedQ8Example' }) || '';
-  const q9Answer = useWatch({ control, name: 'personalizedQ9' }) || '';
+  const watchControl = control as Control<any>;
+  const q8Example = useWatch({ control: watchControl, name: 'personalizedQ8Example' }) || '';
+  const q9Answer = useWatch({ control: watchControl, name: 'personalizedQ9' }) || '';
 
   return (
     <div className="space-y-[30px]">

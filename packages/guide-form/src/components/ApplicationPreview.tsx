@@ -1,8 +1,6 @@
 import { ChevronLeft } from "lucide-react";
 import { FormData } from "../types/schema";
-import { formatCurrency } from "../utils/currencyUtils";
 
-// 基础 UI 组件接口
 export interface UIComponents {
   Card: any;
   CardContent: any;
@@ -11,7 +9,7 @@ export interface UIComponents {
 }
 
 interface ApplicationPreviewProps {
-  formData: FormData;
+  formData: Partial<FormData>;
   missingFields: string[];
   confirmationChecked: boolean;
   setConfirmationChecked: (checked: boolean) => void;
@@ -19,30 +17,40 @@ interface ApplicationPreviewProps {
   onSubmit: () => void;
   isSubmitting: boolean;
   requiresAccountBeforeSubmit?: boolean;
-  validateFormCompleteness: (formData: FormData) => string[];
+  validateFormCompleteness: (formData: Partial<FormData>) => string[];
   setMissingFields: (fields: string[]) => void;
   ui: UIComponents;
   intl?: any;
 }
 
-const MISSING_FIELD_LABELS: Record<string, string> = {
-  "becomeGuide.step2.q1Question": "第 2 步 Q1 回答",
-  "becomeGuide.step2.q1SliderTitle": "第 2 步 Q1 评分",
-  "becomeGuide.step2.q2Question": "第 2 步 Q2 回答",
-  "becomeGuide.step2.q3Question": "第 2 步 Q3 回答",
-  "becomeGuide.step2.q3SliderTitle": "第 2 步 Q3 评分",
-  "becomeGuide.step2.q4Question": "第 2 步 Q4 回答",
-  "becomeGuide.step2.q4SliderTitle": "第 2 步 Q4 评分",
-  "becomeGuide.step3.q5Question": "第 3 步 Q5 回答",
-  "becomeGuide.step3.q5SliderTitle": "第 3 步 Q5 评分",
-  "becomeGuide.step3.q6Question": "第 3 步 Q6 回答",
-  "becomeGuide.step3.q6SliderTitle": "第 3 步 Q6 评分",
-  "becomeGuide.step3.q7Question": "第 3 步 Q7 回答",
-  "becomeGuide.step3.q7SliderTitle": "第 3 步 Q7 评分",
-  "becomeGuide.step3.q8Question": "第 3 步 Q8 优势选择",
-  "becomeGuide.step3.q8SliderTitle": "第 3 步 Q8 评分",
-  "becomeGuide.step3.q8ExampleQuestion": "第 3 步 Q8 示例说明",
-  "becomeGuide.step3.q9Question": "第 3 步 Q9 描述",
+const MISSING_FIELD_LABEL_KEYS: Record<string, string> = {
+  "becomeGuide.step2.q1Question": "becomeGuide.preview.missingFieldLabels.step2Q1Answer",
+  "becomeGuide.step2.q1SliderTitle": "becomeGuide.preview.missingFieldLabels.step2Q1Score",
+  "becomeGuide.step2.q2Question": "becomeGuide.preview.missingFieldLabels.step2Q2Answer",
+  "becomeGuide.step2.q3Question": "becomeGuide.preview.missingFieldLabels.step2Q3Answer",
+  "becomeGuide.step2.q3SliderTitle": "becomeGuide.preview.missingFieldLabels.step2Q3Score",
+  "becomeGuide.step2.q4Question": "becomeGuide.preview.missingFieldLabels.step2Q4Answer",
+  "becomeGuide.step2.q4SliderTitle": "becomeGuide.preview.missingFieldLabels.step2Q4Score",
+  "becomeGuide.step3.q5Question": "becomeGuide.preview.missingFieldLabels.step3Q5Answer",
+  "becomeGuide.step3.q5SliderTitle": "becomeGuide.preview.missingFieldLabels.step3Q5Score",
+  "becomeGuide.step3.q6Question": "becomeGuide.preview.missingFieldLabels.step3Q6Answer",
+  "becomeGuide.step3.q6SliderTitle": "becomeGuide.preview.missingFieldLabels.step3Q6Score",
+  "becomeGuide.step3.q7Question": "becomeGuide.preview.missingFieldLabels.step3Q7Answer",
+  "becomeGuide.step3.q7SliderTitle": "becomeGuide.preview.missingFieldLabels.step3Q7Score",
+  "becomeGuide.step3.q8Question": "becomeGuide.preview.missingFieldLabels.step3Q8Strengths",
+  "becomeGuide.step3.q8SliderTitle": "becomeGuide.preview.missingFieldLabels.step3Q8Score",
+  "becomeGuide.step3.q8ExampleQuestion": "becomeGuide.preview.missingFieldLabels.step3Q8Example",
+  "becomeGuide.step3.q9Question": "becomeGuide.preview.missingFieldLabels.step3Q9Description",
+};
+
+const targetGroupLabelKeys: Record<string, string> = {
+  individual: "becomeGuide.preview.individual",
+  couple: "becomeGuide.preview.couple",
+  family: "becomeGuide.preview.family",
+  group: "becomeGuide.preview.group",
+  child: "becomeGuide.preview.child",
+  elderly: "becomeGuide.preview.elderly",
+  business: "becomeGuide.preview.business",
 };
 
 export const ApplicationPreview = ({
@@ -57,24 +65,20 @@ export const ApplicationPreview = ({
   validateFormCompleteness,
   setMissingFields,
   ui,
-  intl
+  intl,
 }: ApplicationPreviewProps) => {
   const { Card, CardContent, Button, Checkbox } = ui;
-  const translate = (key: string) => intl?.formatMessage({ id: key }) ?? key;
-  const formatMissingField = (field: string) =>
-    MISSING_FIELD_LABELS[field] ?? translate(field);
-  const optionLabels = (step: 2 | 3, question: string, values?: string[]) =>
-    values?.length
-      ? values.map((value) => translate(`becomeGuide.step${step}.${question}Options.${value}`)).join(", ")
-      : "-";
+  const t = (id: string, defaultMessage = id, values?: Record<string, any>) =>
+    intl?.formatMessage({ id, defaultMessage }, values) ?? defaultMessage;
+  const ph = t("becomeGuide.preview.placeholder", "-");
+  const list = (values: string[] | undefined) =>
+    values?.length ? values.join(t("becomeGuide.preview.fieldSeparator", ", ")) : ph;
+  const formatMissingField = (field: string) => t(MISSING_FIELD_LABEL_KEYS[field] ?? field, field);
 
   const handleSubmit = () => {
-    if (!confirmationChecked) {
-      return;
-    }
+    if (!confirmationChecked) return;
 
     const missing = validateFormCompleteness(formData);
-
     if (missing.length > 0) {
       setMissingFields(missing);
       return;
@@ -84,481 +88,222 @@ export const ApplicationPreview = ({
     onSubmit();
   };
 
+  const optionLabels = (step: 2 | 3, question: string, values?: string[]) =>
+    values?.length
+      ? values.map((value) => t(`becomeGuide.step${step}.${question}Options.${value}`, value)).join(", ")
+      : ph;
+
+  const singleOption = (step: 2 | 3, question: string, value?: string) =>
+    value ? t(`becomeGuide.step${step}.${question}Options.${value}`, value) : ph;
+
+  const score = (value?: number | null) =>
+    value == null ? ph : t("becomeGuide.preview.scoreOutOfNine", "{score}/9", { score: value });
+
+  const row = (label: string, value: any) => (
+    <div>
+      <label className="text-sm font-medium text-gray-500">{label}</label>
+      <p className="text-gray-900 whitespace-pre-wrap">{value || ph}</p>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-yellow-50 py-12">
       <div className="max-w-4xl mx-auto px-4">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            申请预览
+            {t("becomeGuide.preview.title", "Application Preview")}
           </h1>
           <p className="text-gray-600 mb-4">
-            请仔细检查您的申请信息，确认无误后提交
+            {t(
+              "becomeGuide.preview.subtitle",
+              "Review your application details before submitting."
+            )}
           </p>
         </div>
 
         <Card className="shadow-lg">
           <CardContent id="print-root" className="p-6 space-y-8">
-            {/* 基本信息 */}
-            <div>
+            <section>
               <h3 className="text-lg font-semibold text-gray-900 mb-4 border-b pb-2">
-                基本信息
+                {t("becomeGuide.preview.basicInfo", "Basic Information")}
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-medium text-gray-500">
-                    姓名
-                  </label>
-                  <p className="text-gray-900">{formData.name || "未填写"}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-500">
-                    年龄
-                  </label>
-                  <p className="text-gray-900">{formData.age ? `${formData.age} 岁` : "未填写"}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-500">
-                    性别
-                  </label>
-                  <p className="text-gray-900">
-                    {formData.sex === "Male"
-                      ? "男"
-                      : formData.sex === "Female"
-                        ? "女"
-                        : "不愿透露"}
-                  </p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-500">
-                    MBTI
-                  </label>
-                  <p className="text-gray-900">{formData.mbti || "未填写"}</p>
-                </div>
+                {row(t("becomeGuide.preview.name", "Name"), formData.name)}
+                {row(
+                  t("becomeGuide.preview.age", "Age"),
+                  formData.age
+                    ? t("becomeGuide.preview.ageValue", "{years} years old", {
+                        years: formData.age,
+                      })
+                    : ph
+                )}
+                {row(
+                  t("becomeGuide.preview.gender", "Gender"),
+                  formData.sex === "Male"
+                    ? t("becomeGuide.preview.male", "Male")
+                    : formData.sex === "Female"
+                      ? t("becomeGuide.preview.female", "Female")
+                      : t("becomeGuide.preview.preferNotToSay", "Prefer not to say")
+                )}
+                {row(t("becomeGuide.preview.mbti", "MBTI"), formData.mbti)}
                 <div className="md:col-span-2">
-                  <label className="text-sm font-medium text-gray-500">
-                    社交媒体简介
-                  </label>
-                  <p className="text-gray-900">
-                    {formData.socialProfile || "未填写"}
-                  </p>
+                  {row(t("becomeGuide.preview.socialProfile", "Social profile"), formData.socialProfile)}
                 </div>
               </div>
-            </div>
+            </section>
 
-            {/* 服务信息 */}
-            <div>
+            <section>
               <h3 className="text-lg font-semibold text-gray-900 mb-4 border-b pb-2">
-                服务信息
+                {t("becomeGuide.preview.serviceInfo", "Service Information")}
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-medium text-gray-500">
-                    服务城市
-                  </label>
-                  <p className="text-gray-900">
-                    {formData.serviceCity || "-"}
-                  </p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-500">
-                    居住开始日期
-                  </label>
-                  <p className="text-gray-900">
-                    {formData.residenceStartDate
-                      ? (() => {
-                          const date = new Date(formData.residenceStartDate);
-                          return `${date.getFullYear()}年${date.getMonth() + 1}月`;
-                        })()
-                      : "未填写"}
-                  </p>
-                </div>
+                {row(t("becomeGuide.preview.serviceCity", "Service City"), formData.serviceCity)}
+                {row(
+                  t("becomeGuide.preview.residenceStartDate", "Residence in Japan since"),
+                  formData.residenceStartDate
+                )}
                 <div className="md:col-span-2">
-                  <label className="text-sm font-medium text-gray-500">
-                    居住信息
-                  </label>
-                  <p className="text-gray-900">
-                    {formData.residenceInfo || "-"}
-                  </p>
+                  {row(t("becomeGuide.preview.residenceInfo", "Address / area"), formData.residenceInfo)}
                 </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-500">
-                    邮政编码
-                  </label>
-                  <p className="text-gray-900">
-                    {formData.residenceZipcode || "-"}
-                  </p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-500">
-                    职业
-                  </label>
-                  <p className="text-gray-900">
-                    {formData.occupation || "-"}
-                  </p>
-                </div>
+                {row(t("becomeGuide.preview.residenceZipcode", "Postal code"), formData.residenceZipcode)}
+                {row(t("becomeGuide.preview.occupation", "Occupation"), formData.occupation)}
                 <div className="md:col-span-2">
-                  <label className="text-sm font-medium text-gray-500">
-                    个人简介
-                  </label>
-                  <p className="text-gray-900 whitespace-pre-wrap">
-                    {formData.bio || "-"}
-                  </p>
+                  {row(t("becomeGuide.preview.bio", "Bio"), formData.bio)}
                 </div>
               </div>
-            </div>
+            </section>
 
-            {/* 资质与经验 */}
-            <div>
+            <section>
               <h3 className="text-lg font-semibold text-gray-900 mb-4 border-b pb-2">
-                资质与经验
+                {t("becomeGuide.preview.qualifications", "Qualifications & Experience")}
               </h3>
               <div className="space-y-4">
-                <div>
-                  <label className="text-sm font-medium text-gray-500">
-                    语言能力
-                  </label>
-                  <p className="text-gray-900">
-                    {formData.languages &&
-                    formData.languages.length > 0
-                      ? formData.languages.join("、")
-                      : "未选择"}
-                  </p>
-                </div>
+                {row(t("becomeGuide.preview.languages", "Languages"), list(formData.languages))}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">
-                      导游经验时长
-                    </label>
-                    <p className="text-gray-900">
-                      {formData.experienceDuration || "-"}
-                    </p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">
-                      导游次数
-                    </label>
-                    <p className="text-gray-900">
-                      {formData.experienceSession || "-"}
-                    </p>
-                  </div>
+                  {row(t("becomeGuide.preview.guideExperience", "Guide experience"), formData.experienceDuration)}
+                  {row(t("becomeGuide.preview.guideSessions", "Guide sessions"), formData.experienceSession)}
                 </div>
+              </div>
+            </section>
 
-                {/* 资质证明 */}
-                {formData.qualifications?.certifications &&
-                  Object.keys(formData.qualifications.certifications).length >
-                    0 && (
-                    <div>
-                      <label className="text-sm font-medium text-gray-500">
-                        资质证明文件
-                      </label>
-                      <div className="space-y-2 mt-1">
-                        {Object.entries(
-                          formData.qualifications.certifications,
-                        )
-                        .filter(([, certData]: [string, any]) => certData.visible !== false)
-                        .map(([certName, certData]: [string, any]) => (
-                          <div
-                            key={certName}
-                            className="flex items-center justify-between bg-gray-50 p-3 rounded"
-                          >
-                            <span className="text-sm font-medium text-gray-700">
-                              {certName}
-                            </span>
-                            {certData.description && certData.proof ? (
-                              <a
-                                href={certData.proof}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-blue-600 hover:text-blue-800 text-sm underline"
-                              >
-                                {certData.description}
-                              </a>
-                            ) : certData.description ? (
-                              <span className="text-sm text-gray-600">
-                                {certData.description}
-                              </span>
-                            ) : (
-                              <span className="text-sm text-gray-400">
-                                未上传文件
-                              </span>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
+            <section>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4 border-b pb-2">
+                {t("becomeGuide.preview.selfAssessment", "Self Assessment")}
+              </h3>
+              <div className="space-y-4">
+                {row(t("becomeGuide.step2.q1Question", "Question 1"), optionLabels(2, "q1", formData.assessmentQ1))}
+                {row(t("becomeGuide.step2.q1SliderTitle", "Question 1 score"), score(formData.assessmentQ1Slider))}
+                {row(t("becomeGuide.step2.q2Question", "Question 2"), singleOption(2, "q2", formData.assessmentQ2))}
+                {row(t("becomeGuide.step2.q3Question", "Question 3"), singleOption(2, "q3", formData.assessmentQ3))}
+                {row(t("becomeGuide.step2.q3SliderTitle", "Question 3 score"), score(formData.assessmentQ3Slider))}
+                {row(t("becomeGuide.step2.q4Question", "Question 4"), optionLabels(2, "q4", formData.assessmentQ4))}
+                {row(t("becomeGuide.step2.q4SliderTitle", "Question 4 score"), score(formData.assessmentQ4Slider))}
+              </div>
+            </section>
+
+            <section>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4 border-b pb-2">
+                {t("becomeGuide.preview.personalizedQuestions", "Personalized Questions")}
+              </h3>
+              <div className="space-y-4">
+                {row(t("becomeGuide.step3.q5Question", "Question 5"), optionLabels(3, "q5", formData.personalizedQ5))}
+                {row(t("becomeGuide.step3.q5SliderTitle", "Question 5 score"), score(formData.personalizedQ5Slider))}
+                {row(t("becomeGuide.step3.q6Question", "Question 6"), optionLabels(3, "q6", formData.personalizedQ6))}
+                {row(t("becomeGuide.step3.q6SliderTitle", "Question 6 score"), score(formData.personalizedQ6Slider))}
+                {row(t("becomeGuide.step3.q7Question", "Question 7"), singleOption(3, "q7", formData.personalizedQ7))}
+                {row(t("becomeGuide.step3.q7SliderTitle", "Question 7 score"), score(formData.personalizedQ7Slider))}
+                {row(t("becomeGuide.step3.q8Question", "Question 8"), optionLabels(3, "q8", formData.personalizedQ8Strengths))}
+                {row(t("becomeGuide.step3.q8SliderTitle", "Question 8 score"), score(formData.personalizedQ8Slider))}
+                {row(t("becomeGuide.step3.q8ExampleQuestion", "Question 8 example"), formData.personalizedQ8Example)}
+                {row(t("becomeGuide.step3.q9Question", "Question 9"), formData.personalizedQ9)}
+              </div>
+            </section>
+
+            <section>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4 border-b pb-2">
+                {t("becomeGuide.preview.servicePreferences", "Service Preferences")}
+              </h3>
+              <div className="space-y-4">
+                {row(
+                  t("becomeGuide.preview.targetGroup", "Target Group"),
+                  formData.targetGroup?.length
+                    ? formData.targetGroup.map((group) => t(targetGroupLabelKeys[group] ?? group, group)).join(", ")
+                    : ph
+                )}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {row(
+                    t("becomeGuide.preview.serviceRange", "Service Group Size Range"),
+                    formData.minPeople && formData.maxPeople
+                      ? `${formData.minPeople} - ${formData.maxPeople} ${t("becomeGuide.preview.people", "people")}`
+                      : ph
                   )}
+                  {row(
+                    t("becomeGuide.preview.serviceDuration", "Service Duration Range"),
+                    formData.minDuration && formData.maxDuration
+                      ? `${formData.minDuration} - ${formData.maxDuration} ${t("becomeGuide.preview.hours", "hours")}`
+                      : ph
+                  )}
+                </div>
+                {row(
+                  t("becomeGuide.preview.basicPrice", "Basic Hourly Rate"),
+                  formData.basicPricePerHour !== undefined
+                    ? `${formData.basicPricePerHour.toFixed(2)} USD/${t("becomeGuide.preview.hours", "hours")}`
+                    : ph
+                )}
+                {row(
+                  t("becomeGuide.preview.additionalPrice", "Additional Hourly Rate"),
+                  formData.additionalPricePerPerson !== undefined
+                    ? `${formData.additionalPricePerPerson.toFixed(2)} USD/${t("becomeGuide.preview.people", "people")}/${t("becomeGuide.preview.hours", "hours")}`
+                    : ph
+                )}
+                {row(
+                  t("becomeGuide.preview.serviceItems", "Services Provided"),
+                  formData.serviceSelections?.length
+                    ? t("becomeGuide.preview.selectedItems", "Selected {count} service items", {
+                        count: formData.serviceSelections.length,
+                      })
+                    : t("becomeGuide.preview.notSelected", "Not selected")
+                )}
               </div>
-            </div>
+            </section>
 
-            {/* Page 2 evaluation questions */}
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4 border-b pb-2">
-                {translate("becomeGuide.step2.title")}
-              </h3>
-              <div className="space-y-4">
-                <div>
-                  <label className="text-sm font-medium text-gray-500">
-                    {translate("becomeGuide.step2.q1Question")}
-                  </label>
-                  <p className="text-gray-900">
-                    {optionLabels(2, "q1", formData.assessmentQ1)}
-                  </p>
-                  <p className="text-sm text-gray-600 mt-1">
-                    {translate("becomeGuide.step2.q1SliderTitle")}:{" "}
-                    {formData.assessmentQ1Slider ?? "-"}
-                  </p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-500">
-                    {translate("becomeGuide.step2.q2Question")}
-                  </label>
-                  <p className="text-gray-900">
-                    {formData.assessmentQ2
-                      ? translate(`becomeGuide.step2.q2Options.${formData.assessmentQ2}`)
-                      : "-"}
-                  </p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-500">
-                    {translate("becomeGuide.step2.q3Question")}
-                  </label>
-                  <p className="text-gray-900">
-                    {formData.assessmentQ3
-                      ? translate(`becomeGuide.step2.q3Options.${formData.assessmentQ3}`)
-                      : "-"}
-                  </p>
-                  <p className="text-sm text-gray-600 mt-1">
-                    {translate("becomeGuide.step2.q3SliderTitle")}:{" "}
-                    {formData.assessmentQ3Slider ?? "-"}
-                  </p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-500">
-                    {translate("becomeGuide.step2.q4Question")}
-                  </label>
-                  <p className="text-gray-900">
-                    {optionLabels(2, "q4", formData.assessmentQ4)}
-                  </p>
-                  <p className="text-sm text-gray-600 mt-1">
-                    {translate("becomeGuide.step2.q4SliderTitle")}:{" "}
-                    {formData.assessmentQ4Slider ?? "-"}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Page 3 evaluation questions */}
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4 border-b pb-2">
-                {translate("becomeGuide.step3.title")}
-              </h3>
-              <div className="space-y-4">
-                <div>
-                  <label className="text-sm font-medium text-gray-500">
-                    {translate("becomeGuide.step3.q5Question")}
-                  </label>
-                  <p className="text-gray-900 whitespace-pre-wrap">
-                    {optionLabels(3, "q5", formData.personalizedQ5)}
-                  </p>
-                  <p className="text-sm text-gray-600 mt-1">
-                    {translate("becomeGuide.step3.q5SliderTitle")}:{" "}
-                    {formData.personalizedQ5Slider ?? "-"}
-                  </p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-500">
-                    {translate("becomeGuide.step3.q6Question")}
-                  </label>
-                  <p className="text-gray-900 whitespace-pre-wrap">
-                    {optionLabels(3, "q6", formData.personalizedQ6)}
-                  </p>
-                  <p className="text-sm text-gray-600 mt-1">
-                    {translate("becomeGuide.step3.q6SliderTitle")}:{" "}
-                    {formData.personalizedQ6Slider ?? "-"}
-                  </p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-500">
-                    {translate("becomeGuide.step3.q7Question")}
-                  </label>
-                  <p className="text-gray-900 whitespace-pre-wrap">
-                    {formData.personalizedQ7
-                      ? translate(`becomeGuide.step3.q7Options.${formData.personalizedQ7}`)
-                      : "-"}
-                  </p>
-                  <p className="text-sm text-gray-600 mt-1">
-                    {translate("becomeGuide.step3.q7SliderTitle")}:{" "}
-                    {formData.personalizedQ7Slider ?? "-"}
-                  </p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-500">
-                    {translate("becomeGuide.step3.q8Question")}
-                  </label>
-                  <p className="text-gray-900 whitespace-pre-wrap">
-                    {optionLabels(3, "q8", formData.personalizedQ8Strengths)}
-                  </p>
-                  <p className="text-sm text-gray-600 mt-1">
-                    {formData.personalizedQ8Example || "-"}
-                  </p>
-                  <p className="text-sm text-gray-600 mt-1">
-                    {translate("becomeGuide.step3.q8SliderTitle")}:{" "}
-                    {formData.personalizedQ8Slider ?? "-"}
-                  </p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-500">
-                    {translate("becomeGuide.step3.q9Question")}
-                  </label>
-                  <p className="text-gray-900 whitespace-pre-wrap">
-                    {formData.personalizedQ9 || "-"}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* 服务类型与偏好 */}
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4 border-b pb-2">
-                服务类型与偏好
-              </h3>
-              <div className="space-y-4">
-                <div>
-                  <label className="text-sm font-medium text-gray-500">
-                    服务对象
-                  </label>
-                  <p className="text-gray-900">
-                    {formData.targetGroup && formData.targetGroup.length > 0
-                      ? formData.targetGroup.map((group) => {
-                          const labels: Record<string, string> = {
-                            individual: "个人",
-                            couple: "情侣",
-                            family: "家庭",
-                            group: "团体",
-                            child: "儿童",
-                            elderly: "老人",
-                            business: "商务"
-                          };
-                          return labels[group] || group;
-                        }).join("、")
-                      : "-"}
-                  </p>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">
-                      服务人数范围
-                    </label>
-                    <p className="text-gray-900">
-                      {formData.minPeople && formData.maxPeople
-                        ? `${formData.minPeople} - ${formData.maxPeople} 人`
-                        : "未填写"}
-                    </p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">
-                      服务时长范围
-                    </label>
-                    <p className="text-gray-900">
-                      {formData.minDuration && formData.maxDuration
-                        ? `${formData.minDuration} - ${formData.maxDuration} 小时`
-                        : "未填写"}
-                    </p>
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                  <label className="text-sm font-medium text-gray-500">
-                    基础时薪
-                  </label>
-                    <p className="text-gray-900">
-                      {formData.basicPricePerHour !== undefined
-                        ? formatCurrency(formData.basicPricePerHour, formData.currency || 'USD') + "/小时"
-                        : formData.basicPricePerHourCents !== undefined
-                        ? formatCurrency(formData.basicPricePerHourCents / 100, formData.currency || 'USD') + "/小时"
-                        : "未填写"}
-                    </p>
-                  </div>
-                  <div>
-                  <label className="text-sm font-medium text-gray-500">
-                    额外人员费用
-                  </label>
-                    <p className="text-gray-900">
-                      {formData.additionalPricePerPerson !== undefined
-                        ? formatCurrency(formData.additionalPricePerPerson, formData.currency || 'USD') + "/人/小时"
-                        : formData.additionalPricePerPersonCents !== undefined
-                        ? formatCurrency(formData.additionalPricePerPersonCents / 100, formData.currency || 'USD') + "/人/小时"
-                        : "未填写"}
-                    </p>
-                  </div>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-500">
-                    服务项目
-                  </label>
-                  <p className="text-gray-900">
-                    {formData.serviceSelections && formData.serviceSelections.length > 0
-                      ? `已选择 ${formData.serviceSelections.length} 个服务项目`
-                      : "未选择"}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* 缺失字段提示 */}
             {missingFields.length > 0 && (
               <div className="bg-red-50 p-4 rounded-lg border-l-4 border-red-500 mb-6">
-                <div className="flex">
-                  <div className="flex-shrink-0">
-                    <svg
-                      className="h-5 w-5 text-red-400"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </div>
-                  <div className="ml-3">
-                    <p className="text-sm text-red-700">
-                      <strong>以下信息尚未完善</strong>
-                      <br />
-                      请返回编辑并补充：{missingFields.map(formatMissingField).join("、")}
-                    </p>
-                  </div>
-                </div>
+                <p className="text-sm text-red-700">
+                  <strong>{t("becomeGuide.preview.missingFields", "The following information is incomplete:")}</strong>
+                  <br />
+                  {missingFields.map(formatMissingField).join(t("becomeGuide.preview.fieldSeparator", ", "))}
+                </p>
               </div>
             )}
 
-            {/* 确认声明 */}
             <div className="bg-gray-50 p-6 rounded-lg border-t-4 border-yellow-500">
               <div className="flex items-start space-x-3">
                 <Checkbox
                   id="confirmation"
                   checked={confirmationChecked}
-                  onCheckedChange={(checked: boolean) =>
-                    setConfirmationChecked(checked === true)
-                  }
+                  onCheckedChange={(checked: boolean) => setConfirmationChecked(checked === true)}
                   className="mt-1"
                 />
-                <label
-                  htmlFor="confirmation"
-                  className="text-sm text-gray-700 leading-relaxed"
-                >
-                  我确认以上填写的信息真实准确。我理解虚假信息可能导致申请被拒绝或账户被暂停。我同意YaoTu平台的服务条款和隐私政策，并承诺遵守平台规则，作为本地向导提供高质量的服务体验。
+                <label htmlFor="confirmation" className="text-sm text-gray-700 leading-relaxed">
+                  {t(
+                    "becomeGuide.preview.previewDeclaration",
+                    "I confirm that all information above is true and accurate."
+                  )}
                 </label>
               </div>
             </div>
 
-            {/* 底部按钮 */}
             {requiresAccountBeforeSubmit && (
               <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
-                <p className="font-semibold">提交前需要先创建并验证账号</p>
+                <p className="font-semibold">
+                  {t("becomeGuide.preview.accountRequiredTitle", "Account verification required before submission")}
+                </p>
                 <p className="mt-1 leading-relaxed">
-                  点击“确认提交申请”后，我们会先带你去创建账号并完成邮箱验证，用于之后查询申请进度。当前申请内容已保存在这个浏览器中；请不要关闭浏览器，验证后回到申请预览页继续提交。
+                  {t(
+                    "becomeGuide.preview.accountRequiredDescription",
+                    "After you continue, you will create or sign in to an account and verify your email so you can return to this application later. Keep this browser open; your draft is saved locally and will resume after verification."
+                  )}
                 </p>
               </div>
             )}
@@ -566,7 +311,7 @@ export const ApplicationPreview = ({
             <div className="flex justify-between items-center pt-6 border-t">
               <Button type="button" variant="outline" onClick={onBackToForm}>
                 <ChevronLeft className="h-4 w-4 mr-1" />
-                返回编辑
+                {t("becomeGuide.preview.backToEdit", "Back to Edit")}
               </Button>
 
               <Button
@@ -575,7 +320,9 @@ export const ApplicationPreview = ({
                 disabled={isSubmitting}
                 className="bg-green-600 hover:bg-green-700"
               >
-                {isSubmitting ? "提交中..." : "确认提交申请"}
+                {isSubmitting
+                  ? t("becomeGuide.preview.submitting", "Submitting...")
+                  : t("becomeGuide.preview.submitApplication", "Confirm Submit Application")}
               </Button>
             </div>
           </CardContent>

@@ -50,15 +50,15 @@ interface Step4ServicePreferencesProps {
   onLoadServiceCategories?: () => Promise<ServiceCategory[]>;
 }
 
-export const Step4ServicePreferences = ({ 
-  control, 
+export const Step4ServicePreferences = ({
+  control,
   ui,
   serviceCategories: propServiceCategories,
   targetGroups = [],
   onLoadServiceCategories
 }: Step4ServicePreferencesProps) => {
   const intl = useIntl();
-  
+
   const {
     FormField,
     FormItem,
@@ -82,7 +82,7 @@ export const Step4ServicePreferences = ({
   } = ui;
 
   const [serviceCategories, setServiceCategories] = useState<ServiceCategory[]>(propServiceCategories || []);
-  
+
   // 监听serviceCategories状态变化
   useEffect(() => {
     console.log('Step4ServicePreferences: serviceCategories状态已更新:', serviceCategories);

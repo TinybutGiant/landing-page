@@ -9,6 +9,8 @@ export interface AuthUser {
   role: 'traveler' | 'guide' | string;
   profilePicture?: string | null;
   readReceiptsEnabled: boolean;
+  emailVerified?: boolean;
+  emailverified?: boolean;
   joinedDate: string | null;
   token: string;
 }

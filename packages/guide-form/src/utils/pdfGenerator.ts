@@ -69,18 +69,18 @@ export async function generatePDFBlob(
   }
 
   const mergedOptions = { ...defaultPDFOptions, ...options } as any;
-  
+
   console.log("🔄 开始生成PDF...", { elementId, options: mergedOptions });
-  
+
   const pdfWorker = html2pdf().set(mergedOptions).from(printRoot);
   const pdfBlob = await pdfWorker.outputPdf("blob");
-  
+
   console.log("📥 PDF生成完成，大小:", pdfBlob.size, "bytes");
-  
+
   if (pdfBlob.size === 0) {
     throw new Error("Generated PDF file is empty");
   }
-  
+
   return pdfBlob;
 }
 
@@ -94,11 +94,11 @@ export function downloadPDF(pdfBlob: Blob, filename: string): void {
   const downloadLink = document.createElement("a");
   downloadLink.href = downloadUrl;
   downloadLink.download = filename;
-  
+
   document.body.appendChild(downloadLink);
   downloadLink.click();
   document.body.removeChild(downloadLink);
-  
+
   // 清理URL对象
   setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000);
 }
@@ -114,27 +114,27 @@ export async function uploadPDF(
   options: PDFUploadOptions
 ): Promise<string> {
   const { applicationId, token, uploadUrl } = options;
-  
+
   console.log("📤 开始上传PDF到服务器...", {
     size: pdfBlob.size,
     applicationId,
     uploadUrl,
   });
-  
+
   const pdfArrayBuffer = await pdfBlob.arrayBuffer();
-  
+
   const requestHeaders = {
     Authorization: `Bearer ${token}`,
     "Content-Type": "application/pdf",
     "Content-Length": pdfArrayBuffer.byteLength.toString(),
   };
-  
+
   const uploadResponse = await fetch(uploadUrl, {
     method: "POST",
     headers: requestHeaders,
     body: pdfArrayBuffer,
   });
-  
+
   if (!uploadResponse.ok) {
     const errorText = await uploadResponse.text();
     console.error("📤 PDF上传失败:", {
@@ -144,10 +144,10 @@ export async function uploadPDF(
     });
     throw new Error(`Upload failed: ${uploadResponse.status} ${uploadResponse.statusText}`);
   }
-  
+
   const uploadResult = await uploadResponse.json();
   console.log("✅ PDF上传成功:", uploadResult.key);
-  
+
   return uploadResult.key;
 }
 
@@ -194,11 +194,11 @@ export async function generateDownloadAndUploadPDF(
   pdfOptions: PDFOptions = {}
 ): Promise<string> {
   const pdfBlob = await generatePDFBlob(elementId, pdfOptions);
-  
+
   // 下载PDF
   const filename = pdfOptions.filename || "guide-application.pdf";
   downloadPDF(pdfBlob, filename);
-  
+
   // 上传PDF
   return await uploadPDF(pdfBlob, uploadOptions);
 }

@@ -32,8 +32,8 @@ interface SupplementalMaterialsUploadProps {
   onToast?: (options: { title: string; description?: string; variant?: string }) => void;
 }
 
-export function SupplementalMaterialsUpload({ 
-  applicationId, 
+export function SupplementalMaterialsUpload({
+  applicationId,
   onSubmitSuccess,
   Card,
   CardContent,
@@ -64,7 +64,7 @@ export function SupplementalMaterialsUpload({
     // 文件类型验证
     const allowedTypes = [
       'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp',
-      'application/pdf', 'application/msword', 
+      'application/pdf', 'application/msword',
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
     ];
 
@@ -95,7 +95,7 @@ export function SupplementalMaterialsUpload({
       }
 
       const result = await onFileUpload(selectedFile);
-      
+
       const newFile: UploadedFile = {
         id: result.fileId,
         name: selectedFile.name,
@@ -105,7 +105,7 @@ export function SupplementalMaterialsUpload({
       };
 
       setFiles(prev => [...prev, newFile]);
-      
+
       onToast?.({
         title: intl.formatMessage({ id: 'supplementalMaterials.uploadSuccess' }),
         description: intl.formatMessage({ id: 'supplementalMaterials.uploadSuccessDescription' }, { fileName: selectedFile.name })
@@ -132,7 +132,7 @@ export function SupplementalMaterialsUpload({
   };
 
   const updateFileDescription = (fileId: string, description: string) => {
-    setFiles(prev => prev.map(f => 
+    setFiles(prev => prev.map(f =>
       f.id === fileId ? { ...f, description } : f
     ));
   };
@@ -188,7 +188,7 @@ export function SupplementalMaterialsUpload({
       // 重置表单
       setDescription("");
       setFiles([]);
-      
+
       // 调用成功回调
       onSubmitSuccess?.();
 
@@ -249,8 +249,8 @@ export function SupplementalMaterialsUpload({
               id="file-upload"
               accept="image/*,.pdf,.doc,.docx"
             />
-            <Label 
-              htmlFor="file-upload" 
+            <Label
+              htmlFor="file-upload"
               className="cursor-pointer flex flex-col items-center space-y-2"
             >
               <Upload className="h-8 w-8 text-orange-500" />
@@ -302,7 +302,7 @@ export function SupplementalMaterialsUpload({
 
         {/* 提交按钮 */}
         <div className="pt-4">
-          <Button 
+          <Button
             onClick={handleSubmit}
             disabled={submitting || (!description.trim() && files.length === 0)}
             className="w-full bg-orange-600 hover:bg-orange-700"

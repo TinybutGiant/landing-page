@@ -27,13 +27,13 @@ interface ApplicationStatusProps {
   application?: ApplicationDetails | null;
   fullApplication?: any;
   timelineData?: { timeline: ApprovalTimelineEntry[] };
-  
+
   // 状态相关
   isLoading?: boolean;
   error?: any;
   timelineLoading?: boolean;
   isJustSubmitted?: boolean;
-  
+
   // 回调函数
   onRefetchTimeline?: () => void;
   onDownloadPDF?: () => void;
@@ -42,7 +42,7 @@ interface ApplicationStatusProps {
   onFileUpload?: (file: File) => Promise<{ fileId: string; publicUrl: string }>;
   onSubmitSupplemental?: (data: any) => Promise<void>;
   onToast?: (options: { title: string; description?: string; variant?: string }) => void;
-  
+
   // UI组件 - 通过props传入
   Card: any;
   CardContent: any;
@@ -53,7 +53,7 @@ interface ApplicationStatusProps {
   Textarea: any;
   Input: any;
   Label: any;
-  
+
   // 图标组件
   CheckCircle: any;
   Clock: any;
@@ -102,26 +102,26 @@ export default function ApplicationStatus({
   // 检查是否需要显示补充材料上传
   const needsSupplementalMaterials = () => {
     if (!timelineData?.timeline || !application) return false;
-    
+
     // 如果当前状态是 needs_more_info，显示上传功能
     if (application.applicationStatus === 'needs_more_info') {
       return true;
     }
-    
+
     // 检查是否有最近的 require_more_info 动作且用户还没有回复
     const timeline = timelineData.timeline;
     const lastRequireMoreInfo = timeline
       .filter(entry => entry.type === 'admin_action' && entry.adminAction === 'require_more_info')
       .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())[0];
-    
+
     if (!lastRequireMoreInfo) return false;
-    
+
     // 检查在这个 require_more_info 之后是否有用户回复
-    const hasUserResponseAfter = timeline.some(entry => 
-      entry.type === 'user_response' && 
+    const hasUserResponseAfter = timeline.some(entry =>
+      entry.type === 'user_response' &&
       new Date(entry.timestamp) > new Date(lastRequireMoreInfo.timestamp)
     );
-    
+
     return !hasUserResponseAfter;
   };
 
@@ -193,7 +193,7 @@ export default function ApplicationStatus({
               <p className="text-gray-600 mb-6">
                 {intl.formatMessage({ id: 'applicationStatus.noApplicationDescription' })}
               </p>
-              <Button 
+              <Button
                 onClick={onNavigateToBecomeGuide}
                 className="bg-yellow-500 hover:bg-yellow-600 text-black"
               >
@@ -280,7 +280,7 @@ export default function ApplicationStatus({
                     </div>
                   </div>
                 ) : timelineData?.timeline ? (
-                  <ApprovalTimeline 
+                  <ApprovalTimeline
                     timeline={timelineData.timeline}
                     CheckCircle={CheckCircle}
                     Clock={Clock}
@@ -300,7 +300,7 @@ export default function ApplicationStatus({
 
           {/* 补充材料上传 */}
           {needsSupplementalMaterials() && application?.id && (
-            <SupplementalMaterialsUpload 
+            <SupplementalMaterialsUpload
               applicationId={application.id}
               onSubmitSuccess={handleSupplementalMaterialsSubmitted}
               Card={Card}
@@ -340,7 +340,7 @@ export default function ApplicationStatus({
                 <p className="text-gray-600 mb-4">
                   {intl.formatMessage({ id: 'applicationStatus.pdfDescription' })}
                 </p>
-                
+
                 <div className="flex justify-center">
                   <Button
                     onClick={onDownloadPDF}
@@ -372,7 +372,7 @@ export default function ApplicationStatus({
                     {application.notes}
                   </p>
                 </div>
-                
+
                 <Button className="bg-orange-600 hover:bg-orange-700 text-black">
                   <Upload className="h-4 w-4 mr-2" />
                   {intl.formatMessage({ id: 'applicationStatus.uploadSupplementalMaterials' })}

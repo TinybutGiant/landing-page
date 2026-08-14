@@ -245,7 +245,7 @@ export default function ViewApplicationStatusPage() {
   };
 
   const handleNavigateToBecomeGuide = () => {
-    window.location.href = "/become-guide";
+    window.location.href = "/become-guide?resume=1";
   };
 
   if (!isUserAuthenticated) {

@@ -40,8 +40,8 @@ const toastVariants = cva(
 
 const Toast = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & 
-  VariantProps<typeof toastVariants> & 
+  React.HTMLAttributes<HTMLDivElement> &
+  VariantProps<typeof toastVariants> &
   { onOpenChange?: (open: boolean) => void }
 >(({ className, variant, onOpenChange, ...props }, ref) => {
   return (
