@@ -25,6 +25,7 @@ import ScrollToTopButton from "@/components/ScrollToTopButton";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/i18n/LanguageProvider";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { api } from "@/lib/apiClient";
 
 const DISPLAY_FONT =
   '"Open Runde", "Helvetica Neue", Helvetica, Arial, sans-serif';
@@ -278,13 +279,15 @@ const LandingPage = () => {
   const ctaRef = useRef<HTMLDivElement>(null);
 
   const { isAuthenticated } = useAuth();
-  const { messages } = useLanguage();
+  const { messages, locale } = useLanguage();
   const t = (key: string, fallback: string) => messages[key] || fallback;
 
   const [waitlistOpen, setWaitlistOpen] = useState(false);
   const [waitlistName, setWaitlistName] = useState("");
   const [waitlistEmail, setWaitlistEmail] = useState("");
   const [waitlistSubmitted, setWaitlistSubmitted] = useState(false);
+  const [waitlistSubmitting, setWaitlistSubmitting] = useState(false);
+  const [waitlistError, setWaitlistError] = useState<string | null>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
   useEffect(() => {
@@ -485,21 +488,33 @@ const LandingPage = () => {
     window.location.href = "/become-guide";
   };
 
-  const handleWaitlistSubmit = (e: FormEvent) => {
+  const handleWaitlistSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!waitlistName.trim() || !waitlistEmail.trim()) return;
+    if (!waitlistName.trim() || !waitlistEmail.trim() || waitlistSubmitting) return;
+
+    setWaitlistError(null);
+    setWaitlistSubmitting(true);
     try {
-      const existing = JSON.parse(
-        localStorage.getItem("yaotu_waitlist") || "[]"
-      ) as Array<{ name: string; email: string; at: string }>;
-      existing.push({
+      const params = new URLSearchParams(window.location.search);
+      await api.post("/api/v2/waitlist", {
         name: waitlistName.trim(),
         email: waitlistEmail.trim(),
-        at: new Date().toISOString(),
+        locale,
+        source: "guide_landing",
+        utmSource: params.get("utm_source"),
+        utmMedium: params.get("utm_medium"),
+        utmCampaign: params.get("utm_campaign"),
       });
-      localStorage.setItem("yaotu_waitlist", JSON.stringify(existing));
     } catch {
-      // ignore storage errors
+      setWaitlistError(
+        t(
+          "landing.waitlist.error",
+          "We couldn't submit your request. Please check your email address and try again."
+        )
+      );
+      return;
+    } finally {
+      setWaitlistSubmitting(false);
     }
     setWaitlistSubmitted(true);
   };
@@ -509,6 +524,8 @@ const LandingPage = () => {
     setWaitlistSubmitted(false);
     setWaitlistName("");
     setWaitlistEmail("");
+    setWaitlistError(null);
+    setWaitlistSubmitting(false);
   };
 
   return (
@@ -1140,7 +1157,7 @@ const LandingPage = () => {
                   <p className="mb-6 text-sm text-gray-600 sm:text-base">
                     {t(
                       "landing.waitlist.subtitle",
-                      "Leave your name and email — we’ll let you know when you can explore guides."
+                      "Leave your name and email. We'll send a confirmation link before adding you to the waitlist."
                     )}
                   </p>
                   <form onSubmit={handleWaitlistSubmit} className="space-y-4">
@@ -1180,24 +1197,35 @@ const LandingPage = () => {
                         placeholder="you@example.com"
                       />
                     </div>
+                    {waitlistError && (
+                      <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+                        {waitlistError}
+                      </p>
+                    )}
                     <Button
                       type="submit"
                       className="w-full rounded-full py-6 font-semibold"
+                      disabled={waitlistSubmitting}
                       data-cursor-hover
                     >
-                      {t("landing.waitlist.submit", "Join Waitlist")}
+                      {waitlistSubmitting
+                        ? t("landing.waitlist.submitting", "Submitting...")
+                        : t("landing.waitlist.submit", "Join Waitlist")}
                     </Button>
                   </form>
                 </>
               ) : (
                 <div className="py-4 text-center">
                   <h3 className="mb-2 text-2xl font-bold text-gray-900">
-                    {t("landing.waitlist.successTitle", "You're on the list")}
+                    {t(
+                      "landing.waitlist.successTitle",
+                      "Check your email to confirm your spot"
+                    )}
                   </h3>
                   <p className="mb-6 text-gray-600">
                     {t(
                       "landing.waitlist.successBody",
-                      "Thanks! We’ll reach out when guides are ready to explore."
+                      "Open the confirmation email and select Confirm my spot. You will be added after confirming your email."
                     )}
                   </p>
                   <Button

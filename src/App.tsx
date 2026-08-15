@@ -6,6 +6,8 @@ import SignupPage from "@/pages/SignupPage";
 import LoginPage from "@/pages/LoginPage";
 import ForgotPasswordPage from "@/pages/ForgotPasswordPage";
 import ResetPasswordPage from "@/pages/ResetPasswordPage";
+import WaitlistConfirmPage from "@/pages/WaitlistConfirmPage";
+import WaitlistUnsubscribePage from "@/pages/WaitlistUnsubscribePage";
 import PDFTestPage from "@/pages/PDFTestPage";
 import ViewApplicationStatusPage from "@/pages/ViewApplicationStatusPage";
 import TermsPage from "@/pages/TermsPage";
@@ -36,6 +38,8 @@ const App = () => {
             <Route path="/login" component={LoginPage} />
             <Route path="/forgot-password" component={ForgotPasswordPage} />
             <Route path="/reset-password" component={ResetPasswordPage} />
+            <Route path="/waitlist/confirm" component={WaitlistConfirmPage} />
+            <Route path="/waitlist/unsubscribe" component={WaitlistUnsubscribePage} />
             <Route path="/pdf-test" component={PDFTestPage} />
             <Route path="/view-application-status" component={ViewApplicationStatusPage} />
             <Route path="/terms" component={TermsPage} />
