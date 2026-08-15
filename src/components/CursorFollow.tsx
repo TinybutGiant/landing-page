@@ -1,156 +1,167 @@
-import { useState, useEffect } from "react"
-import { motion, AnimatePresence, useMotionValue, useMotionValueEvent } from "framer-motion"
-import { ImagePreloader } from "@/lib/imagePreloader"
+import { useState, useEffect, useRef } from "react";
+import {
+  motion,
+  AnimatePresence,
+  useMotionValue,
+  useMotionValueEvent,
+} from "framer-motion";
+import { ImagePreloader } from "@/lib/imagePreloader";
+
+const SPAWN_DISTANCE_PX = 170;
+const HOLD_MS = 700;
+const IMAGE_W = 256;
+const IMAGE_H = 144;
+const TRAIL_OPACITY = 0.72;
+const TRAIL_FILTER =
+  "sepia(0.45) saturate(1.25) hue-rotate(-12deg) brightness(1.04)";
 
 interface Trail {
-  id: number
-  x: number
-  y: number
-  src: string
-  rotate: number
-  scale: number
+  id: number;
+  x: number;
+  y: number;
+  src: string;
 }
 
 interface CursorFollowProps {
   images?: string[];
-  containerSelector?: string; // 指定只在特定容器内显示
-  cycleMode?: 'sequential' | 'random' | 'reverse'; // 循环模式
-  showDebugInfo?: boolean; // 是否显示调试信息
+  containerSelector?: string;
+  cycleMode?: "sequential" | "random" | "reverse";
 }
 
-const CursorFollow = ({ 
-  images = [], 
-  containerSelector = '',
-  cycleMode = 'sequential',
-  showDebugInfo = false
+function nextImageIndex(
+  mode: NonNullable<CursorFollowProps["cycleMode"]>,
+  index: number,
+  length: number
+) {
+  switch (mode) {
+    case "random":
+      return Math.floor(Math.random() * length);
+    case "reverse":
+      return index === 0 ? length - 1 : index - 1;
+    case "sequential":
+    default:
+      return (index + 1) % length;
+  }
+}
+
+function isTouchPrimaryDevice() {
+  const uaMobile =
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent
+    );
+  const touchPrimary = window.matchMedia(
+    "(hover: none) and (pointer: coarse)"
+  ).matches;
+  return uaMobile || touchPrimary;
+}
+
+const CursorFollow = ({
+  images = [],
+  containerSelector = "",
+  cycleMode = "sequential",
 }: CursorFollowProps) => {
-  const [trails, setTrails] = useState<Trail[]>([])
-  const [isMobile, setIsMobile] = useState(false)
-  const [currentImageIndex, setCurrentImageIndex] = useState(0)
-  
-  // 创建 motion values 来跟踪鼠标位置
-  const pointerX = useMotionValue(0)
-  const pointerY = useMotionValue(0)
-
-  // 动态获取图片
+  const [trails, setTrails] = useState<Trail[]>([]);
+  const [isMobile, setIsMobile] = useState(false);
   const [availableImages, setAvailableImages] = useState<string[]>([]);
+  const lastTrailRef = useRef<{ x: number; y: number } | null>(null);
+  const imageIndexRef = useRef(0);
+  const timersRef = useRef<number[]>([]);
+  const mountedRef = useRef(true);
 
-  // 在组件挂载时预加载图片
+  const pointerX = useMotionValue(0);
+  const pointerY = useMotionValue(0);
+
   useEffect(() => {
-    const preloadImages = async () => {
-      const preloader = ImagePreloader.getInstance();
-      const preloadedImages = await preloader.preloadImages();
-      setAvailableImages(preloadedImages);
+    mountedRef.current = true;
+    const preloader = ImagePreloader.getInstance();
+    preloader.preloadImages().then((list) => {
+      if (mountedRef.current) setAvailableImages(list);
+    });
+    return () => {
+      mountedRef.current = false;
+      timersRef.current.forEach((id) => window.clearTimeout(id));
+      timersRef.current = [];
     };
+  }, []);
 
-    preloadImages();
+  useEffect(() => {
+    setIsMobile(isTouchPrimaryDevice());
   }, []);
 
   const finalImages = images.length > 0 ? images : availableImages;
 
-  // 检测移动设备
-  useEffect(() => {
-    const checkMobile = () => {
-      const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-        (navigator.maxTouchPoints && navigator.maxTouchPoints > 2) ||
-        window.matchMedia('(hover: none) and (pointer: coarse)').matches;
-      setIsMobile(isMobileDevice);
-    };
-    checkMobile();
-  }, []);
+  useMotionValueEvent(pointerX, "change", (clientX) => {
+    if (isMobile || finalImages.length === 0) return;
 
-  // 监听鼠标位置
-  useMotionValueEvent(pointerX, "change", (latestX) => {
-    if (isMobile) return;
-    // 如果图片尚未准备好，不创建轨迹
-    if (!finalImages || finalImages.length === 0) return;
-    
-    const latestY = pointerY.get()
+    const clientY = pointerY.get();
+    const container = containerSelector
+      ? document.querySelector(containerSelector)
+      : null;
+    const rect = container?.getBoundingClientRect();
+    const x = rect ? clientX - rect.left : clientX;
+    const y = rect ? clientY - rect.top : clientY;
 
-    const prev = trails[trails.length - 1]
-    if (!prev || Math.hypot(latestX - prev.x, latestY - prev.y) > 170) { // 256px * 2/3 ≈ 170px
-      // 根据循环模式获取当前图片
-      let currentImg: string;
-      let nextIndex: number;
-      
-      switch (cycleMode) {
-        case 'sequential':
-          currentImg = finalImages[currentImageIndex];
-          nextIndex = (currentImageIndex + 1) % finalImages.length;
-          break;
-        case 'random':
-          currentImg = finalImages[currentImageIndex];
-          nextIndex = Math.floor(Math.random() * finalImages.length);
-          break;
-        case 'reverse':
-          currentImg = finalImages[currentImageIndex];
-          nextIndex = currentImageIndex === 0 ? finalImages.length - 1 : currentImageIndex - 1;
-          break;
-        default:
-          currentImg = finalImages[currentImageIndex];
-          nextIndex = (currentImageIndex + 1) % finalImages.length;
-      }
-      
-      // 更新索引
-      setCurrentImageIndex(nextIndex);
-      
-      // 调试信息：显示当前图片索引和总数
-      if (showDebugInfo) {
-        console.log(`[${cycleMode.toUpperCase()}] 显示图片 ${currentImageIndex + 1}/${finalImages.length}: ${currentImg}`);
-      }
+    const prev = lastTrailRef.current;
+    const farEnough =
+      !prev || Math.hypot(x - prev.x, y - prev.y) > SPAWN_DISTANCE_PX;
+    if (!farEnough) return;
 
-      const newTrail = {
-        id: Date.now() + Math.random(), // 避免重复
-        x: latestX,
-        y: latestY,
-        src: currentImg,
-        rotate: 0, // 不旋转
-        scale: 1 // 基础缩放
-      }
+    const index = imageIndexRef.current;
+    const src = finalImages[index];
+    if (!src) return;
 
-      setTrails((t) => [...t, newTrail])
+    imageIndexRef.current = nextImageIndex(
+      cycleMode,
+      index,
+      finalImages.length
+    );
 
-      // 1秒后移除这个轨迹（0.7秒保持 + 0.3秒缩小）
-      setTimeout(() => {
-        setTrails((t) => t.filter(trail => trail.id !== newTrail.id))
-      }, 1000)
-    }
-  })
+    const id = Date.now() + Math.random();
+    lastTrailRef.current = { x, y };
+    setTrails((t) => [...t, { id, x, y, src }]);
 
-  // 鼠标移动事件监听
+    const timer = window.setTimeout(() => {
+      if (!mountedRef.current) return;
+      setTrails((t) => t.filter((trail) => trail.id !== id));
+      timersRef.current = timersRef.current.filter((t) => t !== timer);
+    }, HOLD_MS);
+    timersRef.current.push(timer);
+  });
+
   useEffect(() => {
     if (isMobile) return;
 
     const handleMouseMove = (e: Event) => {
+      if (document.documentElement.classList.contains("is-scrolling")) return;
+
       const mouseEvent = e as MouseEvent;
-      // 如果指定了容器选择器，检查鼠标是否在该容器内
       if (containerSelector) {
         const container = document.querySelector(containerSelector);
         if (container) {
           const rect = container.getBoundingClientRect();
-          const isInside = mouseEvent.clientX >= rect.left && 
-                          mouseEvent.clientX <= rect.right && 
-                          mouseEvent.clientY >= rect.top && 
-                          mouseEvent.clientY <= rect.bottom;
-          if (!isInside) return;
+          const inside =
+            mouseEvent.clientX >= rect.left &&
+            mouseEvent.clientX <= rect.right &&
+            mouseEvent.clientY >= rect.top &&
+            mouseEvent.clientY <= rect.bottom;
+          if (!inside) return;
         }
       }
-      
-      pointerX.set(mouseEvent.clientX)
-      pointerY.set(mouseEvent.clientY)
-    }
 
-    const targetElement = containerSelector ? document.querySelector(containerSelector) : document;
-    if (targetElement) {
-      targetElement.addEventListener('mousemove', handleMouseMove)
-      return () => targetElement.removeEventListener('mousemove', handleMouseMove)
-    }
-  }, [pointerX, pointerY, isMobile, containerSelector])
+      pointerX.set(mouseEvent.clientX);
+      pointerY.set(mouseEvent.clientY);
+    };
 
-  // 在移动设备上不渲染组件
-  if (isMobile) {
-    return null;
-  }
+    const target = containerSelector
+      ? document.querySelector(containerSelector)
+      : document;
+    if (!target) return;
+
+    target.addEventListener("mousemove", handleMouseMove);
+    return () => target.removeEventListener("mousemove", handleMouseMove);
+  }, [pointerX, pointerY, isMobile, containerSelector]);
+
+  if (isMobile) return null;
 
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -159,52 +170,34 @@ const CursorFollow = ({
           <motion.img
             key={t.id}
             src={t.src}
-            initial={{ opacity: 1, scale: 1.0 }}
-            animate={{ 
-              opacity: 1, 
-              scale: 1.0,
-              transition: { 
-                duration: 0.7,
-                ease: "easeOut"
-              }
+            alt=""
+            initial={{ opacity: 0, scale: 0.92 }}
+            animate={{
+              opacity: TRAIL_OPACITY,
+              scale: 1,
+              transition: { duration: 0.18, ease: [0.22, 1, 0.36, 1] },
             }}
-            exit={{ 
-              opacity: 0, 
-              scale: 0.85,
-              transition: { 
-                duration: 0.3,
-                ease: "easeIn"
-              }
+            exit={{
+              opacity: 0,
+              scale: 0.88,
+              transition: { duration: 0.3, ease: "easeIn" },
             }}
             className="absolute pointer-events-none select-none object-cover"
             style={{
-              width: '256px', // 9:16 比例，放大8倍：32px * 8 = 256px
-              height: '144px', // 放大8倍：18px * 8 = 144px
-              left: t.x - 128, // 居中定位：256px / 2 = 128px
-              top: t.y - 72, // 居中定位：144px / 2 = 72px
-              filter: `
-              brightness(1.1)   /* 稍微提亮 */
-              contrast(1.05)    /* 对比度提高 */
-              saturate(1.2)     /* 稍微提高饱和度 */
-              warmth(1.05)      /* 可选，部分浏览器不支持 */
-              `,
-            }}
-            onLoad={() => {
-              if (showDebugInfo) {
-                console.log('图片加载成功:', t.src);
-              }
+              width: IMAGE_W,
+              height: IMAGE_H,
+              left: t.x - IMAGE_W / 2,
+              top: t.y - IMAGE_H / 2,
+              filter: TRAIL_FILTER,
             }}
             onError={(e) => {
-              // 静默处理图片加载失败，不输出错误信息
-              const target = e.target as HTMLImageElement;
-              // 如果图片加载失败，隐藏该图片
-              target.style.display = 'none';
+              (e.target as HTMLImageElement).style.display = "none";
             }}
           />
         ))}
       </AnimatePresence>
     </div>
-  )
+  );
 };
 
 export default CursorFollow;
