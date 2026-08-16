@@ -469,14 +469,10 @@ const LandingPage = () => {
       q: t("landing.faq.q4", "How can I become a local guide?"),
       a: t(
         "landing.faq.a4",
-        "Tap “Become a Local Guide” and apply at the bottom of this page. Share your expertise and open slots for travelers."
+        "Select Become a Local Guide to open the application. Share your expertise and open slots for travelers."
       ),
     },
   ];
-
-  const scrollToCta = () => {
-    ctaRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
 
   const handleViewApplicationStatus = () => {
     window.location.href = isAuthenticated
@@ -687,12 +683,12 @@ const LandingPage = () => {
                 fontSize: "clamp(1.35rem, 2.5vw + 0.6rem, 2.25rem)",
               }}
             >
-              {t("landing.hero.ctaIntro", "Start as a traveler or a local")}
+              {t("landing.hero.ctaIntro", "Join Yaotu today")}
             </p>
             <p className="text-xl text-gray-600 dark:text-gray-300">
               {t(
                 "landing.hero.ctaIntroSub",
-                "Join early and shape the journey with us."
+                "Become one of our first local guides, or get an early invitation when Yaotu opens to travelers."
               )}
             </p>
           </motion.div>
@@ -709,13 +705,10 @@ const LandingPage = () => {
               <Button
                 size="lg"
                 className="h-auto min-h-[3.5rem] w-full whitespace-normal rounded-full px-5 py-4 text-center text-sm font-semibold leading-snug shadow-md sm:px-8 sm:text-base lg:text-lg"
-                onClick={() => setWaitlistOpen(true)}
+                onClick={handleBecomeGuide}
                 data-cursor-hover
               >
-                {t(
-                  "landing.hero.waitlistCta",
-                  "Get Early Access"
-                )}
+                {t("landing.hero.guideCta", "Become a Local Guide")}
               </Button>
             </motion.div>
             <motion.div
@@ -730,11 +723,11 @@ const LandingPage = () => {
               <Button
                 size="lg"
                 variant="outline"
-                className="h-auto min-h-[3.5rem] w-full whitespace-normal rounded-full border-2 px-5 py-4 text-center text-sm font-semibold leading-snug sm:px-8 sm:text-base lg:text-lg"
-                onClick={scrollToCta}
+                className="h-auto min-h-[3.5rem] w-full whitespace-normal rounded-full border-2 border-[#FFD511] bg-white px-5 py-4 text-center text-sm font-semibold leading-snug text-gray-900 shadow-none hover:bg-[#FFF7CC] sm:px-8 sm:text-base lg:text-lg"
+                onClick={() => setWaitlistOpen(true)}
                 data-cursor-hover
               >
-                {t("landing.hero.guideCta", "Become a Local Guide")}
+                {t("landing.hero.waitlistCta", "Get Traveler Early Access")}
               </Button>
             </motion.div>
           </div>
