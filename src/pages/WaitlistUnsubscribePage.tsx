@@ -56,7 +56,7 @@ export default function WaitlistUnsubscribePage() {
             <p className="mb-8 text-gray-600">
               {t(
                 "landing.waitlist.unsubscribeDoneBody",
-                "You will no longer receive Yaotu traveler waitlist updates."
+                "You will no longer receive Yaotu early access updates."
               )}
             </p>
           </>
@@ -76,12 +76,12 @@ export default function WaitlistUnsubscribePage() {
         ) : (
           <>
             <h1 className="mb-3 text-3xl font-bold text-gray-900">
-              {t("landing.waitlist.unsubscribeTitle", "Unsubscribe from waitlist updates")}
+              {t("landing.waitlist.unsubscribeTitle", "Unsubscribe from early access updates")}
             </h1>
             <p className="mb-8 text-gray-600">
               {t(
                 "landing.waitlist.unsubscribeBody",
-                "Select Unsubscribe to stop receiving future Yaotu traveler waitlist updates."
+                "Select Unsubscribe to stop receiving future Yaotu early access updates."
               )}
             </p>
             <Button

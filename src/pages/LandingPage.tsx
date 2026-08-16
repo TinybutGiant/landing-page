@@ -459,10 +459,10 @@ const LandingPage = () => {
       ),
     },
     {
-      q: t("landing.faq.q3", "How do I join the waitlist?"),
+      q: t("landing.faq.q3", "How do I get early access?"),
       a: t(
         "landing.faq.a3",
-        "Click “Join the Waitlist to Explore Guides”, leave your name and email, and we’ll notify you when guides are ready to book."
+        "Select Get Early Access, leave your name and email, and confirm your email. Once our first local guides are ready, we'll prioritize inviting confirmed travelers to experience Yaotu."
       ),
     },
     {
@@ -714,7 +714,7 @@ const LandingPage = () => {
               >
                 {t(
                   "landing.hero.waitlistCta",
-                  "Join the Waitlist to Explore Guides"
+                  "Get Early Access"
                 )}
               </Button>
             </motion.div>
@@ -1152,12 +1152,15 @@ const LandingPage = () => {
                     id="waitlist-title"
                     className="mb-2 pr-8 text-2xl font-bold text-gray-900"
                   >
-                    {t("landing.waitlist.title", "Join the Waitlist")}
+                    {t(
+                      "landing.waitlist.title",
+                      "Join the first group of Yaotu travelers"
+                    )}
                   </h3>
                   <p className="mb-6 text-sm text-gray-600 sm:text-base">
                     {t(
                       "landing.waitlist.subtitle",
-                      "Leave your name and email. We'll send a confirmation link before adding you to the waitlist."
+                      "We're building our first community of trusted local guides. Once they're ready to welcome travelers, we'll invite confirmed members of this list to experience Yaotu first."
                     )}
                   </p>
                   <form onSubmit={handleWaitlistSubmit} className="space-y-4">
@@ -1210,7 +1213,7 @@ const LandingPage = () => {
                     >
                       {waitlistSubmitting
                         ? t("landing.waitlist.submitting", "Submitting...")
-                        : t("landing.waitlist.submit", "Join Waitlist")}
+                        : t("landing.waitlist.submit", "Get early access")}
                     </Button>
                   </form>
                 </>
@@ -1219,13 +1222,13 @@ const LandingPage = () => {
                   <h3 className="mb-2 text-2xl font-bold text-gray-900">
                     {t(
                       "landing.waitlist.successTitle",
-                      "Check your email to confirm your spot"
+                      "Confirm your email"
                     )}
                   </h3>
                   <p className="mb-6 text-gray-600">
                     {t(
                       "landing.waitlist.successBody",
-                      "Open the confirmation email and select Confirm my spot. You will be added after confirming your email."
+                      "We've sent a confirmation email. After you confirm, we'll prioritize inviting you when Yaotu opens its first traveler experience."
                     )}
                   </p>
                   <Button

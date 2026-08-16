@@ -75,7 +75,7 @@ export default function WaitlistConfirmPage() {
             <p className="mb-8 text-gray-600">
               {t(
                 "landing.waitlist.confirmedBody",
-                "You're on the Yaotu traveler waitlist. We'll let you know when the marketplace opens."
+                "You're confirmed. We'll prioritize inviting you when Yaotu opens its first traveler experience."
               )}
             </p>
             <Button asChild className="rounded-full px-8">
@@ -94,7 +94,7 @@ export default function WaitlistConfirmPage() {
             <p className="mb-6 text-gray-600">
               {t(
                 "landing.waitlist.invalidTokenBody",
-                "Enter your email and we'll send a new confirmation link if your waitlist request is still pending."
+                "Enter your email and we'll send a new confirmation link if your early access request is still pending."
               )}
             </p>
             <form onSubmit={resend} className="space-y-4">
@@ -118,7 +118,7 @@ export default function WaitlistConfirmPage() {
                 <p className="rounded-lg border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-700">
                   {t(
                     "landing.waitlist.resendSent",
-                    "If that email is pending confirmation, a new link has been sent."
+                    "If that email has a pending early access request, a new link has been sent."
                   )}
                 </p>
               )}
@@ -137,12 +137,12 @@ export default function WaitlistConfirmPage() {
           <div className="text-center">
             <Mail className="mx-auto mb-5 h-12 w-12 text-yellow-500" />
             <h1 className="mb-3 text-3xl font-bold text-gray-900">
-              {t("landing.waitlist.confirmTitle", "Confirm your waitlist spot")}
+              {t("landing.waitlist.confirmTitle", "Confirm your email")}
             </h1>
             <p className="mb-8 text-gray-600">
               {t(
                 "landing.waitlist.confirmBody",
-                "Select Confirm my spot to finish joining the Yaotu traveler waitlist."
+                "Select Confirm my email to join the first group of Yaotu travelers."
               )}
             </p>
             <Button
@@ -152,7 +152,7 @@ export default function WaitlistConfirmPage() {
             >
               {state === "confirming"
                 ? t("landing.waitlist.confirming", "Confirming...")
-                : t("landing.waitlist.confirmButton", "Confirm my spot")}
+                : t("landing.waitlist.confirmButton", "Confirm my email")}
             </Button>
           </div>
         )}
