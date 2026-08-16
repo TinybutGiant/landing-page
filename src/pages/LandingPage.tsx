@@ -330,7 +330,7 @@ const LandingPage = () => {
       title: t("landing.features.safeSecure", "Safe & Secure"),
       description: t(
         "landing.features.safeSecureDesc",
-        "Every local is verified, with safety features built into every booking."
+        "Every Guide is verified, with safety features built into every booking."
       ),
     },
     {
@@ -346,7 +346,7 @@ const LandingPage = () => {
       title: t("landing.features.authenticExperiences", "Authentic Experiences"),
       description: t(
         "landing.features.authenticExperiencesDesc",
-        "Go beyond the guidebooks and see the city like a local."
+        "Go beyond generic routes and see Japan through local context."
       ),
     },
     {
@@ -354,7 +354,7 @@ const LandingPage = () => {
       title: t("landing.features.expertGuides", "Expert Guides"),
       description: t(
         "landing.features.expertGuidesDesc",
-        "Verified locals with deep knowledge of the city."
+        "Verified local Guides with practical knowledge of Japan's neighborhoods, culture, and everyday details."
       ),
     },
   ];
@@ -362,28 +362,28 @@ const LandingPage = () => {
   const travelerSteps: StepItem[] = [
     {
       step: "①",
-      title: t("landing.howTraveler.step1", "Find a Local"),
+      title: t("landing.howTraveler.step1", "Register Early"),
       description: t(
         "landing.howTraveler.step1Desc",
-        "Browse verified locals nearby and pick someone whose style fits your trip."
+        "Leave your name and email, then confirm your email address."
       ),
       image: "/3.jpg",
     },
     {
       step: "②",
-      title: t("landing.howTraveler.step2", "Book Instantly"),
+      title: t("landing.howTraveler.step2", "Wait for Guides"),
       description: t(
         "landing.howTraveler.step2Desc",
-        "Choose a time that works, confirm in a few taps, and pay securely."
+        "We are reviewing and onboarding the first local Guides in Japan."
       ),
       image: "/5.jpg",
     },
     {
       step: "③",
-      title: t("landing.howTraveler.step3", "Explore Together"),
+      title: t("landing.howTraveler.step3", "Get Invited"),
       description: t(
         "landing.howTraveler.step3Desc",
-        "Meet up and see the city the way someone who lives there sees it."
+        "When the first Guides are ready, confirmed Travelers will receive priority invitations."
       ),
       image: "/6.jpg",
     },
@@ -392,28 +392,28 @@ const LandingPage = () => {
   const guideSteps: StepItem[] = [
     {
       step: "①",
-      title: t("landing.howGuide.step1", "Open a Slot"),
+      title: t("landing.howGuide.step1", "Apply as a Guide"),
       description: t(
         "landing.howGuide.step1Desc",
-        "Pick the days and hours you're free. No fixed schedule required."
+        "Tell us about your local knowledge, availability, and the experiences you can offer in Japan."
       ),
       image: "/3.jpg",
     },
     {
       step: "②",
-      title: t("landing.howGuide.step2", "Book Instantly"),
+      title: t("landing.howGuide.step2", "Get Reviewed"),
       description: t(
         "landing.howGuide.step2Desc",
-        "Travelers book your slot directly, and payment runs through the platform."
+        "We review applications so the first Guide network starts with trust and quality."
       ),
       image: "/5.jpg",
     },
     {
       step: "③",
-      title: t("landing.howGuide.step3", "Explore Together"),
+      title: t("landing.howGuide.step3", "Start Hosting"),
       description: t(
         "landing.howGuide.step3Desc",
-        "Take them to your favorite spots and share the city you know best."
+        "Once approved, open slots and welcome Travelers as the marketplace launches."
       ),
       image: "/6.jpg",
     },
@@ -448,28 +448,28 @@ const LandingPage = () => {
       q: t("landing.faq.q1", "What is Ahhh Yaotu?"),
       a: t(
         "landing.faq.a1",
-        "Ahhh Yaotu connects travelers with verified local guides for authentic, flexible experiences that match your interests and schedule."
+        "Ahhh Yaotu is building a Japan-focused marketplace that connects Travelers with verified local Guides for personal, flexible experiences."
       ),
     },
     {
       q: t("landing.faq.q2", "How are local guides verified?"),
       a: t(
         "landing.faq.a2",
-        "Every local goes through a verification process so that safety and trust are built into every booking."
+        "Every Guide goes through a review and verification process so the first local Guide network in Japan starts with safety and trust."
       ),
     },
     {
       q: t("landing.faq.q3", "How do I get early access?"),
       a: t(
         "landing.faq.a3",
-        "Select Get Early Access, leave your name and email, and confirm your email. Once our first local guides are ready, we'll prioritize inviting confirmed travelers to experience Yaotu."
+        "Select Get Traveler Early Access, leave your name and email, and confirm your email. Once the first local Guides in Japan are ready, we'll prioritize inviting confirmed Travelers to experience Yaotu."
       ),
     },
     {
       q: t("landing.faq.q4", "How can I become a local guide?"),
       a: t(
         "landing.faq.a4",
-        "Select Become a Local Guide to open the application. Share your expertise and open slots for travelers."
+        "Select Become a Local Guide to open the application. Share your Japan local knowledge, service preferences, and availability."
       ),
     },
   ];
@@ -649,7 +649,7 @@ const LandingPage = () => {
             >
               {t(
                 "landing.hero.tagline",
-                "Connect with verified locals who match your interests, travel style, and schedule."
+                "Apply to become one of our first local Guides in Japan, or register for Traveler Early Access."
               )}
             </motion.p>
           </div>
@@ -683,12 +683,12 @@ const LandingPage = () => {
                 fontSize: "clamp(1.35rem, 2.5vw + 0.6rem, 2.25rem)",
               }}
             >
-              {t("landing.hero.ctaIntro", "Join Yaotu today")}
+              {t("landing.hero.ctaIntro", "Help build Yaotu's first local Guide community in Japan")}
             </p>
             <p className="text-xl text-gray-600 dark:text-gray-300">
               {t(
                 "landing.hero.ctaIntroSub",
-                "Become one of our first local guides, or get an early invitation when Yaotu opens to travelers."
+                "We're starting by bringing together our first community of local Guides in Japan. Planning a trip to Japan? Register for Traveler Early Access and we'll send a priority invite when the first Guides are ready."
               )}
             </p>
           </motion.div>
@@ -757,7 +757,7 @@ const LandingPage = () => {
             <p className="text-xl text-gray-600 dark:text-gray-300">
               {t(
                 "landing.features.subtitle",
-                "Explore the city with locals who know it best."
+                "Explore Japan with locals who know the places, habits, and context behind the route."
               )}
             </p>
           </motion.div>
@@ -844,7 +844,7 @@ const LandingPage = () => {
               <p className="mb-8 w-full text-base text-gray-600 sm:text-lg">
                 {t(
                   "landing.howTraveler.subtitle",
-                  "Book a local experience in three simple steps"
+                  "Register now for Early Access while we build the first local Guide network in Japan."
                 )}
               </p>
               <StepFlow
@@ -866,7 +866,7 @@ const LandingPage = () => {
               <p className="mb-8 w-full text-base text-gray-600 sm:text-lg">
                 {t(
                   "landing.howGuide.subtitle",
-                  "Start hosting travelers in three simple steps"
+                  "Apply to help shape Yaotu's first local experience network in Japan."
                 )}
               </p>
               <StepFlow
@@ -1034,7 +1034,7 @@ const LandingPage = () => {
               textShadow: "0 0 30px rgba(255, 255, 255, 0.5)",
             }}
           >
-            {t("landing.cta.title", "Ready to Explore Japan?")}
+            {t("landing.cta.title", "Ready to help shape travel in Japan?")}
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -1046,7 +1046,7 @@ const LandingPage = () => {
           >
             {t(
               "landing.cta.subtitle",
-              "Share your expertise and connect with curious travelers"
+              "Apply as a local Guide and help build Yaotu's first Japan experience network."
             )}
           </motion.p>
           <motion.div
@@ -1073,7 +1073,7 @@ const LandingPage = () => {
                   whileHover={{ x: 2 }}
                   transition={{ duration: 0.2 }}
                 >
-                  {t("landing.cta.becomeGuide", "Apply to Become a Guide")}
+                  {t("landing.cta.becomeGuide", "Apply to Become a Local Guide")}
                   <motion.span
                     className="ml-2 inline-flex"
                     whileHover={{ x: 3 }}
@@ -1147,13 +1147,13 @@ const LandingPage = () => {
                   >
                     {t(
                       "landing.waitlist.title",
-                      "Join the first group of Yaotu travelers"
+                      "Get Traveler Early Access for Japan"
                     )}
                   </h3>
                   <p className="mb-6 text-sm text-gray-600 sm:text-base">
                     {t(
                       "landing.waitlist.subtitle",
-                      "We're building our first community of trusted local guides. Once they're ready to welcome travelers, we'll invite confirmed members of this list to experience Yaotu first."
+                      "We're building our first community of trusted local Guides in Japan. Once they're ready to welcome Travelers, we'll invite confirmed Early Access members to experience Yaotu first."
                     )}
                   </p>
                   <form onSubmit={handleWaitlistSubmit} className="space-y-4">
@@ -1221,7 +1221,7 @@ const LandingPage = () => {
                   <p className="mb-6 text-gray-600">
                     {t(
                       "landing.waitlist.successBody",
-                      "We've sent a confirmation email. After you confirm, we'll prioritize inviting you when Yaotu opens its first traveler experience."
+                      "We've sent a confirmation email. After you confirm, we'll prioritize inviting you when the first local Guide experiences in Japan are ready."
                     )}
                   </p>
                   <Button

@@ -75,7 +75,7 @@ export default function WaitlistConfirmPage() {
             <p className="mb-8 text-gray-600">
               {t(
                 "landing.waitlist.confirmedBody",
-                "You're confirmed. We'll prioritize inviting you when Yaotu opens its first traveler experience."
+                "You're confirmed. We'll prioritize inviting you when the first local Guide experiences in Japan are ready."
               )}
             </p>
             <Button asChild className="rounded-full px-8">
@@ -142,7 +142,7 @@ export default function WaitlistConfirmPage() {
             <p className="mb-8 text-gray-600">
               {t(
                 "landing.waitlist.confirmBody",
-                "Select Confirm my email to join the first group of Yaotu travelers."
+                "Select Confirm my email to join Yaotu Traveler Early Access for Japan."
               )}
             </p>
             <Button
