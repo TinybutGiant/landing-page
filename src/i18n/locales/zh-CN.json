@@ -64,26 +64,44 @@
       "flexibleBooking": "灵活预订",
       "flexibleBookingDesc": "省去反复沟通，放心直接预订。"
     },
+    "how": {
+      "screenshotSlot": "产品截图占位"
+    },
     "howTraveler": {
-      "sectionTitle": "使用流程",
-      "title": "旅行者",
-      "subtitle": "在我们建立日本地区的首批本地 Guide 网络期间，先登记 Early Access。",
-      "step1": "提前登记",
-      "step1Desc": "留下姓名和邮箱，并完成邮箱确认。",
-      "step2": "等待 Guide 准备",
-      "step2Desc": "我们正在审核并接入首批日本本地 Guide。",
-      "step3": "获得优先邀请",
-      "step3Desc": "首批 Guide 准备好后，我们会优先邀请已确认的 Traveler 体验。"
+      "sectionTitle": "Yaotu 如何运作",
+      "eyebrow": "即将开放",
+      "title": "Traveler 体验预览",
+      "subtitle": "Traveler marketplace 正在准备中。你将可以发现日本地区的本地 Guide、了解他们的资料和体验，并直接通过 Yaotu 完成预订。现在可以提前登记 Early Access。",
+      "cta": "获取 Traveler 优先邀请",
+      "step1": "发现本地 Guide",
+      "step1Desc": "按城市、兴趣、语言和想要的体验类型浏览本地 Guide。",
+      "step2": "查看 Guide 资料和体验",
+      "step2Desc": "了解每位 Guide 的背景、服务方式和可提供的体验，再决定是否预约。",
+      "step3": "选择时间并预订",
+      "step3Desc": "marketplace 开放后，你可以选择时间并直接通过 Yaotu 完成预订。"
     },
     "howGuide": {
-      "title": "地陪",
-      "subtitle": "申请加入 Yaotu 在日本的首批本地体验网络。",
+      "eyebrow": "Guide 申请开放",
+      "title": "成为 Yaotu 的本地 Guide",
+      "subtitle": "加入我们正在日本建立的首批本地 Guide 网络。提交申请、完善资料，并随时查看审核进度。",
+      "cta": "成为本地地陪",
       "step1": "提交 Guide 申请",
-      "step1Desc": "告诉我们你的当地知识、可服务时间，以及你能在日本提供的体验。",
-      "step2": "完成审核",
-      "step2Desc": "我们会审核申请，让首批 Guide 网络从信任与质量开始。",
-      "step3": "开始接待",
-      "step3Desc": "通过审核后开放时段，在 marketplace 启动后接待 Traveler。"
+      "step1Desc": "告诉我们你的当地知识、服务城市、可服务时间，以及你能提供的体验。",
+      "step2": "完善资料和资格材料",
+      "step2Desc": "补充资格材料，并完成审核所需的申请资料。",
+      "step3": "查看申请状态",
+      "step3Desc": "随时返回查看审核进度，并根据审核更新继续补充资料。"
+    },
+    "howGuideOperations": {
+      "eyebrow": "审核通过后",
+      "title": "开始在 Yaotu 接待 Traveler",
+      "subtitle": "审核通过后，你可以创建并发布本地体验、管理 Traveler 预订，并直接在 Yaotu 查看收入和提款。",
+      "step1": "发布本地体验",
+      "step1Desc": "设置体验内容、地点、可用时间、时长和价格，并将体验发布给 Traveler。",
+      "step2": "管理 Traveler 预订",
+      "step2Desc": "在 Guide 工作区查看即将开始的预订、Traveler 信息、时间安排和订单状态。",
+      "step3": "查看收入与提款",
+      "step3Desc": "查看收入、提款状态和历史记录，并通过 Yaotu 管理提款。"
     },
     "team": {
       "title": "来自我们的团队",

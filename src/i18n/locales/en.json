@@ -64,26 +64,44 @@
       "flexibleBooking": "Flexible Booking",
       "flexibleBookingDesc": "Skip the back-and-forth and book with\u00A0confidence."
     },
+    "how": {
+      "screenshotSlot": "Product screenshot slot"
+    },
     "howTraveler": {
-      "sectionTitle": "How It Works",
-      "title": "For Travelers",
-      "subtitle": "Register now for Early Access while we build the first local Guide network in Japan.",
-      "step1": "Register Early",
-      "step1Desc": "Leave your name and email, then confirm your email address.",
-      "step2": "Wait for Guides",
-      "step2Desc": "We are reviewing and onboarding the first local Guides in Japan.",
-      "step3": "Get Invited",
-      "step3Desc": "When the first Guides are ready, confirmed Travelers will receive priority invitations."
+      "sectionTitle": "How Yaotu works",
+      "eyebrow": "Coming Soon",
+      "title": "Preview the Traveler experience",
+      "subtitle": "The Traveler marketplace is coming soon. You'll be able to discover local Guides in Japan, explore their profiles and experiences, and book directly through Yaotu. Register for Early Access now.",
+      "cta": "Get Traveler Early Access",
+      "step1": "Discover Guides",
+      "step1Desc": "Browse local Guides by city, interests, language, and the kind of experience you want.",
+      "step2": "Explore Guide profiles and experiences",
+      "step2Desc": "Explore each Guide's background, service style, and available experiences before you decide.",
+      "step3": "Choose a time and book",
+      "step3Desc": "Choose a time and complete your booking directly through Yaotu when the marketplace opens."
     },
     "howGuide": {
-      "title": "For Guides",
-      "subtitle": "Apply to help shape Yaotu's first local experience network in Japan.",
-      "step1": "Apply as a Guide",
-      "step1Desc": "Tell us about your local knowledge, availability, and the experiences you can offer in Japan.",
-      "step2": "Get Reviewed",
-      "step2Desc": "We review applications so the first Guide network starts with trust and quality.",
-      "step3": "Start Hosting",
-      "step3Desc": "Once approved, open slots and welcome Travelers as the marketplace launches."
+      "eyebrow": "Applications open",
+      "title": "Become a local Guide with Yaotu",
+      "subtitle": "Join the first community of local Guides we're building in Japan. Apply, complete your profile, and follow your application progress.",
+      "cta": "Become a Local Guide",
+      "step1": "Submit your Guide application",
+      "step1Desc": "Tell us about your local knowledge, service areas, availability, and the experiences you can offer.",
+      "step2": "Complete your profile and qualifications",
+      "step2Desc": "Add qualification materials and complete the review details we need to evaluate your application.",
+      "step3": "Track your application status",
+      "step3Desc": "Return any time to see your application progress and respond to review updates."
+    },
+    "howGuideOperations": {
+      "eyebrow": "After approval",
+      "title": "Start hosting with Yaotu",
+      "subtitle": "Once approved, create and publish your local experiences, manage Traveler bookings, and track your earnings and payouts directly through Yaotu.",
+      "step1": "Publish your experience",
+      "step1Desc": "Set your experience details, location, availability, duration, and pricing before making it available to Travelers.",
+      "step2": "Manage Traveler bookings",
+      "step2Desc": "Review upcoming bookings, Traveler details, schedules, and booking status from your Guide workspace.",
+      "step3": "Track earnings and payouts",
+      "step3Desc": "See your earnings, payout status, and payout history, and manage withdrawals through Yaotu."
     },
     "team": {
       "title": "From Our Team",
