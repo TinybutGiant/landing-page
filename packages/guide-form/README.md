@@ -1,204 +1,155 @@
 # Guide Form Package
 
-这是一个包含PDF生成功能的React组件包，基于html2pdf.js实现。
+> **CONFIDENTIAL** — Internal use only.
 
-## 功能特性
+Reusable guide application form component package. UI-agnostic, type-safe, with Zod validation.
 
-- 📄 PDF生成：将HTML内容转换为PDF
-- 📥 PDF下载：自动下载生成的PDF文件
-- ☁️ PDF上传：将PDF上传到服务器
-- 🎨 自定义样式：支持自定义PDF样式和选项
-- 🔧 易于集成：提供React组件和Hook
+## Internal installation
 
-## 安装
+This package is private and is not published to the public npm registry. Install the built package
+from an approved workspace or repository checkout:
 
 ```bash
-npm install @replit/guide-form
+pnpm add @replit/guide-form@file:../replit_localguide/packages/guide-form/dist
 ```
 
-## 依赖
+## Peer Dependencies
 
-- `html2pdf.js`: PDF生成库
-- `react`: React框架
+```json
+{
+  "@hookform/resolvers": "^3.0.0",
+  "react": "^18.0.0",
+  "react-dom": "^18.0.0",
+  "react-hook-form": "^7.0.0",
+  "zod": "^3.0.0",
+  "lucide-react": "^0.400.0",
+  "class-variance-authority": "^0.7.0",
+  "clsx": "^2.0.0",
+  "tailwind-merge": "^2.0.0"
+}
+```
 
-## 使用方法
-
-### 1. 使用PrintAndSave组件
+## Usage
 
 ```tsx
-import { PrintAndSave } from '@replit/guide-form';
+import { GuideForm } from '@replit/guide-form';
 
-function MyComponent() {
+const MyGuideForm = () => {
+  const config = {
+    apiEndpoints: {
+      submitApplication: '/api/v2/guide-applications',
+      serviceCategories: '/api/v2/service-categories/with-subcategories',
+    },
+    auth: {
+      getToken: () => user?.token || null,
+      getUserId: () => user?.id || null,
+    },
+    callbacks: {
+      onSuccess: (data) => console.log('Submitted', data),
+      onError: (error) => console.error('Failed', error),
+    },
+  };
+
   return (
-    <PrintAndSave
-      applicationId="app-123"
-      token="your-auth-token"
-      uploadUrl="/api/upload-pdf"
-      elementId="print-root"
-      onSuccess={(fileKey) => console.log('PDF uploaded:', fileKey)}
-      onError={(error) => console.error('Error:', error)}
+    <GuideForm
+      config={config}
+      ui={uiComponents}      // shadcn/ui compatible components
+      destinations={destinations}
+      allowCustomDestination
+      targetGroups={TARGET_GROUP_MAP}
+      locale="en"              // use "zh-CN" for Simplified Chinese
     />
   );
-}
-```
-
-### 2. 使用usePDFGeneration Hook
-
-```tsx
-import { usePDFGeneration } from '@replit/guide-form';
-
-function MyComponent() {
-  const { downloadPDF, isProcessing } = usePDFGeneration({
-    onSuccess: () => console.log('PDF generated!'),
-    onError: (error) => console.error('Error:', error),
-  });
-
-  const handleDownload = () => {
-    downloadPDF("print-root", {
-      filename: "my-document.pdf",
-    });
-  };
-
-  return (
-    <button onClick={handleDownload} disabled={isProcessing}>
-      {isProcessing ? "生成中..." : "下载PDF"}
-    </button>
-  );
-}
-```
-
-### 3. 使用工具函数
-
-```tsx
-import { 
-  generatePDFBlob, 
-  downloadPDF, 
-  uploadPDF,
-  generateDownloadAndUploadPDF 
-} from '@replit/guide-form';
-
-// 生成PDF Blob
-const pdfBlob = await generatePDFBlob("print-root", {
-  filename: "document.pdf",
-  margin: [12, 12, 12, 12],
-});
-
-// 下载PDF
-await downloadPDF("print-root", {
-  filename: "document.pdf",
-});
-
-// 上传PDF
-const fileKey = await uploadPDF(pdfBlob, {
-  applicationId: "app-123",
-  token: "auth-token",
-  uploadUrl: "/api/upload",
-});
-
-// 生成、下载并上传PDF
-const fileKey = await generateDownloadAndUploadPDF(
-  "print-root",
-  {
-    applicationId: "app-123",
-    token: "auth-token",
-    uploadUrl: "/api/upload",
-  },
-  {
-    filename: "document.pdf",
-  }
-);
-```
-
-## API 参考
-
-### PrintAndSave 组件
-
-| 属性 | 类型 | 必需 | 描述 |
-|------|------|------|------|
-| applicationId | string | ✅ | 申请ID |
-| token | string | ✅ | 认证令牌 |
-| uploadUrl | string | ✅ | 上传URL |
-| elementId | string | ❌ | 要转换的DOM元素ID (默认: "print-root") |
-| pdfOptions | PDFOptions | ❌ | PDF生成选项 |
-| onSuccess | (fileKey: string) => void | ❌ | 成功回调 |
-| onError | (error: Error) => void | ❌ | 错误回调 |
-| className | string | ❌ | 自定义CSS类 |
-| children | ReactNode | ❌ | 自定义按钮内容 |
-| disabled | boolean | ❌ | 是否禁用 |
-
-### usePDFGeneration Hook
-
-```tsx
-const {
-  isProcessing,      // 是否正在处理
-  generatePDF,        // 生成PDF Blob
-  downloadPDF,        // 下载PDF
-  uploadPDF,          // 上传PDF
-  downloadAndUploadPDF // 下载并上传PDF
-} = usePDFGeneration({
-  onSuccess?: (fileKey?: string) => void,
-  onError?: (error: Error) => void,
-});
-```
-
-### PDFOptions 接口
-
-```tsx
-interface PDFOptions {
-  margin?: number | [number, number] | [number, number, number, number];
-  filename?: string;
-  image?: {
-    type?: "jpeg" | "png" | "webp";
-    quality?: number;
-  };
-  html2canvas?: {
-    scale?: number;
-    useCORS?: boolean;
-    allowTaint?: boolean;
-    backgroundColor?: string;
-  };
-  jsPDF?: {
-    unit?: string;
-    format?: string;
-    orientation?: string;
-    compress?: boolean;
-  };
-  pagebreak?: {
-    mode?: string[];
-  };
-}
-```
-
-## 默认配置
-
-```tsx
-const defaultPDFOptions = {
-  margin: [12, 12, 12, 12], // 12mm margins
-  filename: "guide-application.pdf",
-  image: { type: "jpeg", quality: 0.98 },
-  html2canvas: {
-    scale: 2,
-    useCORS: true,
-    allowTaint: true,
-    backgroundColor: "#ffffff",
-  },
-  jsPDF: {
-    unit: "mm",
-    format: "a4",
-    orientation: "portrait",
-    compress: true,
-  },
-  pagebreak: { mode: ["avoid-all"] },
 };
 ```
 
-## 注意事项
+The configured submission endpoint must accept the host application's authenticated user. Pass
+the current access token and numeric user ID through the two `auth` accessors; unauthenticated
+visitors are redirected to the login page before submission.
 
-1. 确保目标DOM元素存在且有内容
-2. 上传功能需要服务器端支持
-3. PDF生成是异步操作，请处理加载状态
-4. 建议在生产环境中测试PDF生成功能
+Draft persistence is host-owned: pass `onLoadLocalStorage` and `onSaveLocalStorage` to
+`GuideForm`. `apiEndpoints.submitApplication` is the only application endpoint used by the hook;
+`apiEndpoints.serviceCategories`, when present, is fetched to populate Step 4 unless the host
+provides `serviceCategories` or `onLoadServiceCategories` directly.
 
-## 示例
+## Required UI Components
 
-查看 `landing-page/src/pages/PDFTestPage.tsx` 获取完整的使用示例。
+Components must follow shadcn/ui API conventions:
+
+| Category | Components |
+|----------|-----------|
+| Form | `Form`, `FormField`, `FormItem`, `FormLabel`, `FormControl`, `FormMessage` |
+| Input | `Input`, `Textarea`, `Checkbox`, `RadioGroup`, `RadioGroupItem`, `Button`, `Progress`, `Slider` |
+| Select | `Select`, `SelectContent`, `SelectItem`, `SelectTrigger`, `SelectValue` |
+| Layout | `Card`, `CardContent`, `CardHeader`, `CardTitle`, `Badge`, `Separator` |
+| Icons | `ChevronLeft`, `ChevronRight`, `Save`, `Info` (from lucide-react) |
+| Optional | `YearMonthPicker`, `QualificationUploader`, `Tooltip*`, `TooltipProvider` |
+
+## Props
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `config` | `GuideFormConfig` | Yes | API endpoints, auth, callbacks |
+| `ui` | `UIComponents` | Yes | UI component map |
+| `cities` | `{value, label}[]` | No | City options |
+| `targetGroups` | `{value, label}[]` | No | Target group options |
+| `serviceCategories` | `ServiceCategory[]` | No | Service categories |
+| `onLoadServiceCategories` | `() => Promise<ServiceCategory[]>` | No | Async loader |
+| `customTitle` | `string` | No | Override title |
+| `customDescription` | `string` | No | Override description |
+| `showProgressBar` | `boolean` | No | Show progress bar |
+| `locale` | `"en" \| "zh-CN" \| "zh"` | No | Built-in page titles, Page 2/3, and selected preview values/actions |
+| `t` | `(key: string) => string` | No | Host adapter for the same translated surfaces |
+
+Page 1, Page 4, navigation, and most preview labels in the standalone package currently use
+Simplified Chinese. The main LocalGuide application supplies its own complete `react-intl`
+adapters for the user-facing flow.
+
+## GuideFormConfig
+
+```typescript
+interface GuideFormConfig {
+  apiEndpoints: {
+    submitApplication: string;
+    serviceCategories?: string;
+  };
+  auth: {
+    getToken: () => string | null;
+    getUserId: () => number | null;
+  };
+  callbacks: {
+    onSuccess?: (data: any) => void;
+    onError?: (error: any) => void;
+    onSaveDraft?: (data: any) => void;
+  };
+}
+```
+
+## Form Steps
+
+1. **Basic & Service Info** — Name, age, gender, MBTI, service city
+2. **Self-Assessment** — Q1-Q4 choices with 1-9 tendency sliders (Q2 has no slider)
+3. **Personalized Questions** — Q5-Q9 choices and short answers with 1-9 tendency sliders (Q9 has no slider)
+4. **Service Type & Preferences** — Target audience, services, pricing
+
+## Validation
+
+Zod-based validation: required evaluation answers/sliders, age (18-120), group size (1-50), duration (1-24h), price (non-negative), cross-field (max >= min).
+
+Page 2/3 submission fields are serialized into the shared `evaluationAnswersV2` payload through `prepareEvaluationPayload`.
+
+Application pricing is USD-only. The schema accepts only `currency: "USD"`, loaded form data is
+normalized to USD, `formatCurrency(amount)` always renders dollars, and the public conversion
+helpers are `convertUsdToCents` / `convertCentsToUsd`. The former generic-currency and
+`convertYuan*` helpers are intentionally not part of the shared package contract.
+
+## Development
+
+```bash
+npm install && npm run build    # Build
+npm run dev                     # Watch mode
+```
+
+## License
+
+UNLICENSED — Proprietary LocalGuide (TinybutGiant) internal software. All Rights Reserved.

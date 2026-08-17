@@ -1,6 +1,6 @@
 import React from "react";
 import { useGuideForm } from "../hooks/useGuideForm";
-import { GuideFormConfig, FormData } from "../types/schema";
+import { GuideFormConfig, FormData, GuideFormDestination } from "../types/schema";
 import { Step1BasicInfo } from "./Step1BasicInfo";
 import { Step2SelfAssessment } from "./Step2SelfAssessment";
 import { Step3PersonalizedQuestions } from "./Step3PersonalizedQuestions";
@@ -64,7 +64,8 @@ export interface UIComponents {
 interface GuideFormProps {
   config: GuideFormConfig;
   ui: UIComponents;
-  cities?: Array<{ value: string; label: string }>;
+  destinations?: GuideFormDestination[];
+  allowCustomDestination?: boolean;
   targetGroups?: Array<{ value: string; label?: string }>;
   serviceCategories?: Array<{
     id: number;
@@ -102,12 +103,13 @@ interface GuideFormProps {
 export const GuideForm: React.FC<GuideFormProps> = ({
   config,
   ui,
-  cities = [],
+  destinations = [],
+  allowCustomDestination = true,
   targetGroups = [],
   serviceCategories,
   onLoadServiceCategories,
-  customTitle = "成为YaoTu地陪",
-  customDescription = "分享您的当地专业知识，通过引导旅行者了解您的城市来赚钱。",
+  customTitle = "Become a YaoTu Guide",
+  customDescription = "Share your local expertise and connect with curious travelers.",
   showProgressBar = true,
   onLoadLocalStorage,
   onSaveLocalStorage,
@@ -180,6 +182,7 @@ export const GuideForm: React.FC<GuideFormProps> = ({
         requiresAccountBeforeSubmit={requiresAccountBeforeSubmit}
         validateFormCompleteness={validateForm}
         setMissingFields={setMissingFields}
+        destinations={destinations}
         ui={ui}
         intl={intl}
       />
@@ -267,7 +270,8 @@ export const GuideForm: React.FC<GuideFormProps> = ({
                     control={form.control as any}
                     handleQualificationFilesChange={handleQualificationFilesChange}
                     ui={ui}
-                    cities={cities}
+                    destinations={destinations}
+                    allowCustomDestination={allowCustomDestination}
                   />
                 )}
 

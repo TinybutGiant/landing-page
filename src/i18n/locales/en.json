@@ -62,7 +62,7 @@
       "safeSecure": "Safe & Secure",
       "safeSecureDesc": "Every Guide is verified, with safety features built into every booking.",
       "flexibleBooking": "Flexible Booking",
-      "flexibleBookingDesc": "Skip the back-and-forth and book with\u00A0confidence."
+      "flexibleBookingDesc": "Skip the back-and-forth and book with confidence."
     },
     "how": {
       "screenshotSlot": "Product screenshot slot"
@@ -228,8 +228,6 @@
       "socialProfile": "Xiaohongshu / Instagram Profile Link",
       "socialProfilePlaceholder": "Please enter your social media profile link",
       "serviceInfo": "Service Information",
-      "serviceCity": "Service Cities",
-      "serviceCityPlaceholder": "e.g.: Osaka / Tokyo / Kyoto etc.",
       "residenceInfo": "Your Address/Residential Area",
       "residenceInfoPlaceholder": "For estimating commute time (e.g.: Shinjuku, Shibuya area, etc.)",
       "residenceZipcode": "Postal Code",
@@ -280,20 +278,18 @@
       "invalidFileType": "Invalid File Type",
       "invalidFileTypeDescription": "Please select a valid image (JPEG, PNG, GIF, WEBP) or PDF file.",
       "cancel": "Cancel",
-      "cities": {
-        "tokyo": "Tokyo",
-        "kyoto": "Kyoto",
-        "osaka": "Osaka",
-        "hiroshima": "Hiroshima",
-        "sapporo": "Sapporo",
-        "nara": "Nara",
-        "yokohama": "Yokohama",
-        "kobe": "Kobe",
-        "fukuoka": "Fukuoka",
-        "nagoya": "Nagoya"
-      },
       "year": "",
-      "month": ""
+      "month": "",
+      "serviceAreas": "Service areas in Japan",
+      "serviceAreasSearchPlaceholder": "Search Tokyo, Yokohama, Kyoto...",
+      "customServiceAreas": "Other service areas",
+      "customServiceAreasPlaceholder": "Type another city, region, island, or area",
+      "customServiceAreasHelper": "New areas are reviewed by Yaotu before they become searchable destinations.",
+      "stagedForUpload": "Saved locally until verification",
+      "noMatchingServiceAreas": "No matching destination found.",
+      "addCustomServiceArea": "Add location",
+      "residenceZipcodeHelper": "Enter a 7-digit Japanese postal code. You can type 1234567 or 123-4567.",
+      "residenceZipcodeError": "Please enter a 7-digit Japanese postal code."
     },
     "step2": {
       "title": "Self-Assessment",
@@ -464,7 +460,6 @@
       "sex": "Gender",
       "mbti": "MBTI Personality Type",
       "socialProfile": "Social Media Links",
-      "serviceCity": "Service City",
       "residenceStartDate": "Residence Start Date in Japan",
       "residenceInfo": "Address/Residence Area",
       "occupation": "Current Occupation",
@@ -503,7 +498,14 @@
       "declaration": "I confirm that all the information provided above is true and accurate. I understand that false information may result in application rejection or account suspension. I agree to YaoTu platform's Terms of Service and Privacy Policy, and promise to comply with platform rules and provide quality service as a guide.",
       "backToEdit": "Back to Edit",
       "submitting": "Submitting...",
-      "submitApplication": "Confirm Submit Application"
+      "submitApplication": "Confirm Submit Application",
+      "serviceAreas": "Service areas"
+    },
+    "toast": {
+      "draftConflictTitle": "Saved application found",
+      "draftConflictDesc": "Continue the saved application on your account. Your browser draft was kept locally.",
+      "genericErrorTitle": "Something went wrong",
+      "genericErrorDesc": "Please try again. Your draft is preserved."
     }
   },
   "footer": {

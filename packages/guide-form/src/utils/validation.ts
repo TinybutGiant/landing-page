@@ -42,7 +42,13 @@ export const validateFormCompleteness = (formData: Partial<FormData>): string[] 
   if (!formData.sex) missingFields.push("becomeGuide.preview.gender");
   if (!formData.mbti) missingFields.push("becomeGuide.preview.mbti");
 
-  if (!formData.serviceCity?.trim()) missingFields.push("becomeGuide.preview.serviceCity");
+  if (
+    !formData.serviceAreaDestinationIds?.length &&
+    !formData.customServiceAreaProposals?.length &&
+    !formData.serviceAreas?.length
+  ) {
+    missingFields.push("becomeGuide.preview.serviceAreas");
+  }
   if (!formData.residenceStartDate)
     missingFields.push("becomeGuide.preview.residenceStartDate");
   if (!formData.residenceInfo?.trim()) missingFields.push("becomeGuide.preview.residenceInfo");

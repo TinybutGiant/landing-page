@@ -30,6 +30,31 @@ const certificationSchema = z
   })
   .passthrough();
 
+const serviceAreaSchema = z
+  .object({
+    id: z.coerce.number().int().positive().optional(),
+    destinationId: z.coerce.number().int().positive().optional(),
+    slug: z.string().optional(),
+    countryCode: z.string().optional(),
+    nameEn: z.string().optional(),
+    nameJa: z.string().optional(),
+    nameZhCn: z.string().optional(),
+    timezone: z.string().optional(),
+    prefectureName: z.string().nullable().optional(),
+    placeType: z.string().optional(),
+  })
+  .passthrough();
+
+const serviceAreaProposalSchema = z
+  .object({
+    id: z.union([z.string(), z.number()]).optional(),
+    rawName: z.string().optional(),
+    normalizedName: z.string().optional(),
+    status: z.string().optional(),
+    resolvedDestinationId: z.coerce.number().int().positive().nullable().optional(),
+  })
+  .passthrough();
+
 export const formSchema = z
   .object({
     id: z.union([z.string(), z.number()]).optional(),
@@ -55,7 +80,10 @@ export const formSchema = z
     assessmentQ4: z.array(z.string()).default([]),
     assessmentQ4Slider: z.number().min(SCORE_MIN).max(SCORE_MAX).nullable().optional(),
 
-    serviceCity: z.string().optional(),
+    serviceAreaDestinationIds: z.array(z.coerce.number().int().positive()).default([]),
+    customServiceAreaProposals: z.array(z.string().trim().min(1).max(120)).default([]),
+    serviceAreas: z.array(serviceAreaSchema).optional(),
+    serviceAreaProposals: z.array(serviceAreaProposalSchema).optional(),
     residenceInfo: z.string().optional(),
     residenceZipcode: z
       .string()
@@ -154,6 +182,20 @@ export const formSchema = z
   );
 
 export type FormData = z.infer<typeof formSchema>;
+
+export interface GuideFormDestination {
+  id: number;
+  countryCode?: string;
+  slug: string;
+  nameEn?: string | null;
+  nameJa?: string | null;
+  nameZhCn?: string | null;
+  timezone?: string | null;
+  prefectureName?: string | null;
+  placeType?: string | null;
+  status?: string | null;
+  sortOrder?: number | null;
+}
 
 export type GuideFunnelState =
   | "anonymous_editing"

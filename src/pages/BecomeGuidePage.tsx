@@ -1,10 +1,15 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import html2pdf from "html2pdf.js";
 import { ChevronLeft, ChevronRight, Info, Save } from "lucide-react";
 import { useIntl } from "react-intl";
 import { useLocation } from "wouter";
-import { GuideForm, type GuideFormConfig, type UIComponents } from "@replit/guide-form";
+import {
+  GuideForm,
+  type GuideFormConfig,
+  type GuideFormDestination,
+  type UIComponents,
+} from "@replit/guide-form";
 
 import ApplicationQualificationUploader from "@/components/ApplicationQualificationUploader";
 import { YearMonthPicker } from "@/components/YearMonthPicker";
@@ -89,6 +94,38 @@ const BecomeGuidePage = () => {
   const intl = useIntl();
   const [, setLocation] = useLocation();
   const initialStep = useMemo(readInitialStep, []);
+  const [destinations, setDestinations] = useState<GuideFormDestination[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    apiRequest("GET", "/api/v2/destinations?countryCode=JP")
+      .then((data) => {
+        if (!cancelled && Array.isArray(data)) {
+          setDestinations(data as GuideFormDestination[]);
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to load guide destinations:", error);
+        if (!cancelled) {
+          toast({
+            title: intl.formatMessage({
+              id: "becomeGuide.toast.destinationsLoadFailedTitle",
+              defaultMessage: "Service areas could not be loaded",
+            }),
+            description: intl.formatMessage({
+              id: "becomeGuide.toast.destinationsLoadFailedDesc",
+              defaultMessage:
+                "You can still type your service area and submit it for review.",
+            }),
+          });
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [intl, toast]);
 
   const archiveApplicationPdf = useCallback(async (applicationId: string | number) => {
     const printRoot = document.getElementById("print-root");
@@ -285,17 +322,6 @@ const BecomeGuidePage = () => {
     []
   );
 
-  const cities = useMemo(
-    () => [
-      { value: "tokyo", label: "Tokyo" },
-      { value: "osaka", label: "Osaka" },
-      { value: "kyoto", label: "Kyoto" },
-      { value: "yokohama", label: "Yokohama" },
-      { value: "nagoya", label: "Nagoya" },
-    ],
-    []
-  );
-
   const targetGroups = useMemo(
     () => [
       { value: "individual" },
@@ -350,7 +376,8 @@ const BecomeGuidePage = () => {
             <GuideForm
               config={config}
               ui={uiComponents}
-              cities={cities}
+              destinations={destinations}
+              allowCustomDestination
               targetGroups={targetGroups}
               onLoadServiceCategories={loadServiceCategories}
               customTitle={intl.formatMessage({ id: "becomeGuide.title" })}

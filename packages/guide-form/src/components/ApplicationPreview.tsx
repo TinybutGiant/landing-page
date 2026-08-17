@@ -1,5 +1,5 @@
 import { ChevronLeft } from "lucide-react";
-import { FormData } from "../types/schema";
+import { FormData, GuideFormDestination } from "../types/schema";
 
 export interface UIComponents {
   Card: any;
@@ -19,6 +19,7 @@ interface ApplicationPreviewProps {
   requiresAccountBeforeSubmit?: boolean;
   validateFormCompleteness: (formData: Partial<FormData>) => string[];
   setMissingFields: (fields: string[]) => void;
+  destinations?: GuideFormDestination[];
   ui: UIComponents;
   intl?: any;
 }
@@ -41,6 +42,7 @@ const MISSING_FIELD_LABEL_KEYS: Record<string, string> = {
   "becomeGuide.step3.q8SliderTitle": "becomeGuide.preview.missingFieldLabels.step3Q8Score",
   "becomeGuide.step3.q8ExampleQuestion": "becomeGuide.preview.missingFieldLabels.step3Q8Example",
   "becomeGuide.step3.q9Question": "becomeGuide.preview.missingFieldLabels.step3Q9Description",
+  "becomeGuide.preview.serviceAreas": "becomeGuide.preview.missingFieldLabels.serviceAreas",
 };
 
 const targetGroupLabelKeys: Record<string, string> = {
@@ -64,6 +66,7 @@ export const ApplicationPreview = ({
   requiresAccountBeforeSubmit = false,
   validateFormCompleteness,
   setMissingFields,
+  destinations = [],
   ui,
   intl,
 }: ApplicationPreviewProps) => {
@@ -74,6 +77,29 @@ export const ApplicationPreview = ({
   const list = (values: string[] | undefined) =>
     values?.length ? values.join(t("becomeGuide.preview.fieldSeparator", ", ")) : ph;
   const formatMissingField = (field: string) => t(MISSING_FIELD_LABEL_KEYS[field] ?? field, field);
+  const destinationById = new Map(destinations.map((destination) => [destination.id, destination]));
+  const destinationLabel = (destination: GuideFormDestination) => {
+    const locale = intl?.locale ?? "en";
+    if (locale.startsWith("zh")) {
+      return destination.nameZhCn || destination.nameEn || destination.nameJa || destination.slug;
+    }
+    if (locale.startsWith("ja")) {
+      return destination.nameJa || destination.nameEn || destination.nameZhCn || destination.slug;
+    }
+    return destination.nameEn || destination.nameJa || destination.nameZhCn || destination.slug;
+  };
+  const serviceAreaLabels = [
+    ...(formData.serviceAreas?.map((area) => destinationLabel(area as GuideFormDestination)) ?? []),
+    ...((formData.serviceAreaDestinationIds ?? [])
+      .map((id) => destinationById.get(Number(id)))
+      .filter(Boolean)
+      .map((destination) => destinationLabel(destination as GuideFormDestination))),
+  ];
+  const customProposalLabels = formData.customServiceAreaProposals ?? [];
+  const serviceAreaValue =
+    Array.from(new Set([...serviceAreaLabels, ...customProposalLabels])).join(
+      t("becomeGuide.preview.fieldSeparator", ", ")
+    ) || ph;
 
   const handleSubmit = () => {
     if (!confirmationChecked) return;
@@ -157,7 +183,7 @@ export const ApplicationPreview = ({
                 {t("becomeGuide.preview.serviceInfo", "Service Information")}
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {row(t("becomeGuide.preview.serviceCity", "Service City"), formData.serviceCity)}
+                {row(t("becomeGuide.preview.serviceAreas", "Service Areas"), serviceAreaValue)}
                 {row(
                   t("becomeGuide.preview.residenceStartDate", "Residence in Japan since"),
                   formData.residenceStartDate

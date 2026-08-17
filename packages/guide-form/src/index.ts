@@ -22,6 +22,7 @@ export type {
   GuideDraftConflict,
   GuideDraftConflictReason,
   GuideFormConfig,
+  GuideFormDestination,
   GuideFunnelState,
 } from "./types/schema";
 export type { UIComponents } from "./components/GuideForm";

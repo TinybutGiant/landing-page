@@ -224,8 +224,6 @@
       "socialProfile": "小红书 / Instagram主页链接",
       "socialProfilePlaceholder": "请输入您的社交媒体主页链接",
       "serviceInfo": "服务信息",
-      "serviceCity": "可服务的城市",
-      "serviceCityPlaceholder": "如：大阪 / 东京 / 京都等",
       "residenceInfo": "您的住址/常驻区域",
       "residenceInfoPlaceholder": "便于估算通勤时间（如：新宿区、涩谷附近等）",
       "residenceZipcode": "邮政编码",
@@ -276,20 +274,18 @@
       "invalidFileType": "无效文件类型",
       "invalidFileTypeDescription": "请选择有效的图片（JPEG, PNG, GIF, WEBP）或PDF文件。",
       "cancel": "取消",
-      "cities": {
-        "tokyo": "东京",
-        "kyoto": "京都",
-        "osaka": "大阪",
-        "hiroshima": "广岛",
-        "sapporo": "札幌",
-        "nara": "奈良",
-        "yokohama": "横滨",
-        "kobe": "神户",
-        "fukuoka": "福冈",
-        "nagoya": "名古屋"
-      },
       "year": "年",
-      "month": "月"
+      "month": "月",
+      "serviceAreas": "可服务的日本地区",
+      "serviceAreasSearchPlaceholder": "搜索东京、横滨、京都等地区",
+      "customServiceAreas": "其他可服务地区",
+      "customServiceAreasPlaceholder": "输入其他城市、地区、岛屿或区域",
+      "customServiceAreasHelper": "新地区会由 Yaotu 审核，通过后才会成为可搜索目的地。",
+      "stagedForUpload": "已本地保存，验证后上传",
+      "noMatchingServiceAreas": "没有找到匹配的目的地。",
+      "addCustomServiceArea": "添加地区",
+      "residenceZipcodeHelper": "请输入 7 位日本邮编。可以输入 1234567 或 123-4567。",
+      "residenceZipcodeError": "请输入 7 位日本邮编。"
     },
     "step2": {
       "title": "自我认知评估",
@@ -460,7 +456,6 @@
       "sex": "性别",
       "mbti": "MBTI人格类型",
       "socialProfile": "社交媒体链接",
-      "serviceCity": "服务城市",
       "residenceStartDate": "在日本生活的起始时间",
       "residenceInfo": "住址/常驻区域",
       "occupation": "当前职业",
@@ -499,7 +494,14 @@
       "declaration": "我确认以上所填写的所有信息均属实且准确无误。我理解虚假信息可能导致申请被拒绝或账户被暂停。我同意YaoTu平台的服务条款和隐私政策，并承诺作为地陪时将遵守平台规则，提供优质的服务体验。",
       "backToEdit": "返回编辑",
       "submitting": "提交中...",
-      "submitApplication": "确认提交申请"
+      "submitApplication": "确认提交申请",
+      "serviceAreas": "可服务地区"
+    },
+    "toast": {
+      "draftConflictTitle": "发现已保存的申请",
+      "draftConflictDesc": "请继续账号中已保存的申请。浏览器草稿已保留在本地。",
+      "genericErrorTitle": "出现问题",
+      "genericErrorDesc": "请重试。你的草稿已保留。"
     }
   },
   "footer": {
