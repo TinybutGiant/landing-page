@@ -28,6 +28,8 @@ interface Step1BasicInfoProps {
   handleQualificationFilesChange: (files: any) => void;
   ui: UIComponents;
   destinations?: GuideFormDestination[];
+  destinationsLoading?: boolean;
+  destinationsLoadError?: boolean;
   allowCustomDestination?: boolean;
 }
 
@@ -52,6 +54,8 @@ export const Step1BasicInfo = ({
   handleQualificationFilesChange,
   ui,
   destinations = [],
+  destinationsLoading = false,
+  destinationsLoadError = false,
   allowCustomDestination = true,
 }: Step1BasicInfoProps) => {
   const intl = useIntl();
@@ -312,6 +316,21 @@ export const Step1BasicInfo = ({
                             )}
                           </button>
                         ))
+                      ) : destinationsLoading ? (
+                        <div className="px-3 py-3 text-sm text-gray-500">
+                          {intl.formatMessage({
+                            id: "becomeGuide.step1.loadingServiceAreas",
+                            defaultMessage: "Loading service areas...",
+                          })}
+                        </div>
+                      ) : destinationsLoadError ? (
+                        <div className="px-3 py-3 text-sm text-gray-500">
+                          {intl.formatMessage({
+                            id: "becomeGuide.step1.serviceAreasLoadFailed",
+                            defaultMessage:
+                              "Service areas could not be loaded. You can add another area below.",
+                          })}
+                        </div>
                       ) : (
                         <div className="px-3 py-3 text-sm text-gray-500">
                           {intl.formatMessage({

@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import html2pdf from "html2pdf.js";
 import { ChevronLeft, ChevronRight, Info, Save } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import { useIntl } from "react-intl";
 import { useLocation } from "wouter";
 import {
@@ -52,6 +53,52 @@ import { resolveApiUrl } from "@/lib/apiClient";
 import { getCanonicalVerifyEmailPath } from "@/lib/yaotuAuthRuntime";
 
 const RESUME_PATH = "/become-guide?resume=1";
+const DESTINATIONS_QUERY_KEY = ["/api/v2/destinations", "JP"] as const;
+const DESTINATIONS_CACHE_KEY = "yaotu_landing_destinations_JP_v1";
+const DESTINATIONS_CACHE_TTL_MS = 10 * 60 * 1000;
+
+type CachedDestinations = {
+  cachedAt: number;
+  destinations: GuideFormDestination[];
+};
+
+const readCachedDestinations = (): GuideFormDestination[] | undefined => {
+  if (typeof window === "undefined") return undefined;
+
+  try {
+    const raw = window.sessionStorage.getItem(DESTINATIONS_CACHE_KEY);
+    if (!raw) return undefined;
+
+    const parsed = JSON.parse(raw) as CachedDestinations;
+    if (
+      !Array.isArray(parsed.destinations) ||
+      typeof parsed.cachedAt !== "number" ||
+      Date.now() - parsed.cachedAt > DESTINATIONS_CACHE_TTL_MS
+    ) {
+      window.sessionStorage.removeItem(DESTINATIONS_CACHE_KEY);
+      return undefined;
+    }
+
+    return parsed.destinations;
+  } catch {
+    window.sessionStorage.removeItem(DESTINATIONS_CACHE_KEY);
+    return undefined;
+  }
+};
+
+const cacheDestinations = (destinations: GuideFormDestination[]) => {
+  if (typeof window === "undefined") return;
+
+  try {
+    const payload: CachedDestinations = {
+      cachedAt: Date.now(),
+      destinations,
+    };
+    window.sessionStorage.setItem(DESTINATIONS_CACHE_KEY, JSON.stringify(payload));
+  } catch {
+    // A missed cache write should not affect the guide application flow.
+  }
+};
 
 const readInitialStep = (): "preview" | "resume" | undefined => {
   if (typeof window === "undefined") return undefined;
@@ -94,38 +141,43 @@ const BecomeGuidePage = () => {
   const intl = useIntl();
   const [, setLocation] = useLocation();
   const initialStep = useMemo(readInitialStep, []);
-  const [destinations, setDestinations] = useState<GuideFormDestination[]>([]);
+  const destinationsQuery = useQuery<GuideFormDestination[]>({
+    queryKey: DESTINATIONS_QUERY_KEY,
+    queryFn: async () => {
+      const data = await apiRequest("GET", "/api/v2/destinations?countryCode=JP");
+      if (!Array.isArray(data)) {
+        throw new Error("Destinations response was not an array");
+      }
+      return data as GuideFormDestination[];
+    },
+    initialData: readCachedDestinations,
+    staleTime: DESTINATIONS_CACHE_TTL_MS,
+    gcTime: 30 * 60 * 1000,
+  });
+  const destinations = destinationsQuery.data ?? [];
 
   useEffect(() => {
-    let cancelled = false;
+    if (destinations.length > 0) {
+      cacheDestinations(destinations);
+    }
+  }, [destinations]);
 
-    apiRequest("GET", "/api/v2/destinations?countryCode=JP")
-      .then((data) => {
-        if (!cancelled && Array.isArray(data)) {
-          setDestinations(data as GuideFormDestination[]);
-        }
-      })
-      .catch((error) => {
-        console.error("Failed to load guide destinations:", error);
-        if (!cancelled) {
-          toast({
-            title: intl.formatMessage({
-              id: "becomeGuide.toast.destinationsLoadFailedTitle",
-              defaultMessage: "Service areas could not be loaded",
-            }),
-            description: intl.formatMessage({
-              id: "becomeGuide.toast.destinationsLoadFailedDesc",
-              defaultMessage:
-                "You can still type your service area and submit it for review.",
-            }),
-          });
-        }
-      });
+  useEffect(() => {
+    if (!destinationsQuery.isError) return;
 
-    return () => {
-      cancelled = true;
-    };
-  }, [intl, toast]);
+    console.error("Failed to load guide destinations:", destinationsQuery.error);
+    toast({
+      title: intl.formatMessage({
+        id: "becomeGuide.toast.destinationsLoadFailedTitle",
+        defaultMessage: "Service areas could not be loaded",
+      }),
+      description: intl.formatMessage({
+        id: "becomeGuide.toast.destinationsLoadFailedDesc",
+        defaultMessage:
+          "You can still type your service area and submit it for review.",
+      }),
+    });
+  }, [destinationsQuery.error, destinationsQuery.isError, intl, toast]);
 
   const archiveApplicationPdf = useCallback(async (applicationId: string | number) => {
     const printRoot = document.getElementById("print-root");
@@ -377,6 +429,8 @@ const BecomeGuidePage = () => {
               config={config}
               ui={uiComponents}
               destinations={destinations}
+              destinationsLoading={destinationsQuery.isLoading && destinations.length === 0}
+              destinationsLoadError={destinationsQuery.isError && destinations.length === 0}
               allowCustomDestination
               targetGroups={targetGroups}
               onLoadServiceCategories={loadServiceCategories}

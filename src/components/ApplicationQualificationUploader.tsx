@@ -261,6 +261,9 @@ export default function ApplicationQualificationUploader({
           <Label htmlFor="qualification-file">
             {intl.formatMessage({ id: "becomeGuide.step1.uploadQualificationFiles" })}
           </Label>
+          <p className="mt-1 text-xs text-gray-500">
+            {intl.formatMessage({ id: "becomeGuide.step1.uploadQualificationFilesDescription" })}
+          </p>
           <Input
             ref={inputRef}
             id="qualification-file"

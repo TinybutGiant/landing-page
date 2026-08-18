@@ -65,6 +65,8 @@ interface GuideFormProps {
   config: GuideFormConfig;
   ui: UIComponents;
   destinations?: GuideFormDestination[];
+  destinationsLoading?: boolean;
+  destinationsLoadError?: boolean;
   allowCustomDestination?: boolean;
   targetGroups?: Array<{ value: string; label?: string }>;
   serviceCategories?: Array<{
@@ -104,6 +106,8 @@ export const GuideForm: React.FC<GuideFormProps> = ({
   config,
   ui,
   destinations = [],
+  destinationsLoading = false,
+  destinationsLoadError = false,
   allowCustomDestination = true,
   targetGroups = [],
   serviceCategories,
@@ -271,6 +275,8 @@ export const GuideForm: React.FC<GuideFormProps> = ({
                     handleQualificationFilesChange={handleQualificationFilesChange}
                     ui={ui}
                     destinations={destinations}
+                    destinationsLoading={destinationsLoading}
+                    destinationsLoadError={destinationsLoadError}
                     allowCustomDestination={allowCustomDestination}
                   />
                 )}
