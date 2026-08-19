@@ -14,7 +14,6 @@ import { useIntl } from "react-intl";
 import {
   isAuthenticated,
   isEmailVerified,
-  navigateToAuth,
   navigateToVerification,
 } from "../utils/guideFunnel";
 
@@ -144,6 +143,7 @@ export const GuideForm: React.FC<GuideFormProps> = ({
     prevPage,
     goToPreview,
     backToForm,
+    continueToAuth,
     onSubmit,
     validateFormCompleteness: validateForm
   } = useGuideForm(config, onLoadLocalStorage, onSaveLocalStorage, onClearLocalStorage, initialStep);
@@ -336,7 +336,7 @@ export const GuideForm: React.FC<GuideFormProps> = ({
                         onClick={() =>
                           isVerificationCheckpoint
                             ? navigateToVerification(config)
-                            : navigateToAuth(config)
+                            : void continueToAuth()
                         }
                       >
                         {intl.formatMessage({

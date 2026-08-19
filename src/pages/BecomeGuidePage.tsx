@@ -131,6 +131,18 @@ const guideUrl = (path: string): string => {
 const guideLoginContinuation = (redirectTo: string | null | undefined): string =>
   guideUrl(pathWithRedirect("/login", redirectTo ?? RESUME_PATH));
 
+const pathWithRedirectAndIntent = (
+  path: string,
+  redirectTo: string | null | undefined,
+  signupIntentToken?: string | null
+): string => {
+  const base = pathWithRedirect(path, redirectTo);
+  if (!signupIntentToken?.trim()) return base;
+  const url = new URL(base, typeof window !== "undefined" ? window.location.origin : guideUrl("/"));
+  url.searchParams.set("intent", signupIntentToken.trim());
+  return `${url.pathname}${url.search}${url.hash}`;
+};
+
 const QualificationUploader = (props: any) => (
   <ApplicationQualificationUploader {...props} deferUpload />
 );
@@ -231,6 +243,7 @@ const BecomeGuidePage = () => {
         loadDraft: "/api/v2/guide-applications/draft",
         saveDraft: "/api/v2/guide-applications/draft",
         handoffDraft: "/api/v2/guide-applications/draft/handoff",
+        createSignupIntent: "/api/v2/guide-signup-intents",
         submitApplication: "/api/v2/guide-applications",
         updateApplication: (applicationId) => `/api/v2/guide-applications/${applicationId}`,
         qualificationUpload: "/api/v2/guide-applications/qualification-upload",
@@ -258,8 +271,10 @@ const BecomeGuidePage = () => {
           ),
       },
       callbacks: {
-        onAuthRequired: (redirectTo) => {
-          setLocation(pathWithRedirect("/signup", redirectTo));
+        onAuthRequired: (redirectTo, context) => {
+          setLocation(
+            pathWithRedirectAndIntent("/signup", redirectTo, context?.signupIntentToken)
+          );
         },
         onVerificationRequired: (redirectTo) => {
           rememberPostEmailVerificationRedirect(redirectTo);

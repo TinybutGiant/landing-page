@@ -3,7 +3,7 @@
     "home": "Home",
     "becomeGuide": "Become a Guide",
     "login": "Login",
-    "signup": "Sign Up"
+    "signup": "Pre-launch access"
   },
   "common": {
     "loading": "Loading...",
@@ -24,16 +24,16 @@
   },
   "auth": {
     "loginTitle": "Login",
-    "signupTitle": "Sign Up",
+    "signupTitle": "Pre-launch access",
     "email": "Email",
     "password": "Password",
     "confirmPassword": "Confirm Password",
     "fullName": "Full Name",
     "forgotPassword": "Forgot Password?",
-    "dontHaveAccount": "Don't have an account?",
+    "dontHaveAccount": "New to Yaotu?",
     "alreadyHaveAccount": "Already have an account?",
     "loginButton": "Login",
-    "signupButton": "Sign Up"
+    "signupButton": "Explore pre-launch access"
   },
   "landing": {
     "title": "Yaotu | Japan Local Guide Marketplace",
@@ -641,8 +641,8 @@
     "forgotPassword": "Forgot Password?",
     "loginButton": "Login",
     "loggingIn": "Logging in...",
-    "noAccount": "Don't have an account?",
-    "signupNow": "Sign up now",
+    "noAccount": "New to Yaotu?",
+    "signupNow": "Explore pre-launch access",
     "success": {
       "title": "Login Successful",
       "description": "Welcome back!"

@@ -36,6 +36,25 @@ const LoginPage = () => {
       redirectTo={redirectTo}
       readRedirectParam={false}
       signUpPath="/signup"
+      signupPromptSlot={
+        <div className="mt-3 text-sm leading-normal text-stone-600 dark:text-gray-300">
+          <p className="font-medium text-stone-700 dark:text-gray-200">New to Yaotu?</p>
+          <div className="mt-2 flex flex-wrap gap-3">
+            <a
+              href="/signup"
+              className="font-semibold text-primary underline-offset-2 hover:text-primary/90 hover:underline"
+            >
+              Join Traveler Waitlist
+            </a>
+            <a
+              href="/become-guide"
+              className="font-semibold text-primary underline-offset-2 hover:text-primary/90 hover:underline"
+            >
+              Become a Guide
+            </a>
+          </div>
+        </div>
+      }
       forgotPasswordPath="/forgot-password"
       defaultRedirectPath="/become-guide"
       guideRedirectPath="/become-guide"

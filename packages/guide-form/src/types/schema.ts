@@ -237,6 +237,7 @@ export interface GuideFormConfig {
     submitApplication: string;
     loadDraft?: string;
     handoffDraft?: string;
+    createSignupIntent?: string;
     serviceCategories?: string;
     qualificationUpload?: string;
     archivePdf?: (applicationId: string | number) => string;
@@ -256,7 +257,10 @@ export interface GuideFormConfig {
     onSuccess?: (data: unknown) => void;
     onError?: (error: unknown) => void;
     onSaveDraft?: (data: unknown) => void;
-    onAuthRequired?: (redirectTo: string) => void;
+    onAuthRequired?: (
+      redirectTo: string,
+      context?: { signupIntentToken?: string | null; anonymousDraftId?: string | null }
+    ) => void;
     onVerificationRequired?: (redirectTo: string) => void;
     onHandoffSuccess?: (data: unknown) => void;
     onHandoffConflict?: (conflict: GuideDraftConflict) => void;

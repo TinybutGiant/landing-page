@@ -3,7 +3,7 @@
     "home": "首页",
     "becomeGuide": "成为地陪",
     "login": "登录",
-    "signup": "注册"
+    "signup": "预发布访问"
   },
   "common": {
     "loading": "加载中...",
@@ -24,16 +24,16 @@
   },
   "auth": {
     "loginTitle": "登录",
-    "signupTitle": "注册",
+    "signupTitle": "预发布访问",
     "email": "邮箱",
     "password": "密码",
     "confirmPassword": "确认密码",
     "fullName": "姓名",
     "forgotPassword": "忘记密码？",
-    "dontHaveAccount": "还没有账户？",
+    "dontHaveAccount": "第一次使用 Yaotu？",
     "alreadyHaveAccount": "已有账户？",
     "loginButton": "登录",
-    "signupButton": "注册"
+    "signupButton": "查看预发布访问"
   },
   "landing": {
     "title": "与当地 Guide 一起探索日本",
@@ -637,8 +637,8 @@
     "forgotPassword": "忘记密码？",
     "loginButton": "登录账号",
     "loggingIn": "登录中...",
-    "noAccount": "还没有账号？",
-    "signupNow": "立即注册",
+    "noAccount": "第一次使用 Yaotu？",
+    "signupNow": "查看预发布访问",
     "success": {
       "title": "登录成功",
       "description": "欢迎回来！"

@@ -17,6 +17,7 @@ import {
   markAnonymousDraftMigrated,
   markAnonymousDraftMigrating,
   upsertAnonymousDraft,
+  type AnonymousGuideDraft,
 } from "../storage/anonymousDraftStorage";
 import {
   clearStagedQualificationFiles,
@@ -35,6 +36,10 @@ import {
 
 type InitialStep = "preview" | "resume";
 type DraftSource = "anonymous" | "server";
+
+type GuideSignupIntentResponse = {
+  signupIntentToken?: unknown;
+};
 
 const defaultValues: FormData = {
   name: "",
@@ -167,6 +172,7 @@ export const useGuideForm = (
     isServerOwnedFromStart ? "authenticated_editing" : "anonymous_editing"
   );
   const [draftConflict, setDraftConflict] = useState<GuideDraftConflict | null>(null);
+  const [signupIntentToken, setSignupIntentToken] = useState<string | null>(null);
   const submitRequestIdRef = useRef<string | null>(null);
   const resumeHandledRef = useRef(false);
   const serverDraftLoadedRef = useRef(false);
@@ -250,6 +256,56 @@ export const useGuideForm = (
     },
     [config.callbacks, onSaveLocalStorage]
   );
+
+  const createSignupIntentForDraft = useCallback(
+    async (draft: AnonymousGuideDraft): Promise<string | null> => {
+      const endpoint = config.apiEndpoints.createSignupIntent;
+      if (!endpoint) return null;
+
+      const response = await fetch(resolveApiUrl(endpoint), {
+        method: "POST",
+        headers: toJsonHeaders(null),
+        body: JSON.stringify({
+          anonymousDraftId: draft.clientDraftId,
+          anonymousDraftVersion: draft.draftVersion,
+        }),
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        throw await responseJsonOrText(response);
+      }
+
+      const result = (await response.json()) as GuideSignupIntentResponse;
+      if (typeof result.signupIntentToken !== "string" || !result.signupIntentToken.trim()) {
+        throw new Error("Guide signup intent response did not include a token.");
+      }
+
+      const token = result.signupIntentToken.trim();
+      setSignupIntentToken(token);
+      return token;
+    },
+    [config.apiEndpoints.createSignupIntent, resolveApiUrl]
+  );
+
+  const ensureSignupIntentForCurrentDraft = useCallback(async (): Promise<{
+    signupIntentToken: string | null;
+    anonymousDraftId: string | null;
+  }> => {
+    if (signupIntentToken) {
+      return {
+        signupIntentToken,
+        anonymousDraftId: loadAnonymousDraft()?.clientDraftId ?? null,
+      };
+    }
+
+    const draft = loadAnonymousDraft() ?? saveAnonymousDraft(form.getValues(), 3, true);
+    const token = await createSignupIntentForDraft(draft);
+    return {
+      signupIntentToken: token,
+      anonymousDraftId: draft.clientDraftId,
+    };
+  }, [createSignupIntentForDraft, form, saveAnonymousDraft, signupIntentToken]);
 
   const saveServerDraft = useCallback(
     async (data: Partial<FormData>) => {
@@ -363,6 +419,12 @@ export const useGuideForm = (
 
   const handoffAnonymousDraft = useCallback(async () => {
     if (!isAuthenticated(config)) {
+      const draft = loadAnonymousDraft() ?? saveAnonymousDraft(form.getValues(), 3, true);
+      try {
+        await createSignupIntentForDraft(draft);
+      } catch (error) {
+        config.callbacks.onError?.(error);
+      }
       setFunnelState("auth_required");
       return null;
     }
@@ -451,6 +513,7 @@ export const useGuideForm = (
     return result;
   }, [
     config,
+    createSignupIntentForDraft,
     form,
     onClearLocalStorage,
     resetForm,
@@ -651,8 +714,19 @@ export const useGuideForm = (
       if (!isServerOwnedFromStart) {
         saveAnonymousDraft(data, 3, true);
       }
+      let authContext:
+        | { signupIntentToken: string | null; anonymousDraftId: string | null }
+        | undefined;
+      try {
+        authContext = !isServerOwnedFromStart
+          ? await ensureSignupIntentForCurrentDraft()
+          : undefined;
+      } catch (error) {
+        config.callbacks.onError?.(error);
+        return;
+      }
       setFunnelState("auth_required");
-      navigateToAuth(config);
+      navigateToAuth(config, authContext);
       return;
     }
 
@@ -743,6 +817,20 @@ export const useGuideForm = (
     handleQualificationFilesChange,
     saveDraft,
     submitApplication,
+    continueToAuth: async () => {
+      let authContext:
+        | { signupIntentToken: string | null; anonymousDraftId: string | null }
+        | undefined;
+      try {
+        authContext = !isServerOwnedFromStart
+          ? await ensureSignupIntentForCurrentDraft()
+          : undefined;
+      } catch (error) {
+        config.callbacks.onError?.(error);
+        return;
+      }
+      navigateToAuth(config, authContext);
+    },
     nextPage,
     prevPage,
     goToPreview,
