@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import html2pdf from "html2pdf.js";
 import { ChevronLeft, ChevronRight, Info, Save } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { useIntl } from "react-intl";
+import { type IntlShape, useIntl } from "react-intl";
 import { useLocation } from "wouter";
 import {
   GuideForm,
@@ -145,6 +145,35 @@ const pathWithRedirectAndIntent = (
 
 const QualificationUploader = (props: any) => (
   <ApplicationQualificationUploader {...props} deferUpload />
+);
+
+const FOUNDER_NOTE_PARAGRAPH_IDS = [
+  "becomeGuide.founderNote.paragraph1",
+  "becomeGuide.founderNote.paragraph2",
+  "becomeGuide.founderNote.paragraph3",
+  "becomeGuide.founderNote.paragraph4",
+  "becomeGuide.founderNote.paragraph5",
+] as const;
+
+const FounderNote = ({ intl }: { intl: IntlShape }) => (
+  <section aria-labelledby="become-guide-founder-note-title" className="mb-6">
+    <div className="rounded-lg border border-yellow-200 bg-white/90 p-6 shadow-sm dark:border-yellow-500/30 dark:bg-gray-900/70 sm:p-7">
+      <p className="mb-2 text-xs font-semibold uppercase text-yellow-700 dark:text-yellow-300">
+        {intl.formatMessage({ id: "becomeGuide.founderNote.eyebrow" })}
+      </p>
+      <h2
+        id="become-guide-founder-note-title"
+        className="text-2xl font-semibold text-gray-950 dark:text-white"
+      >
+        {intl.formatMessage({ id: "becomeGuide.founderNote.title" })}
+      </h2>
+      <div className="mt-4 max-w-3xl space-y-4 text-base leading-7 text-gray-700 dark:text-gray-200">
+        {FOUNDER_NOTE_PARAGRAPH_IDS.map((id) => (
+          <p key={id}>{intl.formatMessage({ id })}</p>
+        ))}
+      </div>
+    </div>
+  </section>
 );
 
 const BecomeGuidePage = () => {
@@ -439,6 +468,7 @@ const BecomeGuidePage = () => {
         </div>
 
         <div className="mx-auto max-w-4xl p-6">
+          <FounderNote intl={intl} />
           <TooltipProvider>
             <GuideForm
               config={config}

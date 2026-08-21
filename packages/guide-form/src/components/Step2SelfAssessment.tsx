@@ -36,14 +36,6 @@ const Q1_OPTIONS = [
   'doNotEngage',
 ] as const;
 
-const Q2_OPTIONS = [
-  'stronglyDisagree',
-  'disagree',
-  'neutral',
-  'agree',
-  'stronglyAgree',
-] as const;
-
 const Q3_OPTIONS = [
   'askAndSupport',
   'observeThenCheck',
@@ -152,36 +144,6 @@ export const Step2SelfAssessment = ({
               value={field.value}
               onChange={field.onChange}
             />
-          )}
-        />
-      </QuestionCard>
-
-      <QuestionCard>
-        <FormField
-          control={control}
-          name="assessmentQ2"
-          render={({ field }: any) => (
-            <FormItem>
-              <FormLabel className="text-lg font-semibold text-gray-900 dark:text-white">
-                {translate('becomeGuide.step2.q2Question')}
-              </FormLabel>
-              <FormControl>
-                <RadioGroup value={field.value || ''} onValueChange={field.onChange} className="pt-1">
-                  {Q2_OPTIONS.map((option) => {
-                    const id = `assessment-q2-${option}`;
-                    return (
-                      <div key={option} className="flex items-center gap-3">
-                        <RadioGroupItem id={id} value={option} />
-                        <label htmlFor={id} className="cursor-pointer text-sm text-gray-700 dark:text-gray-200">
-                          {translate(`becomeGuide.step2.q2Options.${option}`)}
-                        </label>
-                      </div>
-                    );
-                  })}
-                </RadioGroup>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
           )}
         />
       </QuestionCard>

@@ -21,15 +21,7 @@
       "q1SliderTooltip": "When a guest makes an unexpected request, which approach is closer to your natural first instinct?",
       "q1Range1": "1 — I first explore whether the request can be accommodated",
       "q1Range9": "9 — I first check whether the request is appropriate and within clear boundaries",
-      "q2Question": "Q2. When providing Guide services, I am generally willing to adjust my own plans to accommodate a guest’s needs.",
-      "q2Options": {
-        "stronglyDisagree": "Strongly disagree",
-        "disagree": "Disagree",
-        "neutral": "Neither agree nor disagree",
-        "agree": "Agree",
-        "stronglyAgree": "Strongly agree"
-      },
-      "q3Question": "Q3. When a guest appears to be having difficulty or does not seem well, what would you usually do first?",
+      "q3Question": "Q2. When a guest appears to be having difficulty or does not seem well, what would you usually do first?",
       "q3Options": {
         "askAndSupport": "Ask whether they need help and provide support based on their response.",
         "observeThenCheck": "Observe the situation first and briefly check in at an appropriate moment.",
@@ -41,7 +33,7 @@
       "q3SliderTooltip": "When a guest appears to be having difficulty, which response feels more natural to you?",
       "q3Range1": "1 — I tend to check in and offer help proactively",
       "q3Range9": "9 — I tend to give them space and wait for clearer signals",
-      "q4Question": "Q4. What types of interaction would you like to have with guests during an experience? (Select all that apply.)",
+      "q4Question": "Q3. What types of interaction would you like to have with guests during an experience? (Select all that apply.)",
       "q4Options": {
         "shareStories": "Start conversations and share appropriate personal experiences or local stories.",
         "localConnections": "When everyone is comfortable and the arrangement is appropriate, introduce guests to local people or invite them to participate in local activities.",
@@ -65,22 +57,7 @@
       "subtitle": "Help us understand your guiding preferences and strengths",
       "sliderInstruction": "Choose the position that best reflects your natural approach. Neither end is automatically better.",
       "sliderUnselected": "Not selected",
-      "q5Question": "Q5. As a local Guide in Japan, what do you usually value most when recommending a place or experience? (Select all that apply.)",
-      "q5Options": {
-        "photogenicScenery": "Attractive scenery or surroundings that are enjoyable to visit or photograph.",
-        "hiddenLocalExperience": "Lesser-known experiences that are familiar to local residents.",
-        "historyAndCulture": "Historical, cultural, or neighborhood stories.",
-        "foodAndDailyLife": "Local food and everyday atmosphere.",
-        "quietAtmosphere": "A quiet and relaxing environment.",
-        "seasonalScenery": "Seasonal scenery or limited-time activities.",
-        "authenticDailyLife": "Experiences that help guests understand everyday life in Japan.",
-        "guestFit": "Suitability for the guest’s interests, physical comfort, and preferred pace."
-      },
-      "q5SliderTitle": "Recommendation Style",
-      "q5SliderTooltip": "When recommending a place or experience, which direction do you naturally lean toward?",
-      "q5Range1": "1 — Familiar, accessible, and broadly appealing experiences",
-      "q5Range9": "9 — Distinctive local experiences and less obvious details",
-      "q6Question": "Q6. If a guest behaves disrespectfully toward you during an experience, which actions might you take? (Select all that apply.)",
+      "q6Question": "Q4. If a guest behaves disrespectfully toward you during an experience, which actions might you take? (Select all that apply.)",
       "q6Options": {
         "stateBoundary": "Remain calm and politely explain how the behavior affects you or crosses a service boundary.",
         "adjustInteraction": "Adjust the interaction according to the seriousness of the situation to prevent it from escalating.",
@@ -93,19 +70,15 @@
       "q6SliderTooltip": "When a guest behaves disrespectfully, which response is closer to your natural approach?",
       "q6Range1": "1 — I first try to adjust the interaction and de-escalate the situation",
       "q6Range9": "9 — I first state a clear boundary and take formal action if needed",
-      "q7Question": "Q7. When your personal emotions or physical condition may conflict with your work responsibilities, which response is closest to how you would usually handle the situation?",
+      "q7Question": "Q5. If you become unavailable before a scheduled experience, what would you usually do?",
       "q7Options": {
-        "assessAndStayProfessional": "Assess my condition first and remain professional if I am still able to provide the agreed service appropriately.",
-        "reduceSocialInteraction": "Complete the essential parts of the service while reducing non-essential social interaction.",
-        "communicateEarly": "Inform the guest and the platform as early as possible if my condition may affect service quality or safety.",
-        "alwaysContinue": "Continue and complete the experience regardless of my condition.",
-        "expressEmotion": "Express my emotions openly to the guest because I believe being authentic is more important than hiding how I feel."
+        "notifyGuestAndYaotu": "Notify the guest and Yaotu as soon as possible, explain the situation, and follow the platform’s cancellation or rescheduling process.",
+        "arrangeDirectly": "Contact the guest and try to arrange another time directly.",
+        "waitAndSee": "Wait until closer to the start time in case I become available again.",
+        "substituteWithoutPlatform": "Ask another person to take my place without involving the platform.",
+        "cancelIfAsked": "Cancel the experience without contacting the guest unless they reach out first."
       },
-      "q7SliderTitle": "Managing Your Condition at Work",
-      "q7SliderTooltip": "If your emotional or physical condition may affect the experience, which approach is closer to yours?",
-      "q7Range1": "1 — I first try to manage the situation independently while maintaining the service",
-      "q7Range9": "9 — I prefer to communicate early and adjust the service if the impact may be significant",
-      "q8Question": "Q8. What do you consider your greatest strengths as a Guide? (Select up to three.)",
+      "q8Question": "Q6. What do you consider your greatest strengths as a Guide? (Select up to three.)",
       "q8Options": {
         "hiddenSpots": "Knowledge of lesser-known local places",
         "conversation": "Conversation skills and the ability to create an engaging atmosphere",
@@ -127,8 +100,9 @@
       "q8SliderTooltip": "Which type of strength is more central to what you naturally bring as a Guide?",
       "q8Range1": "1 — Local knowledge, planning, and practical expertise",
       "q8Range9": "9 — Communication, observation, and guest support",
-      "q9Question": "Q9. After the experience, what words or short sentence would you like guests to use to describe you? (Maximum 50 words.)",
-      "q9Placeholder": "Share how you hope guests would describe their experience with you..."
+      "q9Question": "Q7. Why do you want to become a Yaotu Guide, and what do you hope guiding will make possible for you?",
+      "q9Placeholder": "Share your motivation and what guiding could make possible for you...",
+      "q9HelperText": "There’s no right answer. We’d simply like to understand your motivation and what you hope to get from guiding."
     }
   }
 }

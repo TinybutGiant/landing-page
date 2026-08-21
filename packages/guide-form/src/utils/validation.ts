@@ -6,22 +6,16 @@ export const validateEvaluationQuestions = (formData: Partial<FormData>): string
   if (!formData.assessmentQ1?.length) missingFields.push("becomeGuide.step2.q1Question");
   if (formData.assessmentQ1Slider == null)
     missingFields.push("becomeGuide.step2.q1SliderTitle");
-  if (!formData.assessmentQ2) missingFields.push("becomeGuide.step2.q2Question");
   if (!formData.assessmentQ3) missingFields.push("becomeGuide.step2.q3Question");
   if (formData.assessmentQ3Slider == null)
     missingFields.push("becomeGuide.step2.q3SliderTitle");
   if (!formData.assessmentQ4?.length) missingFields.push("becomeGuide.step2.q4Question");
   if (formData.assessmentQ4Slider == null)
     missingFields.push("becomeGuide.step2.q4SliderTitle");
-  if (!formData.personalizedQ5?.length) missingFields.push("becomeGuide.step3.q5Question");
-  if (formData.personalizedQ5Slider == null)
-    missingFields.push("becomeGuide.step3.q5SliderTitle");
   if (!formData.personalizedQ6?.length) missingFields.push("becomeGuide.step3.q6Question");
   if (formData.personalizedQ6Slider == null)
     missingFields.push("becomeGuide.step3.q6SliderTitle");
   if (!formData.personalizedQ7) missingFields.push("becomeGuide.step3.q7Question");
-  if (formData.personalizedQ7Slider == null)
-    missingFields.push("becomeGuide.step3.q7SliderTitle");
   if (!formData.personalizedQ8Strengths?.length)
     missingFields.push("becomeGuide.step3.q8Question");
   if (formData.personalizedQ8Slider == null)
@@ -55,8 +49,6 @@ export const validateFormCompleteness = (formData: Partial<FormData>): string[] 
   if (!formData.residenceZipcode?.trim())
     missingFields.push("becomeGuide.preview.residenceZipcode");
   if (!formData.occupation?.trim()) missingFields.push("becomeGuide.preview.occupation");
-  if (!formData.bio?.trim()) missingFields.push("becomeGuide.preview.bio");
-
   if (!formData.languages?.length) missingFields.push("becomeGuide.preview.languages");
   if (!formData.experienceDuration) missingFields.push("becomeGuide.preview.guideExperience");
   if (!formData.experienceSession) missingFields.push("becomeGuide.preview.guideSessions");

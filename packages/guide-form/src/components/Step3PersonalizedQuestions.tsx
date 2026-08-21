@@ -16,17 +16,6 @@ export interface Step3PersonalizedQuestionsProps {
   locale?: GuideFormLocale;
 }
 
-const Q5_OPTIONS = [
-  'photogenicScenery',
-  'hiddenLocalExperience',
-  'historyAndCulture',
-  'foodAndDailyLife',
-  'quietAtmosphere',
-  'seasonalScenery',
-  'authenticDailyLife',
-  'guestFit',
-] as const;
-
 const Q6_OPTIONS = [
   'stateBoundary',
   'adjustInteraction',
@@ -37,11 +26,11 @@ const Q6_OPTIONS = [
 ] as const;
 
 const Q7_OPTIONS = [
-  'assessAndStayProfessional',
-  'reduceSocialInteraction',
-  'communicateEarly',
-  'alwaysContinue',
-  'expressEmotion',
+  'notifyGuestAndYaotu',
+  'arrangeDirectly',
+  'waitAndSee',
+  'substituteWithoutPlatform',
+  'cancelIfAsked',
 ] as const;
 
 const Q8_OPTIONS = [
@@ -104,64 +93,6 @@ export const Step3PersonalizedQuestions = ({
           {translate('becomeGuide.step3.subtitle')}
         </p>
       </div>
-
-      <QuestionCard>
-        <FormField
-          control={control}
-          name="personalizedQ5"
-          render={({ field }: any) => (
-            <FormItem>
-              <FormLabel className="text-lg font-semibold text-gray-900 dark:text-white">
-                {translate('becomeGuide.step3.q5Question')}
-              </FormLabel>
-              <div className="space-y-3 pt-1">
-                {Q5_OPTIONS.map((option) => {
-                  const id = `personalized-q5-${option}`;
-                  const selected = (field.value || []).includes(option);
-                  return (
-                    <div key={option} className="flex items-start gap-3">
-                      <FormControl>
-                        <Checkbox
-                          id={id}
-                          checked={selected}
-                          onCheckedChange={(checked: boolean) =>
-                            field.onChange(
-                              checked
-                                ? [...(field.value || []), option]
-                                : (field.value || []).filter((value: string) => value !== option)
-                            )
-                          }
-                        />
-                      </FormControl>
-                      <label htmlFor={id} className="cursor-pointer text-sm leading-6 text-gray-700 dark:text-gray-200">
-                        {translate(`becomeGuide.step3.q5Options.${option}`)}
-                      </label>
-                    </div>
-                  );
-                })}
-              </div>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={control}
-          name="personalizedQ5Slider"
-          render={({ field }: any) => (
-            <EvaluationSlider
-              ui={ui}
-              title={translate('becomeGuide.step3.q5SliderTitle')}
-              tooltip={translate('becomeGuide.step3.q5SliderTooltip')}
-              instruction={translate('becomeGuide.step3.sliderInstruction')}
-              unselectedLabel={translate('becomeGuide.step3.sliderUnselected')}
-              rangeStart={translate('becomeGuide.step3.q5Range1')}
-              rangeEnd={translate('becomeGuide.step3.q5Range9')}
-              value={field.value}
-              onChange={field.onChange}
-            />
-          )}
-        />
-      </QuestionCard>
 
       <QuestionCard>
         <FormField
@@ -247,23 +178,6 @@ export const Step3PersonalizedQuestions = ({
               </FormControl>
               <FormMessage />
             </FormItem>
-          )}
-        />
-        <FormField
-          control={control}
-          name="personalizedQ7Slider"
-          render={({ field }: any) => (
-            <EvaluationSlider
-              ui={ui}
-              title={translate('becomeGuide.step3.q7SliderTitle')}
-              tooltip={translate('becomeGuide.step3.q7SliderTooltip')}
-              instruction={translate('becomeGuide.step3.sliderInstruction')}
-              unselectedLabel={translate('becomeGuide.step3.sliderUnselected')}
-              rangeStart={translate('becomeGuide.step3.q7Range1')}
-              rangeEnd={translate('becomeGuide.step3.q7Range9')}
-              value={field.value}
-              onChange={field.onChange}
-            />
           )}
         />
       </QuestionCard>
@@ -369,16 +283,19 @@ export const Step3PersonalizedQuestions = ({
               <FormLabel className="text-lg font-semibold text-gray-900 dark:text-white">
                 {translate('becomeGuide.step3.q9Question')}
               </FormLabel>
+              <p className="text-sm leading-6 text-gray-600 dark:text-gray-300">
+                {translate('becomeGuide.step3.q9HelperText')}
+              </p>
               <FormControl>
                 <Textarea
-                  maxLength={50}
+                  maxLength={600}
                   placeholder={translate('becomeGuide.step3.q9Placeholder')}
-                  className="min-h-[90px]"
+                  className="min-h-[120px]"
                   value={field.value || ''}
                   onChange={field.onChange}
                 />
               </FormControl>
-              <CharacterCount value={q9Answer} max={50} />
+              <CharacterCount value={q9Answer} max={600} />
               <FormMessage />
             </FormItem>
           )}

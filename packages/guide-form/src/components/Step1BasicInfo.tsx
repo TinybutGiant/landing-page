@@ -565,24 +565,6 @@ export const Step1BasicInfo = ({
             )}
           />
 
-          <FormField
-            control={control}
-            name="bio"
-            render={({ field }: any) => (
-              <FormItem>
-                <FormLabel>{intl.formatMessage({ id: "becomeGuide.step1.bio" })}</FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder={intl.formatMessage({ id: "becomeGuide.step1.bioPlaceholder" })}
-                    className="min-h-[100px]"
-                    value={field.value || ""}
-                    onChange={field.onChange}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
         </div>
       </div>
 

@@ -112,7 +112,7 @@ export const formSchema = z
     personalizedQ8Strengths: z.array(z.string()).max(3).default([]),
     personalizedQ8Slider: z.number().min(SCORE_MIN).max(SCORE_MAX).nullable().optional(),
     personalizedQ8Example: z.string().max(100).default(""),
-    personalizedQ9: z.string().max(50).default(""),
+    personalizedQ9: z.string().max(600).default(""),
 
     serviceSelections: z.array(z.coerce.number().int()).default([]),
     targetGroup: z

@@ -27,17 +27,13 @@ interface ApplicationPreviewProps {
 const MISSING_FIELD_LABEL_KEYS: Record<string, string> = {
   "becomeGuide.step2.q1Question": "becomeGuide.preview.missingFieldLabels.step2Q1Answer",
   "becomeGuide.step2.q1SliderTitle": "becomeGuide.preview.missingFieldLabels.step2Q1Score",
-  "becomeGuide.step2.q2Question": "becomeGuide.preview.missingFieldLabels.step2Q2Answer",
   "becomeGuide.step2.q3Question": "becomeGuide.preview.missingFieldLabels.step2Q3Answer",
   "becomeGuide.step2.q3SliderTitle": "becomeGuide.preview.missingFieldLabels.step2Q3Score",
   "becomeGuide.step2.q4Question": "becomeGuide.preview.missingFieldLabels.step2Q4Answer",
   "becomeGuide.step2.q4SliderTitle": "becomeGuide.preview.missingFieldLabels.step2Q4Score",
-  "becomeGuide.step3.q5Question": "becomeGuide.preview.missingFieldLabels.step3Q5Answer",
-  "becomeGuide.step3.q5SliderTitle": "becomeGuide.preview.missingFieldLabels.step3Q5Score",
   "becomeGuide.step3.q6Question": "becomeGuide.preview.missingFieldLabels.step3Q6Answer",
   "becomeGuide.step3.q6SliderTitle": "becomeGuide.preview.missingFieldLabels.step3Q6Score",
   "becomeGuide.step3.q7Question": "becomeGuide.preview.missingFieldLabels.step3Q7Answer",
-  "becomeGuide.step3.q7SliderTitle": "becomeGuide.preview.missingFieldLabels.step3Q7Score",
   "becomeGuide.step3.q8Question": "becomeGuide.preview.missingFieldLabels.step3Q8Strengths",
   "becomeGuide.step3.q8SliderTitle": "becomeGuide.preview.missingFieldLabels.step3Q8Score",
   "becomeGuide.step3.q8ExampleQuestion": "becomeGuide.preview.missingFieldLabels.step3Q8Example",
@@ -193,9 +189,6 @@ export const ApplicationPreview = ({
                 </div>
                 {row(t("becomeGuide.preview.residenceZipcode", "Postal code"), formData.residenceZipcode)}
                 {row(t("becomeGuide.preview.occupation", "Occupation"), formData.occupation)}
-                <div className="md:col-span-2">
-                  {row(t("becomeGuide.preview.bio", "Bio"), formData.bio)}
-                </div>
               </div>
             </section>
 
@@ -219,11 +212,10 @@ export const ApplicationPreview = ({
               <div className="space-y-4">
                 {row(t("becomeGuide.step2.q1Question", "Question 1"), optionLabels(2, "q1", formData.assessmentQ1))}
                 {row(t("becomeGuide.step2.q1SliderTitle", "Question 1 score"), score(formData.assessmentQ1Slider))}
-                {row(t("becomeGuide.step2.q2Question", "Question 2"), singleOption(2, "q2", formData.assessmentQ2))}
-                {row(t("becomeGuide.step2.q3Question", "Question 3"), singleOption(2, "q3", formData.assessmentQ3))}
-                {row(t("becomeGuide.step2.q3SliderTitle", "Question 3 score"), score(formData.assessmentQ3Slider))}
-                {row(t("becomeGuide.step2.q4Question", "Question 4"), optionLabels(2, "q4", formData.assessmentQ4))}
-                {row(t("becomeGuide.step2.q4SliderTitle", "Question 4 score"), score(formData.assessmentQ4Slider))}
+                {row(t("becomeGuide.step2.q3Question", "Question 2"), singleOption(2, "q3", formData.assessmentQ3))}
+                {row(t("becomeGuide.step2.q3SliderTitle", "Question 2 score"), score(formData.assessmentQ3Slider))}
+                {row(t("becomeGuide.step2.q4Question", "Question 3"), optionLabels(2, "q4", formData.assessmentQ4))}
+                {row(t("becomeGuide.step2.q4SliderTitle", "Question 3 score"), score(formData.assessmentQ4Slider))}
               </div>
             </section>
 
@@ -232,16 +224,13 @@ export const ApplicationPreview = ({
                 {t("becomeGuide.preview.personalizedQuestions", "Personalized Questions")}
               </h3>
               <div className="space-y-4">
-                {row(t("becomeGuide.step3.q5Question", "Question 5"), optionLabels(3, "q5", formData.personalizedQ5))}
-                {row(t("becomeGuide.step3.q5SliderTitle", "Question 5 score"), score(formData.personalizedQ5Slider))}
-                {row(t("becomeGuide.step3.q6Question", "Question 6"), optionLabels(3, "q6", formData.personalizedQ6))}
-                {row(t("becomeGuide.step3.q6SliderTitle", "Question 6 score"), score(formData.personalizedQ6Slider))}
-                {row(t("becomeGuide.step3.q7Question", "Question 7"), singleOption(3, "q7", formData.personalizedQ7))}
-                {row(t("becomeGuide.step3.q7SliderTitle", "Question 7 score"), score(formData.personalizedQ7Slider))}
-                {row(t("becomeGuide.step3.q8Question", "Question 8"), optionLabels(3, "q8", formData.personalizedQ8Strengths))}
-                {row(t("becomeGuide.step3.q8SliderTitle", "Question 8 score"), score(formData.personalizedQ8Slider))}
-                {row(t("becomeGuide.step3.q8ExampleQuestion", "Question 8 example"), formData.personalizedQ8Example)}
-                {row(t("becomeGuide.step3.q9Question", "Question 9"), formData.personalizedQ9)}
+                {row(t("becomeGuide.step3.q6Question", "Question 4"), optionLabels(3, "q6", formData.personalizedQ6))}
+                {row(t("becomeGuide.step3.q6SliderTitle", "Question 4 score"), score(formData.personalizedQ6Slider))}
+                {row(t("becomeGuide.step3.q7Question", "Question 5"), singleOption(3, "q7", formData.personalizedQ7))}
+                {row(t("becomeGuide.step3.q8Question", "Question 6"), optionLabels(3, "q8", formData.personalizedQ8Strengths))}
+                {row(t("becomeGuide.step3.q8SliderTitle", "Question 6 score"), score(formData.personalizedQ8Slider))}
+                {row(t("becomeGuide.step3.q8ExampleQuestion", "Question 6 example"), formData.personalizedQ8Example)}
+                {row(t("becomeGuide.step3.q9Question", "Question 7"), formData.personalizedQ9)}
               </div>
             </section>
 

@@ -128,8 +128,8 @@ interface GuideFormConfig {
 ## Form Steps
 
 1. **Basic & Service Info** — Name, age, gender, MBTI, service city
-2. **Self-Assessment** — Q1-Q4 choices with 1-9 tendency sliders (Q2 has no slider)
-3. **Personalized Questions** — Q5-Q9 choices and short answers with 1-9 tendency sliders (Q9 has no slider)
+2. **Self-Assessment** — Q1-Q3 choices with 1-9 tendency sliders
+3. **Personalized Questions** — Q4-Q7 reliability, conflict, strengths, and motivation questions; Q5 and Q7 have no slider
 4. **Service Type & Preferences** — Target audience, services, pricing
 
 ## Validation
