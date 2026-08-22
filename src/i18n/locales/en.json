@@ -507,6 +507,33 @@
       "genericErrorDesc": "Please try again. Your draft is preserved."
     }
   },
+  "guideForm": {
+    "founderNote": {
+      "trigger": {
+        "unread": "A note for you",
+        "read": "A note for you"
+      },
+      "eyebrow": "WHY WE BUILT YAOTU",
+      "title": "A Note from the Founder",
+      "closeLabel": "Close founder note",
+      "body1": "We built Yaotu around a pretty simple idea: <strong>people need to earn a living, but earning a living shouldn't always mean fitting your entire life around the schedule of a traditional job.</strong>",
+      "body2": "If you've lived somewhere long enough, you probably know a lot of things that feel completely ordinary to you. But to someone visiting for the first time, that knowledge can be genuinely valuable — where to go, what to avoid, the easiest way to get around, where locals actually spend their time, and all the little details that travel guides can never fully capture.",
+      "body3": "Yaotu is meant to give you a way to earn income directly from the things you already know and the skills you already have. You decide when you're available, what you're good at, what kind of experiences you want to provide, and what your time is worth.",
+      "body4": "Guiding doesn't have to become your career. You might be a student, an artist, a content creator, a freelancer, someone building your own project, or simply someone going through a transition in life. Guiding can be your main work, a source of side income, or just something you do occasionally when you have the time.",
+      "body5": "And, on a more personal note, I'm an INFP. While building Yaotu, I often find myself thinking about something very practical: <strong>if I ever reached a point in my own life where I had very few options left, could I at least use what I know about the place I live, become a Guide, and keep myself going?</strong>",
+      "body6": "That question is also why Yaotu deliberately leaves so many decisions in the hands of the Guide.",
+      "body7": "You set the value of your own time. You decide when you're available. And guiding shouldn't require you to rearrange your life until it starts looking like another fixed job. You can take it seriously as work, or you can simply guide occasionally when you need or want the extra income.",
+      "body8": "To us, these aren't just features we added so we could call Yaotu “flexible work.”",
+      "body9": "If we say that Yaotu is supposed to give people one more option, but then turn around and tell you when to work, how much you have to work, how many bookings you need to take, or what your time is supposed to be worth, <strong>then all we've really done is create another job with a different name.</strong>",
+      "body10": "We don't want to build that.",
+      "body11": "It's also why, when I bring people onto the team, I care a lot about whether they can genuinely understand that situation rather than seeing it only as a business model. As it happens, everyone on our small team right now is an INFP too.",
+      "body12": "We don't build particularly fast. We think about things for a long time, and we change and revise things more than once.",
+      "body13": "But so far, almost every part of Yaotu that has stayed is something we eventually decided we genuinely wanted to exist. <strong>We would rather move a little slower than rush something out that we ourselves cannot truly relate to.</strong>",
+      "body14": "What we're trying to do really isn't that complicated:",
+      "body15": "<strong>make it easier for the knowledge, experience, and time you already have to find someone who is willing to pay for it.</strong>",
+      "body16": "If one day what you know about your city, your interests, and your experience can give you one more option when you need it, <strong>then Yaotu has done at least one thing right.</strong>"
+    }
+  },
   "footer": {
     "description": "Travel with a knowledgeable tour guide and explore the real world through academic perspectives and artistic feelings.",
     "discover": "Discover",

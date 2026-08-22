@@ -1,5 +1,6 @@
 // 主要组件
 export { GuideForm } from "./components/GuideForm";
+export { FOUNDER_NOTE_READ_STORAGE_KEY, FounderNoteMail } from "./components/FounderNoteMail";
 export { Step2SelfAssessment } from "./components/Step2SelfAssessment";
 export { Step3PersonalizedQuestions } from "./components/Step3PersonalizedQuestions";
 export { useGuideForm } from "./hooks/useGuideForm";
