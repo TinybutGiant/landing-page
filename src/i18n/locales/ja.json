@@ -179,6 +179,8 @@
       "eyebrow": "なぜ Yaotu をつくったのか",
       "title": "少しだけ、私から伝えたいこと",
       "launcherLabel": "あなたへ",
+      "launcherLabelUnread": "あなたへ",
+      "launcherLabelRead": "あなたへ",
       "openLabel": "メッセージを開く",
       "closeLabel": "メッセージを閉じる",
       "paragraph1": "Yaotu をつくった理由は、実はとてもシンプルです。<strong>生きていくためにはお金が必要です。でも、お金を稼ぐために、必ずしも自分の生活すべてを決まった仕事のスケジュールに合わせる必要はないと思っています。</strong>",

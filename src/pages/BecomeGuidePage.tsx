@@ -168,8 +168,27 @@ const FOUNDER_NOTE_PARAGRAPH_IDS = [
 
 const FOUNDER_NOTE_DIALOG_ID = "become-guide-founder-note-dialog";
 const FOUNDER_NOTE_TITLE_ID = "become-guide-founder-note-title";
+const FOUNDER_NOTE_READ_STORAGE_KEY = "yaotu_founder_note_read";
 const FOCUSABLE_SELECTOR =
   'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+const readFounderNoteReadState = (): boolean => {
+  if (typeof window === "undefined") return false;
+  try {
+    return window.localStorage.getItem(FOUNDER_NOTE_READ_STORAGE_KEY) === "true";
+  } catch {
+    return false;
+  }
+};
+
+const persistFounderNoteReadState = () => {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(FOUNDER_NOTE_READ_STORAGE_KEY, "true");
+  } catch {
+    // Keep the in-memory read state even when storage is unavailable.
+  }
+};
 
 const useIsDesktopViewport = () => {
   const [isDesktop, setIsDesktop] = useState(() =>
@@ -220,6 +239,7 @@ const FounderNoteContent = ({ intl }: { intl: IntlShape }) => (
 
 const FounderNoteMail = ({ intl }: { intl: IntlShape }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [hasReadFounderNote, setHasReadFounderNote] = useState(readFounderNoteReadState);
   const reduceMotion = useReducedMotion();
   const isDesktop = useIsDesktopViewport();
   const desktopTriggerRef = useRef<HTMLButtonElement>(null);
@@ -228,13 +248,18 @@ const FounderNoteMail = ({ intl }: { intl: IntlShape }) => {
   const dialogRef = useRef<HTMLElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
-  const launcherLabel = intl.formatMessage({ id: "becomeGuide.founderNote.launcherLabel" });
-  const openLabel = intl.formatMessage({ id: "becomeGuide.founderNote.openLabel" });
+  const launcherLabel = intl.formatMessage({
+    id: hasReadFounderNote
+      ? "becomeGuide.founderNote.launcherLabelRead"
+      : "becomeGuide.founderNote.launcherLabelUnread",
+  });
   const closeLabel = intl.formatMessage({ id: "becomeGuide.founderNote.closeLabel" });
 
   const close = useCallback(() => setIsOpen(false), []);
   const openFrom = useCallback((trigger: HTMLButtonElement | null) => {
     lastTriggerRef.current = trigger;
+    setHasReadFounderNote(true);
+    persistFounderNoteReadState();
     setIsOpen(true);
   }, []);
 
@@ -306,7 +331,7 @@ const FounderNoteMail = ({ intl }: { intl: IntlShape }) => {
       <motion.button
         ref={desktopTriggerRef}
         type="button"
-        aria-label={openLabel}
+        aria-label={launcherLabel}
         aria-controls={FOUNDER_NOTE_DIALOG_ID}
         aria-expanded={isOpen}
         onClick={() => openFrom(desktopTriggerRef.current)}
@@ -328,7 +353,7 @@ const FounderNoteMail = ({ intl }: { intl: IntlShape }) => {
       <motion.button
         ref={mobileTriggerRef}
         type="button"
-        aria-label={openLabel}
+        aria-label={launcherLabel}
         aria-controls={FOUNDER_NOTE_DIALOG_ID}
         aria-expanded={isOpen}
         onClick={() => openFrom(mobileTriggerRef.current)}

@@ -202,6 +202,8 @@
       "eyebrow": "为什么我们做 Yaotu",
       "title": "想跟你说几句",
       "launcherLabel": "想跟你说几句",
+      "launcherLabelUnread": "你有一封未读来信",
+      "launcherLabelRead": "创始人的一封信",
       "openLabel": "打开这封信",
       "closeLabel": "关闭这封信",
       "paragraph1": "我们做 Yaotu，想法其实很简单：<strong>人总得挣钱，但挣钱这件事，不一定非得把自己的生活塞进一份固定工作的时间表里。</strong>",

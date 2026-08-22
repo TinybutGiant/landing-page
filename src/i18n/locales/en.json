@@ -179,6 +179,8 @@
       "eyebrow": "WHY WE BUILT YAOTU",
       "title": "A Note from the Founder",
       "launcherLabel": "A note for you",
+      "launcherLabelUnread": "A note for you",
+      "launcherLabelRead": "A note for you",
       "openLabel": "Open founder note",
       "closeLabel": "Close founder note",
       "paragraph1": "We built Yaotu around a pretty simple idea: <strong>people need to earn a living, but earning a living shouldn't always mean fitting your entire life around the schedule of a traditional job.</strong>",
