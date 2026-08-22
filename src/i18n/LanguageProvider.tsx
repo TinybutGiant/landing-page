@@ -13,6 +13,36 @@ export const SUPPORTED_LOCALES = {
 } as const;
 
 export type SupportedLocale = keyof typeof SUPPORTED_LOCALES;
+export const LOCALE_STORAGE_KEY = 'locale';
+export const LOCALE_QUERY_PARAM = 'locale';
+
+const normalizeLocale = (locale: string | null | undefined): SupportedLocale | null => {
+  if (!locale) return null;
+  const normalized = locale.trim();
+  if (normalized in SUPPORTED_LOCALES) return normalized as SupportedLocale;
+  const lower = normalized.toLowerCase();
+  if (lower.startsWith('zh')) return 'zh-CN';
+  if (lower.startsWith('en')) return 'en';
+  return null;
+};
+
+const readStoredLocale = (): SupportedLocale | null => {
+  if (typeof window === 'undefined') return null;
+  try {
+    return normalizeLocale(window.localStorage.getItem(LOCALE_STORAGE_KEY));
+  } catch {
+    return null;
+  }
+};
+
+const persistLocale = (locale: SupportedLocale) => {
+  if (typeof window === 'undefined') return;
+  try {
+    window.localStorage.setItem(LOCALE_STORAGE_KEY, locale);
+  } catch {
+    // Keep the in-memory locale even when storage is unavailable.
+  }
+};
 
 // Language context
 interface LanguageContextType {
@@ -65,14 +95,24 @@ interface LanguageProviderProps {
 export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) => {
   // Get initial locale from localStorage or default to 'en'
   const getInitialLocale = (): SupportedLocale => {
-    const savedLocale = localStorage.getItem('locale') as SupportedLocale;
-    if (savedLocale && savedLocale in SUPPORTED_LOCALES) {
+    if (typeof window === 'undefined') return 'en';
+
+    const queryLocale = normalizeLocale(
+      new URLSearchParams(window.location.search).get(LOCALE_QUERY_PARAM)
+    );
+    if (queryLocale) {
+      persistLocale(queryLocale);
+      return queryLocale;
+    }
+
+    const savedLocale = readStoredLocale();
+    if (savedLocale) {
       return savedLocale;
     }
     
     // Try to detect browser language
-    const browserLang = navigator.language;
-    if (browserLang.startsWith('zh')) {
+    const browserLang = window.navigator.language;
+    if (browserLang.toLowerCase().startsWith('zh')) {
       return 'zh-CN';
     }
     
@@ -84,7 +124,7 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
   // Update locale and save to localStorage
   const setLocale = (newLocale: SupportedLocale) => {
     setLocaleState(newLocale);
-    localStorage.setItem('locale', newLocale);
+    persistLocale(newLocale);
     
     // Update document direction and language
     document.documentElement.dir = 'ltr'; // We only support LTR languages
