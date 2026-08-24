@@ -64,9 +64,6 @@
       "flexibleBooking": "Flexible Booking",
       "flexibleBookingDesc": "Skip the back-and-forth and book with confidence."
     },
-    "how": {
-      "screenshotSlot": "Product screenshot slot"
-    },
     "howTraveler": {
       "sectionTitle": "How Yaotu works",
       "eyebrow": "Coming Soon",
@@ -83,14 +80,14 @@
     "howGuide": {
       "eyebrow": "Applications open",
       "title": "Become a local Guide with Yaotu",
-      "subtitle": "Join the first community of local Guides we're building in Japan. Apply, complete your profile, and follow your application progress.",
+      "subtitle": "Join the first community of local Guides we are building in Japan. Complete your profile, submit your application, then sign in to track your progress.",
       "cta": "Become a Local Guide",
-      "step1": "Submit your Guide application",
-      "step1Desc": "Tell us about your local knowledge, service areas, availability, and the experiences you can offer.",
-      "step2": "Complete your profile and qualifications",
-      "step2Desc": "Add qualification materials and complete the review details we need to evaluate your application.",
-      "step3": "Track your application status",
-      "step3Desc": "Return any time to see your application progress and respond to review updates."
+      "step1": "Complete your profile",
+      "step1Desc": "Add your local knowledge, service areas, availability, and qualification materials.",
+      "step2": "Submit your application",
+      "step2Desc": "Send your Guide application for review once your profile details are ready.",
+      "step3": "View your application status",
+      "step3Desc": "Sign in or create an account to return anytime and continue from your current progress."
     },
     "howGuideOperations": {
       "eyebrow": "After approval",

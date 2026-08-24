@@ -64,9 +64,6 @@
       "flexibleBooking": "灵活预订",
       "flexibleBookingDesc": "省去反复沟通，放心直接预订。"
     },
-    "how": {
-      "screenshotSlot": "产品截图占位"
-    },
     "howTraveler": {
       "sectionTitle": "Yaotu 如何运作",
       "eyebrow": "即将开放",
@@ -83,14 +80,14 @@
     "howGuide": {
       "eyebrow": "Guide 申请开放",
       "title": "成为 Yaotu 的本地 Guide",
-      "subtitle": "加入我们正在日本建立的首批本地 Guide 网络。提交申请、完善资料，并随时查看审核进度。",
+      "subtitle": "加入我们正在日本建立的首批本地 Guide 网络。先完善资料、再提交申请，登录后可继续填写并查看进度。",
       "cta": "成为本地地陪",
-      "step1": "提交 Guide 申请",
-      "step1Desc": "告诉我们你的当地知识、服务城市、可服务时间，以及你能提供的体验。",
-      "step2": "完善资料和资格材料",
-      "step2Desc": "补充资格材料，并完成审核所需的申请资料。",
+      "step1": "完善资料",
+      "step1Desc": "补充你的当地知识、服务城市、可服务时间，以及资格材料。",
+      "step2": "提交申请",
+      "step2Desc": "资料准备好后，提交 Guide 申请进入审核。",
       "step3": "查看申请状态",
-      "step3Desc": "随时返回查看审核进度，并根据审核更新继续补充资料。"
+      "step3Desc": "登录或注册后可随时回来，从当前进度继续填写或查看状态。"
     },
     "howGuideOperations": {
       "eyebrow": "审核通过后",
@@ -194,9 +191,13 @@
     "availabilityDesc": "设置您的日程安排和可用时间",
     "getStarted": "开始成为地陪",
     "applicationProcess": "申请流程",
+    "step1Title": "完成申请",
     "step1Desc": "填写您的档案和专业领域",
+    "step2Title": "身份验证",
     "step2Desc": "我们将验证您的身份和资质",
+    "step3Title": "审核通过",
     "step3Desc": "获得批准并开始接受预订",
+    "step4Title": "开始赚钱",
     "step4Desc": "开始与游客分享您的知识",
     "founderNote": {
       "eyebrow": "为什么我们做 Yaotu",

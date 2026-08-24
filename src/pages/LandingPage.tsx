@@ -6,7 +6,6 @@ import {
   type ReactNode,
   type CSSProperties,
 } from "react";
-import { createPortal } from "react-dom";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,121 +30,235 @@ const DISPLAY_FONT =
   '"Open Runde", "Helvetica Neue", Helvetica, Arial, sans-serif';
 
 type StepItem = {
-  step: string;
   title: string;
-  image?: string;
+  image: string;
   description: string;
-  assetSlot?: string;
 };
-
-const CLOSE_DELAY_MS = 180;
 
 const StepFlow = ({
   steps,
   label,
   activeIndex,
   onActiveChange,
-  placeholderLabel,
+  title,
+  eyebrow,
+  description,
+  ctaLabel,
+  onCtaClick,
+  primary = false,
+  imageFirstOnDesktop = false,
 }: {
   steps: StepItem[];
   label: string;
   activeIndex?: number;
   onActiveChange?: (index: number) => void;
-  placeholderLabel: string;
+  title: string;
+  eyebrow?: string;
+  description: string;
+  ctaLabel?: string;
+  onCtaClick?: () => void;
+  primary?: boolean;
+  imageFirstOnDesktop?: boolean;
 }) => {
   const [internalActive, setInternalActive] = useState(0);
   const [direction, setDirection] = useState(1);
-  const [panelOpen, setPanelOpen] = useState(false);
-  const [openedByTouch, setOpenedByTouch] = useState(false);
-  const isTouchRef = useRef(false);
-  const closeTimerRef = useRef<number | null>(null);
   const active = activeIndex ?? internalActive;
-
-  const cancelClose = () => {
-    if (closeTimerRef.current !== null) {
-      window.clearTimeout(closeTimerRef.current);
-      closeTimerRef.current = null;
-    }
-  };
-
-  const scheduleClose = () => {
-    cancelClose();
-    closeTimerRef.current = window.setTimeout(
-      () => setPanelOpen(false),
-      CLOSE_DELAY_MS
-    );
-  };
-
-  const closePanel = () => {
-    cancelClose();
-    setPanelOpen(false);
-  };
-
-  useEffect(() => () => cancelClose(), []);
-
-  useEffect(() => {
-    if (!panelOpen) return;
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") closePanel();
-    };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [panelOpen]);
+  const current = steps[active];
 
   const goTo = (next: number) => {
-    const clamped = ((next % steps.length) + steps.length) % steps.length;
+    const clamped = Math.max(0, Math.min(steps.length - 1, next));
     if (clamped === active) return;
-    if (active === steps.length - 1 && clamped === 0) setDirection(1);
-    else if (active === 0 && clamped === steps.length - 1) setDirection(-1);
-    else setDirection(clamped > active ? 1 : -1);
+    setDirection(clamped > active ? 1 : -1);
     setInternalActive(clamped);
     onActiveChange?.(clamped);
   };
 
-  const current = steps[active];
-  const screenshotSlot = (
-    <div className="flex h-full w-full items-center justify-center bg-[radial-gradient(circle_at_top_left,_rgba(255,213,17,0.18),_transparent_32%),linear-gradient(135deg,_#f8fafc,_#eef2f7)] p-6 text-center">
-      <div className="max-w-sm">
-        <div className="mx-auto mb-5 h-14 w-20 rounded-xl border border-gray-300 bg-white/80 shadow-sm" />
-        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-gray-500">
-          {placeholderLabel}
-        </p>
-        <p className="mt-3 text-lg font-semibold text-gray-900">
-          {current.title}
-        </p>
-        {current.assetSlot && (
-          <p className="mt-2 break-words text-sm text-gray-500">
-            {current.assetSlot}
-          </p>
-        )}
-      </div>
-    </div>
+  const canGoPrev = active > 0;
+  const canGoNext = active < steps.length - 1;
+
+  const media = (
+    <img
+      src={current.image}
+      alt={current.title}
+      className="h-full w-full object-cover object-top"
+      loading="lazy"
+      draggable={false}
+    />
   );
 
-  const navControls = (
-    <div className="flex w-full items-center justify-between gap-4">
-      <div className="flex items-center gap-3">
-        <button
-          type="button"
-          onClick={() => goTo(active - 1)}
-          aria-label={`${label}: previous step`}
-          className="flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-700 transition-colors hover:border-[#FFD511] hover:bg-[#FFD511] hover:text-gray-900"
-          data-cursor-hover
-        >
-          <ArrowLeft className="h-5 w-5" />
-        </button>
-        <button
-          type="button"
-          onClick={() => goTo(active + 1)}
-          aria-label={`${label}: next step`}
-          className="flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-700 transition-colors hover:border-[#FFD511] hover:bg-[#FFD511] hover:text-gray-900"
-          data-cursor-hover
-        >
-          <ArrowRight className="h-5 w-5" />
-        </button>
+  const ctaClasses = primary
+    ? "h-auto min-h-[3.5rem] whitespace-normal rounded-full px-8 py-4 text-center text-base font-semibold leading-snug shadow-md sm:text-lg"
+    : "h-auto min-h-[3.5rem] whitespace-normal rounded-full border-2 border-[#FFD511] bg-white px-8 py-4 text-center text-base font-semibold leading-snug text-gray-900 shadow-none hover:bg-[#FFF7CC] sm:text-lg";
+
+  const sideArrowClass =
+    "absolute top-1/2 z-20 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-gray-900/70 text-white shadow-lg backdrop-blur-sm transition-colors hover:bg-gray-900/90 sm:h-12 sm:w-12";
+
+  const badgeClass = primary
+    ? "inline-flex w-fit shrink-0 rounded-full bg-[#FFD511]/20 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-900"
+    : "inline-flex w-fit shrink-0 rounded-full border border-[#FFD511] bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-700";
+
+  return (
+    <div className="w-full">
+      <div className="relative px-5 sm:px-12 lg:px-14">
+        {canGoPrev ? (
+          <button
+            type="button"
+            onClick={() => goTo(active - 1)}
+            aria-label={`${label}: previous step`}
+            className={`${sideArrowClass} left-0`}
+            data-cursor-hover
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </button>
+        ) : null}
+        {canGoNext ? (
+          <button
+            type="button"
+            onClick={() => goTo(active + 1)}
+            aria-label={`${label}: next step`}
+            className="absolute top-1/2 right-0 z-20 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-[#FFD511] text-gray-900 shadow-lg transition-colors hover:bg-[#E5C00F] sm:h-12 sm:w-12"
+            data-cursor-hover
+          >
+            <ArrowRight className="h-5 w-5" />
+          </button>
+        ) : null}
+
+        <div className="overflow-hidden">
+          <div
+            className={`grid items-start gap-6 p-1 sm:gap-8 sm:p-2 lg:gap-10 lg:p-3 ${
+              imageFirstOnDesktop
+                ? "lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:[grid-template-areas:'media_copy']"
+                : "lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:[grid-template-areas:'copy_media']"
+            }`}
+          >
+            <div className="order-1 flex min-w-0 flex-col justify-center text-left lg:[grid-area:copy]">
+              <div className="flex items-center gap-2.5">
+                {steps.map((item, index) => (
+                  <button
+                    key={item.title}
+                    type="button"
+                    onClick={() => goTo(index)}
+                    aria-label={`${label}: step ${index + 1}`}
+                    aria-current={index === active}
+                    className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold transition-colors sm:h-9 sm:w-9 ${
+                      index === active
+                        ? "bg-[#FFD511] text-gray-900"
+                        : "bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700"
+                    }`}
+                    data-cursor-hover
+                  >
+                    {index + 1}
+                  </button>
+                ))}
+              </div>
+
+              <AnimatePresence mode="wait" custom={direction}>
+                <motion.div
+                  key={current.title}
+                  custom={direction}
+                  initial={{ opacity: 0, x: direction * 28 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: direction * -28 }}
+                  transition={{ duration: 0.28, ease: "easeOut" }}
+                  className="lg:min-h-[29rem]"
+                >
+                  <h3 className="mt-3 max-w-xl text-balance text-2xl font-bold leading-snug text-gray-900 sm:mt-4 sm:text-3xl lg:text-[2.15rem] lg:leading-[1.2]">
+                    {active === 0 ? title : current.title}
+                  </h3>
+
+                  {eyebrow ? (
+                    <span className={`${badgeClass} mt-3`}>{eyebrow}</span>
+                  ) : null}
+
+                  {active === 0 ? (
+                    <p className="mt-4 max-w-xl text-sm leading-relaxed text-gray-600 sm:text-base">
+                      {description}
+                    </p>
+                  ) : null}
+
+                  <div
+                    className={`max-w-xl border-l-2 border-[#FFD511] pl-4 sm:pl-5 ${
+                      active === 0 ? "mt-6 sm:mt-7" : "mt-4 sm:mt-5"
+                    }`}
+                  >
+                    {active === 0 ? (
+                      <>
+                        <p className="flex items-start gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-gray-500 sm:gap-2.5">
+                          <span
+                            className="shrink-0 font-normal normal-case tracking-normal text-gray-500"
+                            aria-hidden
+                          >
+                            {["①", "②", "③"][active]}
+                          </span>
+                          <span>{current.title}</span>
+                        </p>
+                        <p className="mt-2 text-sm leading-relaxed text-gray-700 sm:text-base">
+                          {current.description}
+                        </p>
+                      </>
+                    ) : (
+                      <p className="text-sm leading-relaxed text-gray-700 sm:text-base">
+                        {current.description}
+                      </p>
+                    )}
+                  </div>
+
+                  {ctaLabel && onCtaClick && (
+                    <div className="mt-7 hidden lg:block">
+                      <Button
+                        size="lg"
+                        variant={primary ? "default" : "outline"}
+                        className={ctaClasses}
+                        onClick={onCtaClick}
+                        data-cursor-hover
+                      >
+                        {ctaLabel}
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </div>
+                  )}
+                </motion.div>
+              </AnimatePresence>
+            </div>
+
+            <div className="order-2 w-full min-w-0 self-start lg:[grid-area:media]">
+              <div className="aspect-[16/10] w-full overflow-hidden rounded-2xl border border-gray-200 bg-[#fbfaf3]">
+                <AnimatePresence mode="wait" custom={direction}>
+                  <motion.div
+                    key={current.title}
+                    custom={direction}
+                    initial={{ opacity: 0, x: direction * 28 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: direction * -28 }}
+                    transition={{ duration: 0.28, ease: "easeOut" }}
+                    className="h-full w-full"
+                  >
+                    {media}
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+
+            </div>
+
+            {ctaLabel && onCtaClick && (
+              <div className="order-3 lg:hidden">
+                <Button
+                  size="lg"
+                  variant={primary ? "default" : "outline"}
+                  className={`${ctaClasses} w-full justify-center`}
+                  onClick={onCtaClick}
+                  data-cursor-hover
+                >
+                  {ctaLabel}
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
-      <div className="flex items-center gap-2.5">
+      <div className="mt-3 flex items-center justify-center gap-2.5 lg:-mt-24">
         {steps.map((item, index) => (
           <button
             key={item.title}
@@ -155,169 +268,13 @@ const StepFlow = ({
             aria-current={index === active}
             className={`h-2.5 rounded-full transition-all ${
               index === active
-                ? "w-6 bg-[#FFD511]"
+                ? "w-7 bg-[#FFD511]"
                 : "w-2.5 bg-gray-300 hover:bg-gray-400"
             }`}
             data-cursor-hover
           />
         ))}
       </div>
-    </div>
-  );
-
-  return (
-    <div className="w-full">
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={current.title}
-          initial={{ opacity: 0, x: direction * 24 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: direction * -24 }}
-          transition={{ duration: 0.3, ease: "easeOut" }}
-          onPointerDown={(event) => {
-            isTouchRef.current = event.pointerType !== "mouse";
-          }}
-          onPointerEnter={(event) => {
-            if (event.pointerType !== "mouse") return;
-            cancelClose();
-            setOpenedByTouch(false);
-            setPanelOpen(true);
-          }}
-          onPointerLeave={(event) => {
-            if (event.pointerType === "mouse") scheduleClose();
-          }}
-          onTap={() => {
-            if (!isTouchRef.current) return;
-            setOpenedByTouch(true);
-            setPanelOpen((open) => !open);
-          }}
-          className="w-full"
-        >
-          <div className="mb-3 flex h-7 items-center justify-center text-center">
-            <span className="text-base font-semibold text-gray-900 sm:text-lg">
-              {current.step} {current.title}
-            </span>
-          </div>
-          <div
-            className="aspect-[16/10] w-full overflow-hidden rounded-[1.75rem] border border-gray-200 bg-gray-100 shadow-xl"
-            data-cursor-hover
-          >
-            {current.image ? (
-              <img
-                src={current.image}
-                alt={current.title}
-                className="h-full w-full object-cover"
-                loading="lazy"
-                draggable={false}
-              />
-            ) : (
-              screenshotSlot
-            )}
-          </div>
-        </motion.div>
-      </AnimatePresence>
-
-      <div className="mt-6">{navControls}</div>
-
-      {createPortal(
-        <AnimatePresence>
-          {panelOpen && (
-            <motion.div
-              className="pointer-events-none fixed inset-0 z-[90] flex items-center justify-center p-4"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              <div
-                className={`absolute inset-0 bg-black/40 backdrop-blur-sm ${
-                  openedByTouch ? "pointer-events-auto" : ""
-                }`}
-                onClick={openedByTouch ? closePanel : undefined}
-                aria-hidden
-              />
-              <motion.div
-                role="dialog"
-                aria-label={`${label}: ${current.title}`}
-                initial={{ opacity: 0, y: 20, scale: 0.98 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 12, scale: 0.98 }}
-                transition={{ duration: 0.25, ease: "easeOut" }}
-                onMouseEnter={cancelClose}
-                onMouseLeave={() => {
-                  if (!openedByTouch) scheduleClose();
-                }}
-                className="pointer-events-auto relative grid w-full max-w-4xl overflow-hidden rounded-3xl bg-white text-left shadow-2xl md:grid-cols-2"
-              >
-                <button
-                  type="button"
-                  onClick={closePanel}
-                  aria-label="Close"
-                  className="absolute right-4 top-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-gray-500 shadow-sm transition-colors hover:text-gray-900 md:hidden"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-
-                <div className="order-2 flex flex-col justify-between p-6 sm:p-8 md:order-1 md:p-10">
-                  <AnimatePresence mode="wait">
-                    <motion.div
-                      key={current.title}
-                      initial={{ opacity: 0, y: 12 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -8 }}
-                      transition={{ duration: 0.25, ease: "easeOut" }}
-                    >
-                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">
-                        {label}
-                      </p>
-                      <h4 className="mt-4 text-2xl font-bold text-gray-900 sm:text-3xl">
-                        {current.step} {current.title}
-                      </h4>
-                      <p className="mt-4 text-base leading-relaxed text-gray-600 sm:text-lg">
-                        {current.description}
-                      </p>
-                    </motion.div>
-                  </AnimatePresence>
-
-                  <div className="mt-8 border-t border-gray-200 pt-5 md:mt-10">
-                    {navControls}
-                  </div>
-                </div>
-
-                <div className="relative order-1 aspect-[4/3] bg-gray-100 md:order-2 md:aspect-auto md:min-h-[26rem]">
-                  <AnimatePresence mode="wait">
-                    {current.image ? (
-                      <motion.img
-                        key={current.image + current.title}
-                        src={current.image}
-                        alt={current.title}
-                        initial={{ opacity: 0, scale: 1.04 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.35, ease: "easeOut" }}
-                        className="absolute inset-0 h-full w-full object-cover"
-                        draggable={false}
-                      />
-                    ) : (
-                      <motion.div
-                        key={current.title}
-                        initial={{ opacity: 0, scale: 1.02 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.35, ease: "easeOut" }}
-                        className="absolute inset-0"
-                      >
-                        {screenshotSlot}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>,
-        document.body
-      )}
     </div>
   );
 };
@@ -330,12 +287,11 @@ const FlowStoryRow = ({
   activeStep,
   onStepChange,
   label,
-  placeholderLabel,
   ctaLabel,
   onCtaClick,
-  imageFirstOnDesktop = false,
   primary = false,
   tone = "white",
+  imageFirstOnDesktop = false,
 }: {
   title: string;
   eyebrow?: string;
@@ -344,89 +300,36 @@ const FlowStoryRow = ({
   activeStep: number;
   onStepChange: (index: number) => void;
   label: string;
-  placeholderLabel: string;
   ctaLabel?: string;
   onCtaClick?: () => void;
-  imageFirstOnDesktop?: boolean;
   primary?: boolean;
   tone?: "white" | "warm";
+  imageFirstOnDesktop?: boolean;
 }) => {
-  const current = steps[activeStep] ?? steps[0];
-  const ctaClasses = primary
-    ? "h-auto min-h-[3.5rem] whitespace-normal rounded-full px-8 py-4 text-center text-base font-semibold leading-snug shadow-md sm:text-lg"
-    : "h-auto min-h-[3.5rem] whitespace-normal rounded-full border-2 border-[#FFD511] bg-white px-8 py-4 text-center text-base font-semibold leading-snug text-gray-900 shadow-none hover:bg-[#FFF7CC] sm:text-lg";
-  const backgroundClass = tone === "warm" ? "bg-[#fbfaf3]" : "bg-white";
-
-  const cta = (className = "") => (
-    <Button
-      size="lg"
-      variant={primary ? "default" : "outline"}
-      className={`${ctaClasses} ${className}`}
-      onClick={onCtaClick}
-      data-cursor-hover
-    >
-      {ctaLabel}
-      <ArrowRight className="ml-2 h-4 w-4" />
-    </Button>
-  );
-
   return (
-    <section className={`relative overflow-hidden ${backgroundClass}`}>
-      <div className="mx-auto grid max-w-[88rem] gap-10 px-4 py-20 sm:px-6 sm:py-24 lg:min-h-[72vh] lg:grid-cols-[minmax(0,0.39fr)_minmax(0,0.61fr)] lg:items-center lg:gap-14 lg:px-8 lg:py-28">
+    <div className="relative py-10 sm:py-12 lg:py-14">
+      {tone === "warm" ? (
         <div
-          className={`order-1 flex flex-col justify-center ${
-            imageFirstOnDesktop ? "lg:order-2" : "lg:order-1"
-          }`}
-        >
-          {eyebrow && (
-            <span
-              className={`mb-6 inline-flex w-fit rounded-full px-3.5 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] ${
-                primary
-                  ? "bg-[#FFD511]/20 text-gray-900"
-                  : "border border-[#FFD511] bg-white text-gray-700"
-              }`}
-            >
-              {eyebrow}
-            </span>
-          )}
-          <h3 className="max-w-xl text-4xl font-bold leading-[1.05] text-gray-900 sm:text-5xl lg:text-[3.25rem]">
-            {title}
-          </h3>
-          <p className="mt-7 max-w-xl text-lg leading-relaxed text-gray-600 sm:text-xl">
-            {description}
-          </p>
-          <div className="mt-10 max-w-xl border-l-2 border-[#FFD511] pl-5">
-            <p className="text-sm font-semibold uppercase tracking-[0.14em] text-gray-500">
-              {current.step} {current.title}
-            </p>
-            <p className="mt-3 text-base leading-relaxed text-gray-700 sm:text-lg">
-              {current.description}
-            </p>
-          </div>
-          {ctaLabel && onCtaClick && (
-            <div className="mt-10 hidden lg:block">{cta()}</div>
-          )}
-        </div>
-
-        <div
-          className={`order-2 min-w-0 ${
-            imageFirstOnDesktop ? "lg:order-1" : "lg:order-2"
-          }`}
-        >
-          <StepFlow
-            steps={steps}
-            label={label}
-            activeIndex={activeStep}
-            onActiveChange={onStepChange}
-            placeholderLabel={placeholderLabel}
-          />
-        </div>
-
-        {ctaLabel && onCtaClick && (
-          <div className="order-3 lg:hidden">{cta("w-full justify-center")}</div>
-        )}
+          className="pointer-events-none absolute inset-y-0 left-1/2 w-screen -translate-x-1/2 bg-[#fbfaf3]"
+          aria-hidden
+        />
+      ) : null}
+      <div className="relative">
+        <StepFlow
+          steps={steps}
+          label={label}
+          activeIndex={activeStep}
+          onActiveChange={onStepChange}
+          title={title}
+          eyebrow={eyebrow}
+          description={description}
+          ctaLabel={ctaLabel}
+          onCtaClick={onCtaClick}
+          primary={primary}
+          imageFirstOnDesktop={imageFirstOnDesktop}
+        />
       </div>
-    </section>
+    </div>
   );
 };
 
@@ -520,16 +423,14 @@ const LandingPage = () => {
 
   const travelerSteps: StepItem[] = [
     {
-      step: "①",
       title: t("landing.howTraveler.step1", "Discover Guides"),
       description: t(
         "landing.howTraveler.step1Desc",
         "Browse local Guides by city, interests, language, and the kind of experience you want."
       ),
-      assetSlot: "public/screenshots/traveler-discover.webp",
+      image: "/screenshots/traveler-discover.png",
     },
     {
-      step: "②",
       title: t(
         "landing.howTraveler.step2",
         "Explore Guide profiles and experiences"
@@ -538,79 +439,69 @@ const LandingPage = () => {
         "landing.howTraveler.step2Desc",
         "Explore each Guide's background, service style, and available experiences before you decide."
       ),
-      assetSlot: "public/screenshots/traveler-profile.webp",
+      image: "/screenshots/traveler-profile.png",
     },
     {
-      step: "③",
       title: t("landing.howTraveler.step3", "Choose a time and book"),
       description: t(
         "landing.howTraveler.step3Desc",
         "Choose a time and complete your booking directly through Yaotu when the marketplace opens."
       ),
-      assetSlot: "public/screenshots/traveler-book.webp",
+      image: "/screenshots/traveler-book.png",
     },
   ];
 
   const guideSteps: StepItem[] = [
     {
-      step: "①",
-      title: t("landing.howGuide.step1", "Submit your Guide application"),
+      title: t("landing.howGuide.step1", "Complete your profile"),
       description: t(
         "landing.howGuide.step1Desc",
-        "Tell us about your local knowledge, service areas, availability, and the experiences you can offer."
+        "Add your local knowledge, service areas, availability, and qualification materials."
       ),
-      assetSlot: "public/screenshots/guide-apply.webp",
+      image: "/screenshots/guide-qualification.png",
     },
     {
-      step: "②",
-      title: t(
-        "landing.howGuide.step2",
-        "Complete your profile and qualifications"
-      ),
+      title: t("landing.howGuide.step2", "Submit your application"),
       description: t(
         "landing.howGuide.step2Desc",
-        "Add qualification materials and complete the review details we need to evaluate your application."
+        "Send your Guide application for review once your profile details are ready."
       ),
-      assetSlot: "public/screenshots/guide-qualification.webp",
+      image: "/screenshots/guide-apply.png",
     },
     {
-      step: "③",
-      title: t("landing.howGuide.step3", "Track your application status"),
+      title: t("landing.howGuide.step3", "View your application status"),
       description: t(
         "landing.howGuide.step3Desc",
-        "Return any time to see your application progress and respond to review updates."
+        "Sign in or create an account to return anytime and continue from your current progress."
       ),
-      assetSlot: "public/screenshots/guide-status.webp",
+      image: "/screenshots/guide-status.png",
     },
   ];
 
   const guideOperationsSteps: StepItem[] = [
     {
-      step: "①",
       title: t("landing.howGuideOperations.step1", "Publish your experience"),
       description: t(
         "landing.howGuideOperations.step1Desc",
         "Set your experience details, location, availability, duration, and pricing before making it available to Travelers."
       ),
-      assetSlot: "public/screenshots/guide-publish.webp",
+      image: "/screenshots/guide-publish.png",
     },
     {
-      step: "②",
       title: t("landing.howGuideOperations.step2", "Manage Traveler bookings"),
       description: t(
         "landing.howGuideOperations.step2Desc",
         "Review upcoming bookings, Traveler details, schedules, and booking status from your Guide workspace."
       ),
-      assetSlot: "public/screenshots/guide-bookings.webp",
+      image: "/screenshots/guide-bookings.png",
     },
     {
-      step: "③",
       title: t("landing.howGuideOperations.step3", "Track earnings and payouts"),
       description: t(
         "landing.howGuideOperations.step3Desc",
         "See your earnings, payout status, and payout history, and manage withdrawals through Yaotu."
       ),
-      assetSlot: "public/screenshots/guide-earnings.webp",
+      image: "/screenshots/guide-earnings.png",
     },
   ];
 
@@ -735,10 +626,9 @@ const LandingPage = () => {
       <div
         ref={heroRef}
         id="hero-section"
-        className="relative flex min-h-screen items-center overflow-hidden"
+        className="landing-hero relative flex min-h-screen items-center overflow-hidden"
         style={
           {
-            "--hero-title-size": "clamp(30px, 9vw, 170px)",
             "--hero-tagline-size":
               "clamp(0.95rem, calc(var(--hero-title-size) * 0.185), 1.6rem)",
           } as CSSProperties
@@ -772,15 +662,16 @@ const LandingPage = () => {
           className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center px-5 sm:px-8"
           style={{ opacity: heroOpacity }}
         >
-          <div className="relative max-w-full">
+          <div className="relative flex max-w-full -translate-y-[2vh] flex-col items-center text-center sm:-translate-y-[1vh]">
             <div
-              className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[46vh] w-[96vw] max-w-6xl -translate-x-1/2 -translate-y-1/2"
+              className="pointer-events-none absolute left-1/2 top-[46%] -z-10 h-[56vh] w-[96vw] max-w-6xl -translate-x-1/2 -translate-y-1/2"
               style={{
                 background:
                   "radial-gradient(closest-side, rgba(255,255,255,0.92) 35%, rgba(255,255,255,0.55) 65%, rgba(255,255,255,0))",
               }}
               aria-hidden
             />
+
             <motion.h1
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
@@ -829,15 +720,15 @@ const LandingPage = () => {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.65, delay: 1.15 }}
-              className="absolute left-0 right-0 top-full mx-auto text-center text-gray-700"
+              className="mx-auto text-center text-gray-700"
               style={{
                 fontFamily: DISPLAY_FONT,
                 fontWeight: 500,
                 lineHeight: 1.5,
                 letterSpacing: "0.01em",
                 fontSize: "var(--hero-tagline-size)",
-                width: "min(44rem, 92vw)",
-                marginTop: "calc(var(--hero-title-size) * 0.3)",
+                width: "min(40rem, 92vw)",
+                marginTop: "calc(var(--hero-title-size) * 0.22)",
                 textShadow:
                   "0 0 14px rgba(255,255,255,0.95), 0 0 32px rgba(255,255,255,0.75)",
               }}
@@ -847,88 +738,38 @@ const LandingPage = () => {
                 "Apply to become one of our first local Guides in Japan, or register for Traveler Early Access."
               )}
             </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.55, delay: 1.35 }}
+              className="pointer-events-auto mt-7 flex w-full max-w-xl flex-col items-stretch gap-3 sm:mt-8 sm:max-w-none sm:flex-row sm:items-center sm:justify-center sm:gap-4"
+            >
+              <motion.div whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }}>
+                <Button
+                  size="lg"
+                  className="h-auto min-h-[3.25rem] w-full whitespace-normal rounded-full px-6 py-3.5 text-center text-sm font-semibold leading-snug shadow-md sm:w-auto sm:min-w-[14rem] sm:px-8 sm:text-base"
+                  onClick={handleBecomeGuide}
+                  data-cursor-hover
+                >
+                  {t("landing.hero.guideCta", "Become a Local Guide")}
+                </Button>
+              </motion.div>
+              <motion.div whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }}>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="h-auto min-h-[3.25rem] w-full whitespace-normal rounded-full border-2 border-[#FFD511] bg-white/95 px-6 py-3.5 text-center text-sm font-semibold leading-snug text-gray-900 shadow-none hover:bg-[#FFF7CC] sm:w-auto sm:min-w-[14rem] sm:px-8 sm:text-base"
+                  onClick={() => setWaitlistOpen(true)}
+                  data-cursor-hover
+                >
+                  {t("landing.hero.waitlistCta", "Get Traveler Early Access")}
+                </Button>
+              </motion.div>
+            </motion.div>
           </div>
         </motion.div>
       </div>
-
-      {/* Mid CTAs */}
-      <section className="relative z-10 py-20 sm:py-24 lg:py-28">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="relative flex flex-col items-center text-center"
-        >
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.05 }}
-            className="mb-14 w-full text-center sm:mb-16"
-          >
-            <p
-              className="mb-4 text-gray-900"
-              style={{
-                fontFamily: DISPLAY_FONT,
-                fontWeight: 700,
-                lineHeight: 1.25,
-                letterSpacing: "-0.02em",
-                fontSize: "clamp(1.35rem, 2.5vw + 0.6rem, 2.25rem)",
-              }}
-            >
-              {t("landing.hero.ctaIntro", "Help build Yaotu's first local Guide community in Japan")}
-            </p>
-            <p className="text-xl text-gray-600 dark:text-gray-300">
-              {t(
-                "landing.hero.ctaIntroSub",
-                "We're starting by bringing together our first community of local Guides in Japan. Planning a trip to Japan? Register for Traveler Early Access and we'll send a priority invite when the first Guides are ready."
-              )}
-            </p>
-          </motion.div>
-          <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.45, delay: 0.12 }}
-              whileHover={{ scale: 1.02, y: -2 }}
-              whileTap={{ scale: 0.98 }}
-              className="w-full"
-            >
-              <Button
-                size="lg"
-                className="h-auto min-h-[3.5rem] w-full whitespace-normal rounded-full px-5 py-4 text-center text-sm font-semibold leading-snug shadow-md sm:px-8 sm:text-base lg:text-lg"
-                onClick={handleBecomeGuide}
-                data-cursor-hover
-              >
-                {t("landing.hero.guideCta", "Become a Local Guide")}
-              </Button>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.45, delay: 0.2 }}
-              whileHover={{ scale: 1.02, y: -2 }}
-              whileTap={{ scale: 0.98 }}
-              className="w-full"
-            >
-              <Button
-                size="lg"
-                variant="outline"
-                className="h-auto min-h-[3.5rem] w-full whitespace-normal rounded-full border-2 border-[#FFD511] bg-white px-5 py-4 text-center text-sm font-semibold leading-snug text-gray-900 shadow-none hover:bg-[#FFF7CC] sm:px-8 sm:text-base lg:text-lg"
-                onClick={() => setWaitlistOpen(true)}
-                data-cursor-hover
-              >
-                {t("landing.hero.waitlistCta", "Get Traveler Early Access")}
-              </Button>
-            </motion.div>
-          </div>
-        </motion.div>
-        </div>
-      </section>
 
       {/* Features */}
       <motion.section
@@ -1011,17 +852,15 @@ const LandingPage = () => {
       </motion.section>
 
       {/* How it works */}
-      <section className="relative overflow-hidden bg-white">
-        <div className="mx-auto max-w-[88rem] px-4 pb-14 pt-24 text-center sm:px-6 sm:pb-16 sm:pt-28 lg:px-8">
-          <div>
-            <h2 className="text-5xl font-bold leading-tight text-gray-900 sm:text-6xl">
+      <section className="relative bg-white">
+        <div className="mx-auto max-w-7xl px-4 pb-16 pt-24 sm:px-6 sm:pb-20 sm:pt-28 lg:px-8 lg:pb-24">
+          <div className="mb-14 text-center sm:mb-16">
+            <h2 className="text-4xl font-bold leading-tight text-gray-900 sm:text-5xl lg:text-6xl">
               {t("landing.howTraveler.sectionTitle", "How Yaotu works")}
             </h2>
           </div>
 
-        </div>
-
-        <div>
+          <div className="flex flex-col">
             <FlowStoryRow
               primary
               title={t(
@@ -1031,16 +870,12 @@ const LandingPage = () => {
               eyebrow={t("landing.howGuide.eyebrow", "Applications open")}
               description={t(
                 "landing.howGuide.subtitle",
-                "Join the first community of local Guides we're building in Japan. Apply, complete your profile, and follow your application progress."
+                "Join the first community of local Guides we're building in Japan. Complete your profile, submit your application, then sign in to track your progress."
               )}
               steps={guideSteps}
               activeStep={guideActiveStep}
               onStepChange={setGuideActiveStep}
               label={t("landing.howGuide.title", "Become a local Guide with Yaotu")}
-              placeholderLabel={t(
-                "landing.how.screenshotSlot",
-                "Product screenshot slot"
-              )}
               ctaLabel={t("landing.howGuide.cta", "Become a Local Guide")}
               onCtaClick={handleBecomeGuide}
             />
@@ -1067,10 +902,8 @@ const LandingPage = () => {
                 "landing.howGuideOperations.title",
                 "Start hosting with Yaotu"
               )}
-              placeholderLabel={t(
-                "landing.how.screenshotSlot",
-                "Product screenshot slot"
-              )}
+              ctaLabel={t("landing.howGuide.cta", "Become a Local Guide")}
+              onCtaClick={handleBecomeGuide}
             />
 
             <FlowStoryRow
@@ -1090,16 +923,13 @@ const LandingPage = () => {
                 "landing.howTraveler.title",
                 "Preview the Traveler experience"
               )}
-              placeholderLabel={t(
-                "landing.how.screenshotSlot",
-                "Product screenshot slot"
-              )}
               ctaLabel={t(
                 "landing.howTraveler.cta",
                 "Get Traveler Early Access"
               )}
               onCtaClick={() => setWaitlistOpen(true)}
             />
+          </div>
         </div>
       </section>
 

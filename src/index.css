@@ -103,24 +103,39 @@
 /* Smooth scrolling */
 html {
   scroll-behavior: smooth;
+  overflow-x: clip;
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
+body {
+  overflow-x: clip;
+}
+
+/* Main page scrollbar */
+html::-webkit-scrollbar {
   width: 8px;
 }
 
-::-webkit-scrollbar-track {
+html::-webkit-scrollbar-track {
   background: #f1f1f1;
 }
 
-::-webkit-scrollbar-thumb {
+html::-webkit-scrollbar-thumb {
   background: #FFD511;
   border-radius: 4px;
 }
 
-::-webkit-scrollbar-thumb:hover {
+html::-webkit-scrollbar-thumb:hover {
   background: #FFA500;
+}
+
+.landing-hero {
+  --hero-title-size: clamp(30px, 9vw, 170px);
+}
+
+@media (max-width: 640px) {
+  .landing-hero {
+    --hero-title-size: clamp(24px, 7.2vw, 30px);
+  }
 }
 
 .hero-blob {
