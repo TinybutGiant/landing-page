@@ -1,11 +1,16 @@
-import { useEffect, useMemo, useState, type FormEvent } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { SignUpForm } from '@yaotu/auth';
 import { useLocation } from 'wouter';
 
 import { useAuth } from '@/context/AuthContext';
 import { readRedirectParam } from '@/lib/authRedirects';
-import { getCanonicalVerifyEmailPath, useYaoTuAuthRuntime } from '@/lib/yaotuAuthRuntime';
-import { api, resolveApiUrl } from '@/lib/apiClient';
+import { useLanguage } from '@/i18n/LanguageProvider';
+import {
+  getCanonicalVerifyEmailPath,
+  getMarketplaceUrl,
+  useYaoTuAuthRuntime,
+} from '@/lib/yaotuAuthRuntime';
+import { resolveApiUrl } from '@/lib/apiClient';
 
 const DEFAULT_REDIRECT = '/become-guide';
 type IntentStatus = 'none' | 'checking' | 'valid' | 'invalid';
@@ -28,31 +33,10 @@ function readSignupIntentParam(): string | null {
 }
 
 function PreLaunchSignupGate({ invalidIntent = false }: { invalidIntent?: boolean }) {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const handleWaitlistSubmit = async (event: FormEvent) => {
-    event.preventDefault();
-    if (!name.trim() || !email.trim() || submitting) return;
-
-    setSubmitting(true);
-    setError(null);
-    try {
-      await api.post('/api/v2/waitlist', {
-        name: name.trim(),
-        email: email.trim(),
-        source: 'guide_signup_gate',
-      });
-      setSubmitted(true);
-    } catch {
-      setError("We couldn't submit your request. Please check your email and try again.");
-    } finally {
-      setSubmitting(false);
-    }
-  };
+  const { locale } = useLanguage();
+  const travelerWaitlistUrl = getMarketplaceUrl(
+    `/signup?locale=${encodeURIComponent(locale)}`
+  );
 
   return (
     <main className="min-h-screen bg-white px-4 py-12 text-gray-900">
@@ -80,41 +64,14 @@ function PreLaunchSignupGate({ invalidIntent = false }: { invalidIntent?: boolea
           <div className="rounded-lg border border-gray-200 bg-gray-50 p-5">
             <h2 className="text-xl font-semibold">Join the Traveler Waitlist</h2>
             <p className="mt-2 text-sm leading-6 text-gray-600">
-              Get notified when traveler marketplace access opens.
+              Traveler early access is handled on the main Yaotu site.
             </p>
-            {submitted ? (
-              <p className="mt-5 rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
-                Check your inbox to confirm your waitlist spot.
-              </p>
-            ) : (
-              <form onSubmit={handleWaitlistSubmit} className="mt-5 space-y-3">
-                <input
-                  value={name}
-                  onChange={(event) => setName(event.target.value)}
-                  required
-                  autoComplete="name"
-                  placeholder="Name"
-                  className="h-11 w-full rounded-md border border-gray-300 bg-white px-3 text-sm text-gray-900 outline-none focus:border-[#FFD511] focus:ring-2 focus:ring-[#FFD511]/40"
-                />
-                <input
-                  value={email}
-                  onChange={(event) => setEmail(event.target.value)}
-                  required
-                  type="email"
-                  autoComplete="email"
-                  placeholder="Email"
-                  className="h-11 w-full rounded-md border border-gray-300 bg-white px-3 text-sm text-gray-900 outline-none focus:border-[#FFD511] focus:ring-2 focus:ring-[#FFD511]/40"
-                />
-                {error && <p className="text-sm text-red-600">{error}</p>}
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className="min-h-11 w-full rounded-md bg-[#FFD511] px-4 py-2 text-sm font-semibold text-gray-900 disabled:opacity-60"
-                >
-                  {submitting ? 'Submitting...' : 'Join Waitlist'}
-                </button>
-              </form>
-            )}
+            <a
+              href={travelerWaitlistUrl}
+              className="mt-5 inline-flex min-h-11 w-full items-center justify-center rounded-md bg-[#FFD511] px-4 py-2 text-sm font-semibold text-gray-900 hover:bg-[#e9c20f]"
+            >
+              Join Waitlist
+            </a>
           </div>
 
           <div className="rounded-lg border border-gray-200 p-5">

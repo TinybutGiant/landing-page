@@ -1,7 +1,6 @@
 import {
   useRef,
   useState,
-  FormEvent,
   useEffect,
   type ReactNode,
   type CSSProperties,
@@ -25,7 +24,7 @@ import ScrollToTopButton from "@/components/ScrollToTopButton";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/i18n/LanguageProvider";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
-import { api } from "@/lib/apiClient";
+import { getMarketplaceUrl } from "@/lib/yaotuAuthRuntime";
 
 const DISPLAY_FONT =
   '"Open Runde", "Helvetica Neue", Helvetica, Arial, sans-serif';
@@ -438,16 +437,13 @@ const LandingPage = () => {
   const { messages, locale } = useLanguage();
   const t = (key: string, fallback: string) => messages[key] || fallback;
 
-  const [waitlistOpen, setWaitlistOpen] = useState(false);
-  const [waitlistName, setWaitlistName] = useState("");
-  const [waitlistEmail, setWaitlistEmail] = useState("");
-  const [waitlistSubmitted, setWaitlistSubmitted] = useState(false);
-  const [waitlistSubmitting, setWaitlistSubmitting] = useState(false);
-  const [waitlistError, setWaitlistError] = useState<string | null>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [guideActiveStep, setGuideActiveStep] = useState(0);
   const [guideOperationsActiveStep, setGuideOperationsActiveStep] = useState(0);
   const [travelerActiveStep, setTravelerActiveStep] = useState(0);
+  const travelerWaitlistUrl = getMarketplaceUrl(
+    `/signup?locale=${encodeURIComponent(locale)}`
+  );
 
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout> | null = null;
@@ -679,53 +675,15 @@ const LandingPage = () => {
     window.location.href = "/become-guide";
   };
 
-  const handleWaitlistSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    if (!waitlistName.trim() || !waitlistEmail.trim() || waitlistSubmitting) return;
-
-    setWaitlistError(null);
-    setWaitlistSubmitting(true);
-    try {
-      const params = new URLSearchParams(window.location.search);
-      await api.post("/api/v2/waitlist", {
-        name: waitlistName.trim(),
-        email: waitlistEmail.trim(),
-        locale,
-        source: "guide_landing",
-        utmSource: params.get("utm_source"),
-        utmMedium: params.get("utm_medium"),
-        utmCampaign: params.get("utm_campaign"),
-      });
-    } catch {
-      setWaitlistError(
-        t(
-          "landing.waitlist.error",
-          "We couldn't submit your request. Please check your email address and try again."
-        )
-      );
-      return;
-    } finally {
-      setWaitlistSubmitting(false);
-    }
-    setWaitlistSubmitted(true);
-  };
-
-  const closeWaitlist = () => {
-    setWaitlistOpen(false);
-    setWaitlistSubmitted(false);
-    setWaitlistName("");
-    setWaitlistEmail("");
-    setWaitlistError(null);
-    setWaitlistSubmitting(false);
+  const handleTravelerWaitlist = () => {
+    window.location.href = travelerWaitlistUrl;
   };
 
   return (
     <div
-      className={`min-h-screen bg-gradient-to-br from-yellow-50 via-white to-orange-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 ${
-        waitlistOpen ? "" : "landing-blend-cursor"
-      }`}
+      className="min-h-screen bg-gradient-to-br from-yellow-50 via-white to-orange-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 landing-blend-cursor"
     >
-      <BlendCursor enabled={!waitlistOpen} />
+      <BlendCursor enabled />
       <ScrollToTopButton />
       <div className="fixed top-4 right-4 z-50">
         <LanguageSwitcher />
@@ -919,7 +877,7 @@ const LandingPage = () => {
                 size="lg"
                 variant="outline"
                 className="h-auto min-h-[3.5rem] w-full whitespace-normal rounded-full border-2 border-[#FFD511] bg-white px-5 py-4 text-center text-sm font-semibold leading-snug text-gray-900 shadow-none hover:bg-[#FFF7CC] sm:px-8 sm:text-base lg:text-lg"
-                onClick={() => setWaitlistOpen(true)}
+                onClick={handleTravelerWaitlist}
                 data-cursor-hover
               >
                 {t("landing.hero.waitlistCta", "Get Traveler Early Access")}
@@ -1098,7 +1056,7 @@ const LandingPage = () => {
                 "landing.howTraveler.cta",
                 "Get Traveler Early Access"
               )}
-              onCtaClick={() => setWaitlistOpen(true)}
+              onCtaClick={handleTravelerWaitlist}
             />
         </div>
       </section>
@@ -1331,137 +1289,6 @@ const LandingPage = () => {
         </div>
       </motion.section>
 
-      {/* Waitlist modal */}
-      <AnimatePresence>
-        {waitlistOpen && (
-          <motion.div
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <button
-              type="button"
-              className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-              aria-label="Close"
-              onClick={closeWaitlist}
-            />
-            <motion.div
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby="waitlist-title"
-              initial={{ opacity: 0, y: 20, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 12, scale: 0.98 }}
-              className="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl sm:p-8"
-            >
-              <button
-                type="button"
-                onClick={closeWaitlist}
-                className="absolute right-4 top-4 text-gray-400 hover:text-gray-700"
-                aria-label="Close dialog"
-              >
-                <X className="h-5 w-5" />
-              </button>
-
-              {!waitlistSubmitted ? (
-                <>
-                  <h3
-                    id="waitlist-title"
-                    className="mb-2 pr-8 text-2xl font-bold text-gray-900"
-                  >
-                    {t(
-                      "landing.waitlist.title",
-                      "Get Traveler Early Access for Japan"
-                    )}
-                  </h3>
-                  <p className="mb-6 text-sm text-gray-600 sm:text-base">
-                    {t(
-                      "landing.waitlist.subtitle",
-                      "We're building our first community of trusted local Guides in Japan. Once they're ready to welcome Travelers, we'll invite confirmed Early Access members to experience Yaotu first."
-                    )}
-                  </p>
-                  <form onSubmit={handleWaitlistSubmit} className="space-y-4">
-                    <div>
-                      <label
-                        htmlFor="waitlist-name"
-                        className="mb-1.5 block text-sm font-medium text-gray-700"
-                      >
-                        {t("landing.waitlist.name", "Name")}
-                      </label>
-                      <input
-                        id="waitlist-name"
-                        type="text"
-                        required
-                        autoComplete="name"
-                        value={waitlistName}
-                        onChange={(e) => setWaitlistName(e.target.value)}
-                        className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-gray-900 outline-none focus:border-[#FFD511] focus:ring-2 focus:ring-[#FFD511]/40"
-                        placeholder="Your name"
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="waitlist-email"
-                        className="mb-1.5 block text-sm font-medium text-gray-700"
-                      >
-                        {t("landing.waitlist.email", "Email")}
-                      </label>
-                      <input
-                        id="waitlist-email"
-                        type="email"
-                        required
-                        autoComplete="email"
-                        value={waitlistEmail}
-                        onChange={(e) => setWaitlistEmail(e.target.value)}
-                        className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-gray-900 outline-none focus:border-[#FFD511] focus:ring-2 focus:ring-[#FFD511]/40"
-                        placeholder="you@example.com"
-                      />
-                    </div>
-                    {waitlistError && (
-                      <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-                        {waitlistError}
-                      </p>
-                    )}
-                    <Button
-                      type="submit"
-                      className="w-full rounded-full py-6 font-semibold"
-                      disabled={waitlistSubmitting}
-                      data-cursor-hover
-                    >
-                      {waitlistSubmitting
-                        ? t("landing.waitlist.submitting", "Submitting...")
-                        : t("landing.waitlist.submit", "Get early access")}
-                    </Button>
-                  </form>
-                </>
-              ) : (
-                <div className="py-4 text-center">
-                  <h3 className="mb-2 text-2xl font-bold text-gray-900">
-                    {t(
-                      "landing.waitlist.successTitle",
-                      "Confirm your email"
-                    )}
-                  </h3>
-                  <p className="mb-6 text-gray-600">
-                    {t(
-                      "landing.waitlist.successBody",
-                      "We've sent a confirmation email. After you confirm, we'll prioritize inviting you when the first local Guide experiences in Japan are ready."
-                    )}
-                  </p>
-                  <Button
-                    className="rounded-full px-8"
-                    onClick={closeWaitlist}
-                    data-cursor-hover
-                  >
-                    {t("common.close", "Close")}
-                  </Button>
-                </div>
-              )}
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 };
