@@ -67,10 +67,10 @@ The configured submission endpoint must accept the host application's authentica
 the current access token and numeric user ID through the two `auth` accessors; unauthenticated
 visitors are redirected to the login page before submission.
 
-Draft persistence is host-owned: pass `onLoadLocalStorage` and `onSaveLocalStorage` to
-`GuideForm`. `apiEndpoints.submitApplication` is the only application endpoint used by the hook;
-`apiEndpoints.serviceCategories`, when present, is fetched to populate Step 4 unless the host
-provides `serviceCategories` or `onLoadServiceCategories` directly.
+Draft persistence can be browser-owned until the auth checkpoint or server-owned from the start,
+depending on `draftOwnershipMode`. In addition to `apiEndpoints.submitApplication`, the hook can
+use configured draft, handoff, signup-intent, qualification-upload, archive-PDF, update, and
+service-category endpoints as the host flow requires.
 
 ## Required UI Components
 

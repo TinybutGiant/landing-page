@@ -30,7 +30,6 @@ import { useToast } from "../hooks/use-toast";
 import { apiRequest } from "../lib/queryClient";
 import { isAuthenticated } from "../lib/auth";
 import { 
-  checkAndGenerateGuideForUser, 
   triggerLazyEvaluationForApprovedApplication,
   getUserGuideStatus 
 } from "../lib/guideGenerationService";
