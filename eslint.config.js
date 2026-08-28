@@ -10,7 +10,6 @@ export default [
     ignores: [
       "dist/**",
       "node_modules/**",
-      "packages/guide-form/dist/**",
     ],
   },
   {
