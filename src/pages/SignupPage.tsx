@@ -199,7 +199,6 @@ const SignupPage = () => {
     <SignUpForm
       {...runtime}
       redirectTo={redirectTo}
-      signupIntentToken={signupIntentToken}
       readRedirectParam={false}
       loginPath="/login"
       verifyEmailPath={getCanonicalVerifyEmailPath(guideLoginContinuation(redirectTo))}
