@@ -23,6 +23,9 @@ import ScrollToTopButton from "@/components/ScrollToTopButton";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/i18n/LanguageProvider";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import TeamMemberMarquee, {
+  type TeamMemberCard,
+} from "@/components/TeamMemberMarquee";
 import { getMarketplaceUrl } from "@/lib/yaotuAuthRuntime";
 
 const DISPLAY_FONT =
@@ -525,6 +528,71 @@ const LandingPage = () => {
     },
   ];
 
+  const leadershipTeam: TeamMemberCard[] = [
+    {
+      id: "maya",
+      name: t("landing.teamMembers.mayaName", "Maya"),
+      role: t("landing.teamMembers.mayaRole", "Head of Product Design"),
+      bio: t(
+        "landing.teamMembers.mayaBio",
+        "Maya shapes how Travelers and Guides experience Yaotu, focusing on clarity, trust, and the small details that make local travel feel personal."
+      ),
+      links: ["linkedin", "portfolio", "contact"],
+    },
+    {
+      id: "kai",
+      name: t("landing.teamMembers.kaiName", "Kai"),
+      role: t("landing.teamMembers.kaiRole", "Head of Product & Growth"),
+      bio: t(
+        "landing.teamMembers.kaiBio",
+        "Kai helps bring Yaotu's first Guide community to life, connecting early partners, launch strategy, and the story behind the product."
+      ),
+      links: ["linkedin", "contact"],
+    },
+  ];
+
+  const internTeam: TeamMemberCard[] = [
+    {
+      id: "lin",
+      name: t("landing.teamMembers.linName", "Lin"),
+      role: t("landing.teamMembers.linRole", "Engineering Intern"),
+      bio: t(
+        "landing.teamMembers.linBio",
+        "Lin builds the systems behind Yaotu, from guide onboarding to booking flows, with a focus on reliability, speed, and safe releases."
+      ),
+      links: ["linkedin", "portfolio"],
+    },
+    {
+      id: "noa",
+      name: t("landing.teamMembers.noaName", "Noa"),
+      role: t("landing.teamMembers.noaRole", "User Research Intern"),
+      bio: t(
+        "landing.teamMembers.noaBio",
+        "Noa listens to Travelers and Guides across Japan, turning real feedback into product decisions that keep Yaotu grounded in everyday travel needs."
+      ),
+      links: ["contact"],
+    },
+    {
+      id: "alex",
+      name: t("landing.teamMembers.alexName", "Alex"),
+      role: t("landing.teamMembers.alexRole", "Marketing Intern"),
+      bio: t(
+        "landing.teamMembers.alexBio",
+        "Alex helps tell Yaotu's story across channels, turning product updates and Guide stories into content that reaches future Travelers."
+      ),
+      links: ["linkedin"],
+    },
+    {
+      id: "sam",
+      name: t("landing.teamMembers.samName", "Sam"),
+      role: t("landing.teamMembers.samRole", "Operations Intern"),
+      bio: t(
+        "landing.teamMembers.samBio",
+        "Sam supports day-to-day Guide onboarding and community operations, keeping early partners supported as the network grows."
+      ),
+    },
+  ];
+
   const faqs = [
     {
       q: t("landing.faq.q1", "What is Ahhh Yaotu?"),
@@ -947,6 +1015,17 @@ const LandingPage = () => {
           </div>
         </div>
       </motion.section>
+
+      {/* Meet the team */}
+      <TeamMemberMarquee
+        title={t("landing.teamMembers.title", "Meet the team")}
+        rows={[leadershipTeam, internTeam]}
+        closeLabel={t("common.close", "Close")}
+        connectLabel={t("landing.teamMembers.connect", "Connect")}
+        linkedInLabel={t("landing.teamMembers.linkedIn", "LinkedIn")}
+        portfolioLabel={t("landing.teamMembers.portfolio", "Portfolio")}
+        contactLabel={t("landing.teamMembers.contact", "Contact")}
+      />
 
       {/* FAQ */}
       <section className="bg-white/50 py-20 backdrop-blur-sm">

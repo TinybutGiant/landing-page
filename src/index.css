@@ -138,6 +138,55 @@ html::-webkit-scrollbar-thumb:hover {
   }
 }
 
+.team-marquee-fade {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 6%,
+    #000 94%,
+    transparent
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 6%,
+    #000 94%,
+    transparent
+  );
+}
+
+.team-marquee-track {
+  animation: team-marquee-scroll linear infinite;
+}
+
+.team-marquee-reverse {
+  animation-direction: reverse;
+}
+
+.team-marquee-paused {
+  animation-play-state: paused;
+}
+
+@keyframes team-marquee-scroll {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .team-marquee-track {
+    animation: none;
+    flex-wrap: wrap;
+    width: 100%;
+    max-width: 80rem;
+    margin-inline: auto;
+    padding-inline: 1rem;
+  }
+}
+
 .hero-blob {
   filter: blur(24px);
   will-change: transform;
