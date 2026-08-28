@@ -25,7 +25,6 @@ export default defineConfig(({ command, mode }) => {
       alias: {
         "@": path.resolve(__dirname, "./src"),
         "@components": path.resolve(__dirname, "src/components"),
-        "@replit/guide-form": path.resolve(__dirname, "./packages/guide-form/src/index.ts"),
       },
     },
     build: {

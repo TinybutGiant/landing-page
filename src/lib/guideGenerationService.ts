@@ -30,41 +30,6 @@ function authHeaders(): HeadersInit {
 }
 
 /**
- * Check if user has approved application and needs guide generation.
- * This function calls the main project's API to trigger lazy evaluation.
- */
-export async function checkAndGenerateGuideForUser(
-  userId: number
-): Promise<GuideGenerationResult> {
-  try {
-    console.log(`[LANDING_PAGE] Checking guide generation for user ${userId}`);
-
-    const response = await fetch(
-      resolveApiUrl(`/api/v2/guide-generation/check-and-generate/${userId}`),
-      {
-        method: "POST",
-        headers: authHeaders(),
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(`Guide generation check failed: ${response.status} ${response.statusText}`);
-    }
-
-    const result = await response.json();
-    console.log("[LANDING_PAGE] Guide generation result:", result);
-
-    return result;
-  } catch (error) {
-    console.error("Error checking and generating guide for user:", error);
-    return {
-      success: false,
-      message: "Failed to check and generate guide profile",
-    };
-  }
-}
-
-/**
  * Get user guide status for frontend display logic.
  */
 export async function getUserGuideStatus(userId: number): Promise<UserGuideStatus> {
