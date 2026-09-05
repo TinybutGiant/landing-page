@@ -10,11 +10,15 @@ export type TeamMemberCard = {
   name: string;
   role: string;
   bio: string;
+  /** Short one-liner for featured cards. Falls back to role when omitted. */
+  summary?: string;
   links?: TeamMemberLinkType[];
 };
 
 type TeamMemberMarqueeProps = {
   title: string;
+  featured?: TeamMemberCard[];
+  featuredSubtitle?: string;
   rows: TeamMemberCard[][];
   closeLabel?: string;
   connectLabel?: string;
@@ -76,6 +80,98 @@ function getMemberLinks(
   }));
 }
 
+type FeaturedSize = "sm" | "md" | "lg";
+
+const FEATURED_SIZE_BY_INDEX_6: FeaturedSize[] = [
+  "sm",
+  "md",
+  "lg",
+  "lg",
+  "md",
+  "sm",
+];
+
+function getFeaturedSize(index: number, total: number): FeaturedSize {
+  if (total === 6) return FEATURED_SIZE_BY_INDEX_6[index] ?? "sm";
+
+  const middle = (total - 1) / 2;
+  const distance = Math.abs(index - middle);
+  if (distance <= 0.5) return "lg";
+  if (distance <= 1.5) return "md";
+  return "sm";
+}
+
+function FeaturedMemberCard({
+  member,
+  onSelect,
+  size = "md",
+}: {
+  member: TeamMemberCard;
+  onSelect: (member: TeamMemberCard) => void;
+  size?: FeaturedSize;
+}) {
+  const sizeStyles = {
+    sm: {
+      card: "min-h-[13.5rem] px-3 py-5 sm:min-h-[14.5rem] sm:px-4 sm:py-5",
+      avatar: "h-14 w-14 sm:h-16 sm:w-16",
+      icon: "h-6 w-6 sm:h-7 sm:w-7",
+      name: "text-sm sm:text-base",
+      summary: "text-xs sm:text-sm",
+    },
+    md: {
+      card: "min-h-[16rem] px-4 py-6 sm:min-h-[17.5rem] sm:px-5 sm:py-7",
+      avatar: "h-[4.5rem] w-[4.5rem] sm:h-[5.5rem] sm:w-[5.5rem]",
+      icon: "h-8 w-8 sm:h-9 sm:w-9",
+      name: "text-base sm:text-lg",
+      summary: "text-xs sm:text-sm",
+    },
+    lg: {
+      card: "min-h-[18.5rem] px-4 py-7 sm:min-h-[20.5rem] sm:px-6 sm:py-8",
+      avatar: "h-20 w-20 sm:h-24 sm:w-24",
+      icon: "h-9 w-9 sm:h-10 sm:w-10",
+      name: "text-lg sm:text-xl",
+      summary: "text-sm",
+    },
+  }[size];
+
+  return (
+    <button
+      type="button"
+      onClick={() => onSelect(member)}
+      className={`group relative flex h-full w-full flex-col items-center overflow-hidden rounded-2xl border border-gray-200 bg-white/80 text-center shadow-lg backdrop-blur-sm transition-shadow hover:shadow-xl ${sizeStyles.card}`}
+      data-cursor-hover
+      aria-label={`${member.name}, ${member.role}`}
+    >
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-yellow-50/50 to-orange-50/50 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+      <div
+        className={`relative z-10 flex shrink-0 items-center justify-center overflow-hidden rounded-full transition-colors duration-200 ${sizeStyles.avatar}`}
+        style={{ background: "linear-gradient(135deg, #FFD51133, #FFA50033)" }}
+        aria-hidden
+      >
+        <div className="absolute inset-0 bg-[#FFD511] opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
+        <User
+          className={`relative z-10 text-gray-800 transition-all duration-200 group-hover:scale-75 group-hover:opacity-0 ${sizeStyles.icon}`}
+          strokeWidth={1.75}
+        />
+        <ArrowUpRight
+          className={`absolute z-10 scale-75 text-gray-900 opacity-0 transition-all duration-200 group-hover:scale-100 group-hover:opacity-100 ${sizeStyles.icon}`}
+          strokeWidth={2}
+        />
+      </div>
+      <p
+        className={`relative z-10 mt-4 font-semibold text-gray-900 ${sizeStyles.name}`}
+      >
+        {member.name}
+      </p>
+      <p
+        className={`relative z-10 mt-2 line-clamp-2 leading-relaxed text-gray-600 ${sizeStyles.summary}`}
+      >
+        {member.summary ?? member.role}
+      </p>
+    </button>
+  );
+}
+
 function MarqueeCard({
   member,
   onSelect,
@@ -87,24 +183,27 @@ function MarqueeCard({
     <button
       type="button"
       onClick={() => onSelect(member)}
-      className="group flex w-[min(88vw,22rem)] shrink-0 items-center gap-4 rounded-2xl border border-gray-200 bg-white/80 px-4 py-3.5 text-left backdrop-blur-sm transition-colors hover:bg-white sm:w-[24rem] sm:px-5 sm:py-4"
+      className="group relative flex w-[min(88vw,22rem)] shrink-0 items-center gap-4 overflow-hidden rounded-2xl border border-gray-200 bg-white/80 px-4 py-3.5 text-left shadow-lg backdrop-blur-sm transition-shadow hover:shadow-xl sm:w-[24rem] sm:px-5 sm:py-4"
       data-cursor-hover
       aria-label={`${member.name}, ${member.role}`}
     >
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-yellow-50/50 to-orange-50/50 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
       <div
-        className="relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#e8e8e8] transition-colors duration-200 group-hover:bg-gray-900 sm:h-16 sm:w-16"
+        className="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full transition-colors duration-200 sm:h-16 sm:w-16"
+        style={{ background: "linear-gradient(135deg, #FFD51133, #FFA50033)" }}
         aria-hidden
       >
+        <div className="absolute inset-0 bg-[#FFD511] opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
         <User
-          className="h-6 w-6 text-gray-600 transition-all duration-200 group-hover:scale-75 group-hover:opacity-0 sm:h-7 sm:w-7"
+          className="relative z-10 h-6 w-6 text-gray-800 transition-all duration-200 group-hover:scale-75 group-hover:opacity-0 sm:h-7 sm:w-7"
           strokeWidth={1.75}
         />
         <ArrowUpRight
-          className="absolute h-6 w-6 scale-75 text-white opacity-0 transition-all duration-200 group-hover:scale-100 group-hover:opacity-100 sm:h-7 sm:w-7"
+          className="absolute z-10 h-6 w-6 scale-75 text-gray-900 opacity-0 transition-all duration-200 group-hover:scale-100 group-hover:opacity-100 sm:h-7 sm:w-7"
           strokeWidth={2}
         />
       </div>
-      <div className="min-w-0">
+      <div className="relative z-10 min-w-0">
         <p className="text-sm font-semibold leading-snug text-gray-900 sm:text-base">
           {member.name}
         </p>
@@ -162,7 +261,7 @@ function MemberLinkButton({
   return (
     <button
       type="button"
-      className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-800 transition-colors hover:border-gray-300 hover:bg-gray-50 active:scale-[0.98]"
+      className="inline-flex cursor-pointer items-center gap-2 rounded-full border-2 border-[#FFD511] bg-white px-4 py-2 text-sm font-semibold text-gray-900 transition-colors hover:bg-[#FFF7CC] active:scale-[0.98]"
     >
       <Icon className="h-4 w-4 shrink-0" strokeWidth={1.75} />
       {label}
@@ -222,7 +321,10 @@ function TeamMemberModal({
         </button>
 
         <div className="flex flex-col items-center text-center">
-          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[#f3f3f3] text-gray-600">
+          <div
+            className="flex h-20 w-20 items-center justify-center rounded-full text-gray-900 shadow-md"
+            style={{ background: "linear-gradient(135deg, #FFD511, #FFA500)" }}
+          >
             <User className="h-9 w-9" strokeWidth={1.75} />
           </div>
           <h3
@@ -262,6 +364,8 @@ const ROW_DURATIONS_SECONDS = [108, 128];
 
 export default function TeamMemberMarquee({
   title,
+  featured = [],
+  featuredSubtitle,
   rows,
   closeLabel = "Close",
   connectLabel = "Connect",
@@ -282,30 +386,71 @@ export default function TeamMemberMarquee({
   };
 
   const visibleRows = rows.filter((row) => row.length > 0);
+  const hasFeatured = featured.length > 0;
 
   return (
     <>
       <section className="relative overflow-hidden py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h2 className="max-w-3xl text-3xl font-bold leading-tight tracking-tight text-gray-900 sm:text-4xl lg:text-[2.5rem] lg:leading-[1.15]">
-            {title}
-          </h2>
+          <div className="mb-10 max-w-3xl sm:mb-12">
+            <div className="border-l-2 border-[#FFD511] pl-4 sm:pl-5">
+              <h2 className="text-3xl font-bold leading-tight tracking-tight text-gray-900 sm:text-4xl lg:text-[2.5rem] lg:leading-[1.15]">
+                {title}
+              </h2>
+              {featuredSubtitle ? (
+                <p className="mt-3 text-base leading-relaxed text-gray-600 sm:text-lg">
+                  {featuredSubtitle}
+                </p>
+              ) : null}
+            </div>
+          </div>
+
+          {hasFeatured ? (
+            <div className="flex flex-wrap items-end justify-center gap-3 sm:gap-3 lg:flex-nowrap lg:gap-4">
+              {featured.map((member, index) => {
+                const size = getFeaturedSize(index, featured.length);
+                const widthClass =
+                  size === "lg"
+                    ? "lg:flex-[1.3]"
+                    : size === "md"
+                      ? "lg:flex-[1.05]"
+                      : "lg:flex-[0.85]";
+
+                return (
+                  <div
+                    key={member.id}
+                    className={`w-[calc(50%-0.375rem)] sm:w-[calc(33.333%-0.5rem)] lg:w-auto lg:min-w-0 ${widthClass}`}
+                  >
+                    <FeaturedMemberCard
+                      member={member}
+                      onSelect={setSelectedMember}
+                      size={size}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          ) : null}
         </div>
 
-        <div className="mt-10 space-y-3 sm:mt-12 sm:space-y-4">
-          {visibleRows.map((rowMembers, index) => (
-            <MarqueeRow
-              key={`marquee-row-${index}`}
-              members={rowMembers}
-              onSelect={setSelectedMember}
-              reverse={index % 2 === 1}
-              durationSeconds={
-                ROW_DURATIONS_SECONDS[index] ??
-                ROW_DURATIONS_SECONDS[ROW_DURATIONS_SECONDS.length - 1]
-              }
-            />
-          ))}
-        </div>
+        {visibleRows.length > 0 ? (
+          <div className={hasFeatured ? "mt-14 sm:mt-16" : "mt-10 sm:mt-12"}>
+            <div className="space-y-3 sm:space-y-4">
+              {visibleRows.map((rowMembers, index) => (
+                <MarqueeRow
+                  key={`marquee-row-${index}`}
+                  members={rowMembers}
+                  onSelect={setSelectedMember}
+                  reverse={index % 2 === 1}
+                  durationSeconds={
+                    ROW_DURATIONS_SECONDS[index] ??
+                    ROW_DURATIONS_SECONDS[ROW_DURATIONS_SECONDS.length - 1]
+                  }
+                />
+              ))}
+            </div>
+          </div>
+        ) : null}
       </section>
 
       <AnimatePresence>

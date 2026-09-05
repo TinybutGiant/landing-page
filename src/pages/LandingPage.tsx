@@ -528,11 +528,29 @@ const LandingPage = () => {
     },
   ];
 
-  const leadershipTeam: TeamMemberCard[] = [
+  const coreTeam: TeamMemberCard[] = [
+    {
+      id: "noa",
+      name: t("landing.teamMembers.noaName", "Noa"),
+      role: t("landing.teamMembers.noaRole", "User Research"),
+      summary: t(
+        "landing.teamMembers.noaSummary",
+        "Turns Traveler and Guide feedback into product decisions."
+      ),
+      bio: t(
+        "landing.teamMembers.noaBio",
+        "Noa listens to Travelers and Guides across Japan, turning real feedback into product decisions that keep Yaotu grounded in everyday travel needs."
+      ),
+      links: ["contact"],
+    },
     {
       id: "maya",
       name: t("landing.teamMembers.mayaName", "Maya"),
       role: t("landing.teamMembers.mayaRole", "Head of Product Design"),
+      summary: t(
+        "landing.teamMembers.mayaSummary",
+        "Designs the Traveler and Guide experience."
+      ),
       bio: t(
         "landing.teamMembers.mayaBio",
         "Maya shapes how Travelers and Guides experience Yaotu, focusing on clarity, trust, and the small details that make local travel feel personal."
@@ -543,19 +561,24 @@ const LandingPage = () => {
       id: "kai",
       name: t("landing.teamMembers.kaiName", "Kai"),
       role: t("landing.teamMembers.kaiRole", "Head of Product & Growth"),
+      summary: t(
+        "landing.teamMembers.kaiSummary",
+        "Connects early Guides and launch strategy."
+      ),
       bio: t(
         "landing.teamMembers.kaiBio",
         "Kai helps bring Yaotu's first Guide community to life, connecting early partners, launch strategy, and the story behind the product."
       ),
       links: ["linkedin", "contact"],
     },
-  ];
-
-  const internTeam: TeamMemberCard[] = [
     {
       id: "lin",
       name: t("landing.teamMembers.linName", "Lin"),
-      role: t("landing.teamMembers.linRole", "Engineering Intern"),
+      role: t("landing.teamMembers.linRole", "Head of Engineering"),
+      summary: t(
+        "landing.teamMembers.linSummary",
+        "Builds the systems behind bookings and onboarding."
+      ),
       bio: t(
         "landing.teamMembers.linBio",
         "Lin builds the systems behind Yaotu, from guide onboarding to booking flows, with a focus on reliability, speed, and safe releases."
@@ -563,19 +586,13 @@ const LandingPage = () => {
       links: ["linkedin", "portfolio"],
     },
     {
-      id: "noa",
-      name: t("landing.teamMembers.noaName", "Noa"),
-      role: t("landing.teamMembers.noaRole", "User Research Intern"),
-      bio: t(
-        "landing.teamMembers.noaBio",
-        "Noa listens to Travelers and Guides across Japan, turning real feedback into product decisions that keep Yaotu grounded in everyday travel needs."
-      ),
-      links: ["contact"],
-    },
-    {
       id: "alex",
       name: t("landing.teamMembers.alexName", "Alex"),
-      role: t("landing.teamMembers.alexRole", "Marketing Intern"),
+      role: t("landing.teamMembers.alexRole", "Marketing"),
+      summary: t(
+        "landing.teamMembers.alexSummary",
+        "Tells Yaotu's story across channels."
+      ),
       bio: t(
         "landing.teamMembers.alexBio",
         "Alex helps tell Yaotu's story across channels, turning product updates and Guide stories into content that reaches future Travelers."
@@ -585,10 +602,92 @@ const LandingPage = () => {
     {
       id: "sam",
       name: t("landing.teamMembers.samName", "Sam"),
-      role: t("landing.teamMembers.samRole", "Operations Intern"),
+      role: t("landing.teamMembers.samRole", "Operations"),
+      summary: t(
+        "landing.teamMembers.samSummary",
+        "Keeps Guide onboarding and community ops running."
+      ),
       bio: t(
         "landing.teamMembers.samBio",
         "Sam supports day-to-day Guide onboarding and community operations, keeping early partners supported as the network grows."
+      ),
+    },
+  ];
+
+  const alumniRowOne: TeamMemberCard[] = [
+    {
+      id: "rina",
+      name: t("landing.teamMembers.rinaName", "Rina"),
+      role: t("landing.teamMembers.rinaRole", "Design Intern"),
+      bio: t(
+        "landing.teamMembers.rinaBio",
+        "Rina helped shape early Traveler flows and left after a focused design sprint."
+      ),
+    },
+    {
+      id: "jun",
+      name: t("landing.teamMembers.junName", "Jun"),
+      role: t("landing.teamMembers.junRole", "Engineering Intern"),
+      bio: t(
+        "landing.teamMembers.junBio",
+        "Jun contributed to early booking prototypes before moving on to another role."
+      ),
+    },
+    {
+      id: "hana",
+      name: t("landing.teamMembers.hanaName", "Hana"),
+      role: t("landing.teamMembers.hanaRole", "Research Intern"),
+      bio: t(
+        "landing.teamMembers.hanaBio",
+        "Hana ran early Guide interviews that still inform how we verify local partners."
+      ),
+    },
+    {
+      id: "leo",
+      name: t("landing.teamMembers.leoName", "Leo"),
+      role: t("landing.teamMembers.leoRole", "Growth Intern"),
+      bio: t(
+        "landing.teamMembers.leoBio",
+        "Leo tested early waitlist messaging and community outreach experiments."
+      ),
+    },
+  ];
+
+  const alumniRowTwo: TeamMemberCard[] = [
+    {
+      id: "mia",
+      name: t("landing.teamMembers.miaName", "Mia"),
+      role: t("landing.teamMembers.miaRole", "Marketing Intern"),
+      bio: t(
+        "landing.teamMembers.miaBio",
+        "Mia drafted the first Guide stories that introduced Yaotu to early travelers."
+      ),
+    },
+    {
+      id: "owen",
+      name: t("landing.teamMembers.owenName", "Owen"),
+      role: t("landing.teamMembers.owenRole", "Ops Intern"),
+      bio: t(
+        "landing.teamMembers.owenBio",
+        "Owen supported the first Guide onboarding batch before wrapping a short placement."
+      ),
+    },
+    {
+      id: "yuki",
+      name: t("landing.teamMembers.yukiName", "Yuki"),
+      role: t("landing.teamMembers.yukiRole", "Content Intern"),
+      bio: t(
+        "landing.teamMembers.yukiBio",
+        "Yuki helped translate early product copy across English, Chinese, and Japanese."
+      ),
+    },
+    {
+      id: "tom",
+      name: t("landing.teamMembers.tomName", "Tom"),
+      role: t("landing.teamMembers.tomRole", "Product Intern"),
+      bio: t(
+        "landing.teamMembers.tomBio",
+        "Tom sketched early marketplace concepts during a short product exploration."
       ),
     },
   ];
@@ -1019,7 +1118,12 @@ const LandingPage = () => {
       {/* Meet the team */}
       <TeamMemberMarquee
         title={t("landing.teamMembers.title", "Meet the team")}
-        rows={[leadershipTeam, internTeam]}
+        featuredSubtitle={t(
+          "landing.teamMembers.featuredSubtitle",
+          "The people you'll meet week to week."
+        )}
+        featured={coreTeam}
+        rows={[alumniRowOne, alumniRowTwo]}
         closeLabel={t("common.close", "Close")}
         connectLabel={t("landing.teamMembers.connect", "Connect")}
         linkedInLabel={t("landing.teamMembers.linkedIn", "LinkedIn")}
