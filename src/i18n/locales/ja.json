@@ -112,11 +112,12 @@
     },
     "teamMembers": {
       "title": "チームを知る",
-      "featuredSubtitle": "毎週顔を合わせるメンバー。",
+      "featuredSubtitle": "Yaotuを一緒につくるメンバー。",
       "connect": "つながる",
       "linkedIn": "LinkedIn",
       "portfolio": "ポートフォリオ",
       "contact": "連絡する",
+      "former": "元メンバー",
       "mayaName": "Maya",
       "mayaRole": "プロダクトデザイン責任者",
       "mayaSummary": "TravelerとGuideの体験をデザイン。",

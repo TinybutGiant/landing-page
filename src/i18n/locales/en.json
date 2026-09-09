@@ -112,11 +112,12 @@
     },
     "teamMembers": {
       "title": "Meet the team",
-      "featuredSubtitle": "The people you'll meet week to week.",
+      "featuredSubtitle": "The people building Yaotu.",
       "connect": "Connect",
       "linkedIn": "LinkedIn",
       "portfolio": "Portfolio",
       "contact": "Contact",
+      "former": "Former",
       "mayaName": "Maya",
       "mayaRole": "Head of Product Design",
       "mayaSummary": "Designs the Traveler and Guide experience.",

@@ -112,11 +112,12 @@
     },
     "teamMembers": {
       "title": "认识我们的团队",
-      "featuredSubtitle": "每周都能见到的人。",
+      "featuredSubtitle": "正在一起建设 Yaotu 的团队成员。",
       "connect": "联系方式",
       "linkedIn": "LinkedIn",
       "portfolio": "作品集",
       "contact": "联系",
+      "former": "曾经成员",
       "mayaName": "Maya",
       "mayaRole": "产品设计负责人",
       "mayaSummary": "负责 Traveler 与 Guide 的体验设计。",

@@ -5,6 +5,14 @@ import type { LucideIcon } from "lucide-react";
 
 export type TeamMemberLinkType = "linkedin" | "portfolio" | "contact";
 
+export type TeamMemberStatus = "active" | "former";
+
+export type TeamMemberLink = {
+  type: TeamMemberLinkType;
+  href: string;
+  label?: string;
+};
+
 export type TeamMemberCard = {
   id: string;
   name: string;
@@ -12,7 +20,9 @@ export type TeamMemberCard = {
   bio: string;
   /** Short one-liner for featured cards. Falls back to role when omitted. */
   summary?: string;
-  links?: TeamMemberLinkType[];
+  status?: TeamMemberStatus;
+  avatarSrc?: string;
+  links?: TeamMemberLink[];
 };
 
 type TeamMemberMarqueeProps = {
@@ -25,6 +35,7 @@ type TeamMemberMarqueeProps = {
   linkedInLabel?: string;
   portfolioLabel?: string;
   contactLabel?: string;
+  formerLabel?: string;
 };
 
 type ModalLabels = {
@@ -33,11 +44,13 @@ type ModalLabels = {
   linkedInLabel: string;
   portfolioLabel: string;
   contactLabel: string;
+  formerLabel: string;
 };
 
 type MemberLink = {
   id: TeamMemberLinkType;
   label: string;
+  href: string;
   icon: LucideIcon;
 };
 
@@ -71,13 +84,19 @@ function getMemberLinks(
 ): MemberLink[] {
   if (!member.links?.length) return [];
 
-  return LINK_DEFINITIONS.filter((definition) =>
-    member.links?.includes(definition.id)
-  ).map((definition) => ({
-    id: definition.id,
-    label: labels[definition.labelKey],
-    icon: definition.icon,
-  }));
+  return member.links
+    .map((link) => {
+      const definition = LINK_DEFINITIONS.find(({ id }) => id === link.type);
+      if (!definition) return null;
+
+      return {
+        id: link.type,
+        label: link.label ?? labels[definition.labelKey],
+        href: link.href,
+        icon: definition.icon,
+      };
+    })
+    .filter((link): link is MemberLink => Boolean(link));
 }
 
 type FeaturedSize = "sm" | "md" | "lg";
@@ -101,13 +120,59 @@ function getFeaturedSize(index: number, total: number): FeaturedSize {
   return "sm";
 }
 
+function MemberAvatar({
+  member,
+  avatarClassName,
+  iconClassName,
+  interactive = false,
+}: {
+  member: TeamMemberCard;
+  avatarClassName: string;
+  iconClassName: string;
+  interactive?: boolean;
+}) {
+  return (
+    <div
+      className={`relative z-10 flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#FFF7CC] text-gray-900 shadow-sm ${avatarClassName}`}
+      aria-hidden
+    >
+      {member.avatarSrc ? (
+        <img
+          src={member.avatarSrc}
+          alt=""
+          loading="lazy"
+          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.04]"
+        />
+      ) : (
+        <User className={iconClassName} strokeWidth={1.75} />
+      )}
+      <div className="pointer-events-none absolute inset-0 rounded-full ring-1 ring-inset ring-black/5" />
+      {interactive ? (
+        <div className="absolute inset-0 flex items-center justify-center bg-white/70 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+          <ArrowUpRight className={iconClassName} strokeWidth={2} />
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function FormerBadge({ label }: { label: string }) {
+  return (
+    <span className="inline-flex shrink-0 items-center rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 text-[0.6875rem] font-semibold uppercase tracking-wide text-gray-500">
+      {label}
+    </span>
+  );
+}
+
 function FeaturedMemberCard({
   member,
   onSelect,
+  formerLabel,
   size = "md",
 }: {
   member: TeamMemberCard;
   onSelect: (member: TeamMemberCard) => void;
+  formerLabel: string;
   size?: FeaturedSize;
 }) {
   const sizeStyles = {
@@ -143,26 +208,22 @@ function FeaturedMemberCard({
       aria-label={`${member.name}, ${member.role}`}
     >
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-yellow-50/50 to-orange-50/50 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-      <div
-        className={`relative z-10 flex shrink-0 items-center justify-center overflow-hidden rounded-full transition-colors duration-200 ${sizeStyles.avatar}`}
-        style={{ background: "linear-gradient(135deg, #FFD51133, #FFA50033)" }}
-        aria-hidden
-      >
-        <div className="absolute inset-0 bg-[#FFD511] opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
-        <User
-          className={`relative z-10 text-gray-800 transition-all duration-200 group-hover:scale-75 group-hover:opacity-0 ${sizeStyles.icon}`}
-          strokeWidth={1.75}
-        />
-        <ArrowUpRight
-          className={`absolute z-10 scale-75 text-gray-900 opacity-0 transition-all duration-200 group-hover:scale-100 group-hover:opacity-100 ${sizeStyles.icon}`}
-          strokeWidth={2}
-        />
-      </div>
+      <MemberAvatar
+        member={member}
+        avatarClassName={sizeStyles.avatar}
+        iconClassName={sizeStyles.icon}
+        interactive
+      />
       <p
         className={`relative z-10 mt-4 font-semibold text-gray-900 ${sizeStyles.name}`}
       >
         {member.name}
       </p>
+      {member.status === "former" ? (
+        <div className="relative z-10 mt-2">
+          <FormerBadge label={formerLabel} />
+        </div>
+      ) : null}
       <p
         className={`relative z-10 mt-2 line-clamp-2 leading-relaxed text-gray-600 ${sizeStyles.summary}`}
       >
@@ -175,9 +236,11 @@ function FeaturedMemberCard({
 function MarqueeCard({
   member,
   onSelect,
+  formerLabel,
 }: {
   member: TeamMemberCard;
   onSelect: (member: TeamMemberCard) => void;
+  formerLabel: string;
 }) {
   return (
     <button
@@ -188,26 +251,22 @@ function MarqueeCard({
       aria-label={`${member.name}, ${member.role}`}
     >
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-yellow-50/50 to-orange-50/50 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-      <div
-        className="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full transition-colors duration-200 sm:h-16 sm:w-16"
-        style={{ background: "linear-gradient(135deg, #FFD51133, #FFA50033)" }}
-        aria-hidden
-      >
-        <div className="absolute inset-0 bg-[#FFD511] opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
-        <User
-          className="relative z-10 h-6 w-6 text-gray-800 transition-all duration-200 group-hover:scale-75 group-hover:opacity-0 sm:h-7 sm:w-7"
-          strokeWidth={1.75}
-        />
-        <ArrowUpRight
-          className="absolute z-10 h-6 w-6 scale-75 text-gray-900 opacity-0 transition-all duration-200 group-hover:scale-100 group-hover:opacity-100 sm:h-7 sm:w-7"
-          strokeWidth={2}
-        />
-      </div>
+      <MemberAvatar
+        member={member}
+        avatarClassName="h-14 w-14 sm:h-16 sm:w-16"
+        iconClassName="h-6 w-6 sm:h-7 sm:w-7"
+        interactive
+      />
       <div className="relative z-10 min-w-0">
-        <p className="text-sm font-semibold leading-snug text-gray-900 sm:text-base">
-          {member.name}
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+          <p className="text-sm font-semibold leading-snug text-gray-900 sm:text-base">
+            {member.name}
+          </p>
+          {member.status === "former" ? <FormerBadge label={formerLabel} /> : null}
+        </div>
+        <p className="mt-0.5 line-clamp-2 text-sm leading-snug text-gray-600">
+          {member.role}
         </p>
-        <p className="mt-0.5 text-sm leading-snug text-gray-600">{member.role}</p>
       </div>
     </button>
   );
@@ -218,11 +277,13 @@ function MarqueeRow({
   onSelect,
   reverse = false,
   durationSeconds = 108,
+  formerLabel,
 }: {
   members: TeamMemberCard[];
   onSelect: (member: TeamMemberCard) => void;
   reverse?: boolean;
   durationSeconds?: number;
+  formerLabel: string;
 }) {
   const [paused, setPaused] = useState(false);
   const loop = useMemo(() => buildSeamlessLoop(members), [members]);
@@ -244,6 +305,7 @@ function MarqueeRow({
             key={`${member.id}-${index}`}
             member={member}
             onSelect={onSelect}
+            formerLabel={formerLabel}
           />
         ))}
       </div>
@@ -253,19 +315,24 @@ function MarqueeRow({
 
 function MemberLinkButton({
   label,
+  href,
   icon: Icon,
 }: {
   label: string;
+  href: string;
   icon: LucideIcon;
 }) {
   return (
-    <button
-      type="button"
+    <a
+      href={href}
+      target="_blank"
+      rel="noreferrer noopener"
       className="inline-flex cursor-pointer items-center gap-2 rounded-full border-2 border-[#FFD511] bg-white px-4 py-2 text-sm font-semibold text-gray-900 transition-colors hover:bg-[#FFF7CC] active:scale-[0.98]"
+      data-cursor-hover
     >
       <Icon className="h-4 w-4 shrink-0" strokeWidth={1.75} />
       {label}
-    </button>
+    </a>
   );
 }
 
@@ -321,19 +388,23 @@ function TeamMemberModal({
         </button>
 
         <div className="flex flex-col items-center text-center">
-          <div
-            className="flex h-20 w-20 items-center justify-center rounded-full text-gray-900 shadow-md"
-            style={{ background: "linear-gradient(135deg, #FFD511, #FFA500)" }}
-          >
-            <User className="h-9 w-9" strokeWidth={1.75} />
-          </div>
+          <MemberAvatar
+            member={member}
+            avatarClassName="h-24 w-24"
+            iconClassName="h-9 w-9"
+          />
           <h3
             id="team-member-modal-title"
             className="mt-5 text-2xl font-bold text-gray-900"
           >
             {member.name}
           </h3>
-          <p className="mt-1 text-sm font-medium text-gray-500">{member.role}</p>
+          <div className="mt-2 flex flex-wrap items-center justify-center gap-2">
+            <p className="text-sm font-medium text-gray-500">{member.role}</p>
+            {member.status === "former" ? (
+              <FormerBadge label={labels.formerLabel} />
+            ) : null}
+          </div>
           <p className="mt-5 text-left text-sm leading-relaxed text-gray-600 sm:text-base">
             {member.bio}
           </p>
@@ -348,6 +419,7 @@ function TeamMemberModal({
                   <MemberLinkButton
                     key={link.id}
                     label={link.label}
+                    href={link.href}
                     icon={link.icon}
                   />
                 ))}
@@ -372,6 +444,7 @@ export default function TeamMemberMarquee({
   linkedInLabel = "LinkedIn",
   portfolioLabel = "Portfolio",
   contactLabel = "Contact",
+  formerLabel = "Former",
 }: TeamMemberMarqueeProps) {
   const [selectedMember, setSelectedMember] = useState<TeamMemberCard | null>(
     null
@@ -383,6 +456,7 @@ export default function TeamMemberMarquee({
     linkedInLabel,
     portfolioLabel,
     contactLabel,
+    formerLabel,
   };
 
   const visibleRows = rows.filter((row) => row.length > 0);
@@ -424,6 +498,7 @@ export default function TeamMemberMarquee({
                     <FeaturedMemberCard
                       member={member}
                       onSelect={setSelectedMember}
+                      formerLabel={formerLabel}
                       size={size}
                     />
                   </div>
@@ -446,6 +521,7 @@ export default function TeamMemberMarquee({
                     ROW_DURATIONS_SECONDS[index] ??
                     ROW_DURATIONS_SECONDS[ROW_DURATIONS_SECONDS.length - 1]
                   }
+                  formerLabel={formerLabel}
                 />
               ))}
             </div>
