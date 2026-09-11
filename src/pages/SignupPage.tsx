@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { SignUpForm } from '@yaotu/auth';
+import { GUIDE_APPLICATION_IDENTITY_INTENT_STORAGE_KEY } from '@replit/guide-form';
 import { useLocation } from 'wouter';
 
 import { useAuth } from '@/context/AuthContext';
-import { readRedirectParam } from '@/lib/authRedirects';
+import { readRedirectParam, rememberPostEmailVerificationRedirect } from '@/lib/authRedirects';
 import { useLanguage } from '@/i18n/LanguageProvider';
 import {
   getCanonicalVerifyEmailPath,
@@ -29,7 +30,8 @@ const guideLoginContinuation = (redirectTo: string | null): string => {
 function readSignupIntentParam(): string | null {
   if (typeof window === 'undefined') return null;
   const value = new URLSearchParams(window.location.search).get('intent')?.trim();
-  return value || null;
+  if (value) return value;
+  return sessionStorage.getItem(GUIDE_APPLICATION_IDENTITY_INTENT_STORAGE_KEY)?.trim() || null;
 }
 
 function PreLaunchSignupGate({ invalidIntent = false }: { invalidIntent?: boolean }) {
@@ -46,7 +48,7 @@ function PreLaunchSignupGate({ invalidIntent = false }: { invalidIntent?: boolea
             Pre-launch access
           </p>
           <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
-            Yaotu account creation opens through guide onboarding.
+            Yaotu account creation opens through the Guide application checkpoint.
           </h1>
           <p className="mt-4 text-base leading-7 text-gray-600">
             Travelers can join early access without creating an account. Guide applicants should
@@ -54,8 +56,8 @@ function PreLaunchSignupGate({ invalidIntent = false }: { invalidIntent?: boolea
           </p>
           {invalidIntent && (
             <p className="mt-4 rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-              This guide signup link has expired or was already used. Continue from your guide
-              application to request a new link.
+              This guide application account link has expired or was already used. Continue from
+              your guide application to request a new link.
             </p>
           )}
         </div>
@@ -77,8 +79,8 @@ function PreLaunchSignupGate({ invalidIntent = false }: { invalidIntent?: boolea
           <div className="rounded-lg border border-gray-200 p-5">
             <h2 className="text-xl font-semibold">Apply as a Guide</h2>
             <p className="mt-2 text-sm leading-6 text-gray-600">
-              Start the application first. The account setup step appears after the initial guide
-              onboarding checkpoint.
+              Start the application first. Account setup appears only when your guide application
+              reaches the identity checkpoint.
             </p>
             <a
               href="/become-guide"
@@ -110,6 +112,17 @@ const SignupPage = () => {
   );
 
   useEffect(() => {
+    if (!signupIntentToken || typeof window === 'undefined') return;
+
+    const url = new URL(window.location.href);
+    if (!url.searchParams.has('intent')) return;
+
+    sessionStorage.setItem(GUIDE_APPLICATION_IDENTITY_INTENT_STORAGE_KEY, signupIntentToken);
+    url.searchParams.delete('intent');
+    window.history.replaceState(window.history.state, '', `${url.pathname}${url.search}${url.hash}`);
+  }, [signupIntentToken]);
+
+  useEffect(() => {
     if (!user) return;
     setLocation(redirectTo ?? DEFAULT_REDIRECT);
   }, [redirectTo, setLocation, user]);
@@ -129,10 +142,16 @@ const SignupPage = () => {
     })
       .then((response) => {
         if (cancelled) return;
+        if (!response.ok) {
+          sessionStorage.removeItem(GUIDE_APPLICATION_IDENTITY_INTENT_STORAGE_KEY);
+        }
         setIntentStatus(response.ok ? 'valid' : 'invalid');
       })
       .catch(() => {
-        if (!cancelled) setIntentStatus('invalid');
+        if (!cancelled) {
+          sessionStorage.removeItem(GUIDE_APPLICATION_IDENTITY_INTENT_STORAGE_KEY);
+          setIntentStatus('invalid');
+        }
       });
 
     return () => {
@@ -143,7 +162,7 @@ const SignupPage = () => {
   if (intentStatus === 'checking') {
     return (
       <main className="flex min-h-screen items-center justify-center bg-white px-4 text-gray-900">
-        <p className="text-sm text-gray-600">Checking signup link...</p>
+        <p className="text-sm text-gray-600">Checking account link...</p>
       </main>
     );
   }
@@ -157,10 +176,24 @@ const SignupPage = () => {
       {...runtime}
       redirectTo={redirectTo}
       readRedirectParam={false}
+      signupIntentToken={signupIntentToken}
       loginPath="/login"
       verifyEmailPath={getCanonicalVerifyEmailPath(guideLoginContinuation(redirectTo))}
       termsPath="/terms"
       privacyPath="/privacy"
+      onSignupVerificationRequired={(result, context) => {
+        sessionStorage.removeItem(GUIDE_APPLICATION_IDENTITY_INTENT_STORAGE_KEY);
+        sessionStorage.setItem('pendingEmailVerificationIdentifier', result.email.trim());
+        if (result.verificationEmailMasked) {
+          sessionStorage.setItem(
+            'pendingEmailVerificationDestination',
+            result.verificationEmailMasked
+          );
+        } else {
+          sessionStorage.removeItem('pendingEmailVerificationDestination');
+        }
+        rememberPostEmailVerificationRedirect(context.redirectTo ?? redirectTo);
+      }}
     />
   );
 };

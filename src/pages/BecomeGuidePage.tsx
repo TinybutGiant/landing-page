@@ -6,7 +6,9 @@ import { useQuery } from "@tanstack/react-query";
 import { useIntl } from "react-intl";
 import { useLocation } from "wouter";
 import {
+  DEFAULT_RESUME_PATH,
   FounderNoteMail,
+  GUIDE_APPLICATION_IDENTITY_INTENT_STORAGE_KEY,
   GuideForm,
   type GuideFormConfig,
   type GuideFormDestination,
@@ -53,7 +55,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { resolveApiUrl } from "@/lib/apiClient";
 import { getCanonicalVerifyEmailPath } from "@/lib/yaotuAuthRuntime";
 
-const RESUME_PATH = "/become-guide?resume=1";
+const RESUME_PATH = DEFAULT_RESUME_PATH;
 const DESTINATIONS_QUERY_KEY = ["/api/v2/destinations", "JP"] as const;
 const DESTINATIONS_CACHE_KEY = "yaotu_landing_destinations_JP_v1";
 const DESTINATIONS_CACHE_TTL_MS = 10 * 60 * 1000;
@@ -109,6 +111,12 @@ const readInitialStep = (): "preview" | "resume" | undefined => {
   return undefined;
 };
 
+const readApplicationSource = (): string | undefined => {
+  if (typeof window === "undefined") return undefined;
+  const source = new URLSearchParams(window.location.search).get("from")?.trim();
+  return source && /^[a-z0-9_-]{1,64}$/i.test(source) ? source : undefined;
+};
+
 const extractApplicationId = (payload: any) =>
   payload?.application?.id ?? payload?.applicationId ?? payload?.id;
 
@@ -132,18 +140,6 @@ const guideUrl = (path: string): string => {
 const guideLoginContinuation = (redirectTo: string | null | undefined): string =>
   guideUrl(pathWithRedirect("/login", redirectTo ?? RESUME_PATH));
 
-const pathWithRedirectAndIntent = (
-  path: string,
-  redirectTo: string | null | undefined,
-  signupIntentToken?: string | null
-): string => {
-  const base = pathWithRedirect(path, redirectTo);
-  if (!signupIntentToken?.trim()) return base;
-  const url = new URL(base, typeof window !== "undefined" ? window.location.origin : guideUrl("/"));
-  url.searchParams.set("intent", signupIntentToken.trim());
-  return `${url.pathname}${url.search}${url.hash}`;
-};
-
 const QualificationUploader = (props: any) => (
   <ApplicationQualificationUploader {...props} deferUpload />
 );
@@ -154,6 +150,7 @@ const BecomeGuidePage = () => {
   const intl = useIntl();
   const [, setLocation] = useLocation();
   const initialStep = useMemo(readInitialStep, []);
+  const applicationSource = useMemo(readApplicationSource, []);
   const destinationsQuery = useQuery<GuideFormDestination[]>({
     queryKey: DESTINATIONS_QUERY_KEY,
     queryFn: async () => {
@@ -240,6 +237,8 @@ const BecomeGuidePage = () => {
   const config = useMemo<GuideFormConfig>(
     () => ({
       resolveApiUrl,
+      // Source attribution only; @replit/guide-form owns the Guide Application state machine.
+      applicationSource,
       apiEndpoints: {
         loadDraft: "/api/v2/guide-applications/draft",
         saveDraft: "/api/v2/guide-applications/draft",
@@ -272,11 +271,6 @@ const BecomeGuidePage = () => {
           ),
       },
       callbacks: {
-        onAuthRequired: (redirectTo, context) => {
-          setLocation(
-            pathWithRedirectAndIntent("/signup", redirectTo, context?.signupIntentToken)
-          );
-        },
         onVerificationRequired: (redirectTo) => {
           rememberPostEmailVerificationRedirect(redirectTo);
           window.location.assign(getCanonicalVerifyEmailPath(guideLoginContinuation(redirectTo)));
@@ -294,6 +288,9 @@ const BecomeGuidePage = () => {
             }),
             variant: "destructive",
           });
+        },
+        onHandoffSuccess: () => {
+          sessionStorage.removeItem(GUIDE_APPLICATION_IDENTITY_INTENT_STORAGE_KEY);
         },
         onError: (error) => {
           if (isTokenExpiredError(error)) {
@@ -346,7 +343,7 @@ const BecomeGuidePage = () => {
         resumePath: RESUME_PATH,
       },
     }),
-    [archiveApplicationPdf, intl, logout, setLocation, toast, user]
+    [applicationSource, archiveApplicationPdf, intl, logout, setLocation, toast, user]
   );
 
   const uiComponents = useMemo<UIComponents>(
