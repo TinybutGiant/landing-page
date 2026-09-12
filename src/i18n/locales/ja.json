@@ -33,7 +33,15 @@
     "dontHaveAccount": "Yaotu は初めてですか？",
     "alreadyHaveAccount": "すでにアカウントをお持ちの方",
     "loginButton": "サインイン",
-    "signupButton": "プレローンチアクセスを見る"
+    "signupButton": "プレローンチアクセスを見る",
+    "emailVerification": {
+      "description": "この情報でアカウントを利用できる場合は受信トレイをご確認ください。または、下からサインインするか確認メールをリクエストしてください。",
+      "sent": "リクエストを受け付けました。アカウント設定を続行できる場合は受信トレイを確認するか、下のオプションをご利用ください。"
+    },
+    "toast": {
+      "signupSuccessTitle": "リクエストを受け付けました",
+      "signupVerificationRequiredDescription": "この情報でアカウントを利用できる場合は受信トレイをご確認ください。サインインまたは確認メールのリクエストも利用できます。"
+    }
   },
   "landing": {
     "title": "地元ガイドと一緒に日本を発見しよう",

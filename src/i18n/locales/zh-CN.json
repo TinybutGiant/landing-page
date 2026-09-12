@@ -33,7 +33,15 @@
     "dontHaveAccount": "第一次使用 Yaotu？",
     "alreadyHaveAccount": "已有账户？",
     "loginButton": "登录",
-    "signupButton": "查看预发布访问"
+    "signupButton": "查看预发布访问",
+    "emailVerification": {
+      "description": "如果这些信息可用于账户，请查看收件箱；也可以在下方登录或申请发送验证邮件。",
+      "sent": "请求已收到。如果账户设置可以继续，请查看收件箱，或使用下方选项。"
+    },
+    "toast": {
+      "signupSuccessTitle": "请求已收到",
+      "signupVerificationRequiredDescription": "如果这些信息可用于账户，请查看收件箱；你也可以登录或申请发送验证邮件。"
+    }
   },
   "landing": {
     "title": "与当地 Guide 一起探索日本",

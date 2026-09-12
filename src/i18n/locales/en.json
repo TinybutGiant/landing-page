@@ -33,7 +33,15 @@
     "dontHaveAccount": "New to Yaotu?",
     "alreadyHaveAccount": "Already have an account?",
     "loginButton": "Login",
-    "signupButton": "Explore pre-launch access"
+    "signupButton": "Explore pre-launch access",
+    "emailVerification": {
+      "description": "If these details can be used for an account, check your inbox. Otherwise, sign in or request a verification email below.",
+      "sent": "Request received. Check your inbox if account setup can continue, or use the options below."
+    },
+    "toast": {
+      "signupSuccessTitle": "Request received",
+      "signupVerificationRequiredDescription": "If these details can be used for an account, check your inbox. You can also sign in or request a verification email."
+    }
   },
   "landing": {
     "title": "Yaotu | Japan Local Guide Marketplace",

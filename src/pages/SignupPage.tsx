@@ -181,17 +181,11 @@ const SignupPage = () => {
       verifyEmailPath={getCanonicalVerifyEmailPath(guideLoginContinuation(redirectTo))}
       termsPath="/terms"
       privacyPath="/privacy"
-      onSignupVerificationRequired={(result, context) => {
-        sessionStorage.removeItem(GUIDE_APPLICATION_IDENTITY_INTENT_STORAGE_KEY);
-        sessionStorage.setItem('pendingEmailVerificationIdentifier', result.email.trim());
-        if (result.verificationEmailMasked) {
-          sessionStorage.setItem(
-            'pendingEmailVerificationDestination',
-            result.verificationEmailMasked
-          );
-        } else {
-          sessionStorage.removeItem('pendingEmailVerificationDestination');
-        }
+      onSignupVerificationRequired={(_result, context) => {
+        // Verification continues on the main origin, whose sessionStorage is
+        // isolated from this landing origin. Do not retain a raw email here.
+        sessionStorage.removeItem('pendingEmailVerificationIdentifier');
+        sessionStorage.removeItem('pendingEmailVerificationDestination');
         rememberPostEmailVerificationRedirect(context.redirectTo ?? redirectTo);
       }}
     />
