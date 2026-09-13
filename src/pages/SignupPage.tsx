@@ -7,6 +7,7 @@ import { useAuth } from '@/context/AuthContext';
 import { readRedirectParam, rememberPostEmailVerificationRedirect } from '@/lib/authRedirects';
 import { useLanguage } from '@/i18n/LanguageProvider';
 import {
+  addSignupEmailPrefillFragment,
   getCanonicalVerifyEmailPath,
   getMarketplaceUrl,
   useYaoTuAuthRuntime,
@@ -177,8 +178,10 @@ const SignupPage = () => {
       redirectTo={redirectTo}
       readRedirectParam={false}
       signupIntentToken={signupIntentToken}
+      signupConsumer="guide"
       loginPath="/login"
       verifyEmailPath={getCanonicalVerifyEmailPath(guideLoginContinuation(redirectTo))}
+      resolveVerifyEmailPath={addSignupEmailPrefillFragment}
       termsPath="/terms"
       privacyPath="/privacy"
       onSignupVerificationRequired={(_result, context) => {

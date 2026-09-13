@@ -25,7 +25,11 @@
   "auth": {
     "loginTitle": "登录",
     "signupTitle": "预发布访问",
-    "email": "邮箱",
+    "createAccount": "创建您的账户",
+    "continue": "继续",
+    "signupContinuing": "正在继续...",
+    "email": "邮箱地址",
+    "emailPlaceholder": "请输入邮箱地址",
     "password": "密码",
     "confirmPassword": "确认密码",
     "fullName": "姓名",
@@ -35,12 +39,26 @@
     "loginButton": "登录",
     "signupButton": "查看预发布访问",
     "emailVerification": {
-      "description": "如果这些信息可用于账户，请查看收件箱；也可以在下方登录或申请发送验证邮件。",
-      "sent": "请求已收到。如果账户设置可以继续，请查看收件箱，或使用下方选项。"
+      "title": "检查您的邮箱",
+      "description": "如果此邮箱可用于创建账户，我们会发送验证链接。",
+      "privacyNote": "为保护隐私，我们不会确认此邮箱是否存在账户。",
+      "existingAccount": "已有账户？请登录以继续。",
+      "signIn": "登录",
+      "sent": "注册请求已收到。",
+      "requestReceived": "如果此邮箱仍需验证，我们会发送新的验证链接。",
+      "resendPrompt": "没有收到验证邮件？您可以在下方重新发送。",
+      "resend": "重新发送验证邮件"
+    },
+    "forgotPasswordPage": {
+      "description": "输入邮箱地址以申请密码重置链接。",
+      "emailSent": "请求已收到",
+      "emailSentDesc": "如果此邮箱可以接收密码重置邮件，我们会发送重置链接。",
+      "checkEmailDesc": "如果此邮箱可以接收密码重置邮件，我们会发送重置链接。",
+      "notReceived": "没有收到邮件？请等待两分钟后再试，并检查垃圾邮件文件夹。"
     },
     "toast": {
       "signupSuccessTitle": "请求已收到",
-      "signupVerificationRequiredDescription": "如果这些信息可用于账户，请查看收件箱；你也可以登录或申请发送验证邮件。"
+      "signupVerificationRequiredDescription": "如果此邮箱可用于创建账户，我们会发送验证链接。"
     }
   },
   "landing": {

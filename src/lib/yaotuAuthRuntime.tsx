@@ -15,6 +15,10 @@ import { useToast } from '@/hooks/use-toast';
 import { API_BASE } from '@/lib/apiClient';
 
 const DEFAULT_MARKETPLACE_ORIGIN = 'https://www.ahhh-yaotu.com';
+const ALLOWED_PRODUCTION_AUTH_ORIGINS = new Set([
+  DEFAULT_MARKETPLACE_ORIGIN,
+  'https://ahhh-yaotu.onrender.com',
+]);
 
 const authApiClient = createAuthApiClient({
   apiBaseUrl: API_BASE,
@@ -85,11 +89,24 @@ function trimTrailingSlash(value: string): string {
 }
 
 export function getCanonicalAuthOrigin(): string {
-  return trimTrailingSlash(
+  const candidate = trimTrailingSlash(
     import.meta.env.VITE_AUTH_ORIGIN ||
       import.meta.env.VITE_MARKETPLACE_ORIGIN ||
       DEFAULT_MARKETPLACE_ORIGIN
   );
+  const url = new URL(candidate);
+  const isLocalDevelopment =
+    !import.meta.env.PROD &&
+    (url.hostname === 'localhost' || url.hostname === '127.0.0.1');
+  if (
+    url.username ||
+    url.password ||
+    (!isLocalDevelopment && url.protocol !== 'https:') ||
+    (import.meta.env.PROD && !ALLOWED_PRODUCTION_AUTH_ORIGINS.has(url.origin))
+  ) {
+    throw new Error('VITE_AUTH_ORIGIN must be an allowlisted canonical HTTPS origin.');
+  }
+  return url.origin;
 }
 
 export function getCanonicalVerifyEmailPath(redirectTo?: string | null): string {
@@ -97,6 +114,26 @@ export function getCanonicalVerifyEmailPath(redirectTo?: string | null): string 
   if (redirectTo?.trim()) {
     url.searchParams.set("redirect", redirectTo.trim());
   }
+  return url.toString();
+}
+
+export function addSignupEmailPrefillFragment(
+  verifyEmailPath: string,
+  submittedEmail: string
+): string {
+  const url = new URL(verifyEmailPath, getCanonicalAuthOrigin());
+  if (url.origin !== getCanonicalAuthOrigin()) {
+    throw new Error('Verification email prefill may only target the canonical auth origin.');
+  }
+
+  const email = submittedEmail.trim();
+  if (!email || email.length > 320 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return url.toString();
+  }
+
+  const fragment = new URLSearchParams(url.hash.replace(/^#/, ''));
+  fragment.set('signupEmail', email);
+  url.hash = fragment.toString();
   return url.toString();
 }
 

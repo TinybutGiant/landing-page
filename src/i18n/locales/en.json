@@ -25,22 +25,40 @@
   "auth": {
     "loginTitle": "Login",
     "signupTitle": "Pre-launch access",
-    "email": "Email",
+    "createAccount": "Create your account",
+    "continue": "Continue",
+    "signupContinuing": "Continuing...",
+    "email": "Email address",
+    "emailPlaceholder": "Enter your email address",
     "password": "Password",
     "confirmPassword": "Confirm Password",
     "fullName": "Full Name",
     "forgotPassword": "Forgot Password?",
     "dontHaveAccount": "New to Yaotu?",
     "alreadyHaveAccount": "Already have an account?",
-    "loginButton": "Login",
+    "loginButton": "Sign in",
     "signupButton": "Explore pre-launch access",
     "emailVerification": {
-      "description": "If these details can be used for an account, check your inbox. Otherwise, sign in or request a verification email below.",
-      "sent": "Request received. Check your inbox if account setup can continue, or use the options below."
+      "title": "Check your email",
+      "description": "If this email can be used to create an account, we'll send you a verification link.",
+      "privacyNote": "For privacy, we don't confirm whether an account exists for this email.",
+      "existingAccount": "Already have an account? Sign in to continue.",
+      "signIn": "Sign in",
+      "sent": "Your signup request was received.",
+      "requestReceived": "If this email still needs verification, we'll send a new verification link.",
+      "resendPrompt": "Didn't get a verification email? You can resend it below.",
+      "resend": "Resend verification email"
+    },
+    "forgotPasswordPage": {
+      "description": "Enter your email address to request a password reset link.",
+      "emailSent": "Request received",
+      "emailSentDesc": "If this email can receive a password reset, we'll send a reset link.",
+      "checkEmailDesc": "If this email can receive a password reset, we'll send a reset link.",
+      "notReceived": "Didn't get an email? Wait two minutes before trying again and check spam."
     },
     "toast": {
       "signupSuccessTitle": "Request received",
-      "signupVerificationRequiredDescription": "If these details can be used for an account, check your inbox. You can also sign in or request a verification email."
+      "signupVerificationRequiredDescription": "If this email can be used to create an account, we'll send you a verification link."
     }
   },
   "landing": {

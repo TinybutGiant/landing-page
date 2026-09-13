@@ -25,7 +25,11 @@
   "auth": {
     "loginTitle": "ログイン",
     "signupTitle": "プレローンチアクセス",
+    "createAccount": "アカウントを作成",
+    "continue": "続行",
+    "signupContinuing": "続行しています...",
     "email": "メールアドレス",
+    "emailPlaceholder": "メールアドレスを入力してください",
     "password": "パスワード",
     "confirmPassword": "パスワードを確認",
     "fullName": "氏名",
@@ -35,12 +39,26 @@
     "loginButton": "サインイン",
     "signupButton": "プレローンチアクセスを見る",
     "emailVerification": {
-      "description": "この情報でアカウントを利用できる場合は受信トレイをご確認ください。または、下からサインインするか確認メールをリクエストしてください。",
-      "sent": "リクエストを受け付けました。アカウント設定を続行できる場合は受信トレイを確認するか、下のオプションをご利用ください。"
+      "title": "メールを確認してください",
+      "description": "このメールアドレスでアカウントを作成できる場合は、確認リンクを送信します。",
+      "privacyNote": "プライバシー保護のため、このメールアドレスのアカウントが存在するかどうかはお伝えしません。",
+      "existingAccount": "すでにアカウントをお持ちですか？サインインして続行してください。",
+      "signIn": "サインイン",
+      "sent": "登録リクエストを受け付けました。",
+      "requestReceived": "このメールアドレスに確認が必要な場合は、新しい確認リンクを送信します。",
+      "resendPrompt": "確認メールが届きませんでしたか？下から再送できます。",
+      "resend": "確認メールを再送"
+    },
+    "forgotPasswordPage": {
+      "description": "パスワードリセットリンクをリクエストするメールアドレスを入力してください。",
+      "emailSent": "リクエストを受け付けました",
+      "emailSentDesc": "このメールアドレスでパスワードをリセットできる場合は、リセットリンクを送信します。",
+      "checkEmailDesc": "このメールアドレスでパスワードをリセットできる場合は、リセットリンクを送信します。",
+      "notReceived": "メールが届きませんでしたか？2分待ってから再試行し、迷惑メールフォルダーも確認してください。"
     },
     "toast": {
       "signupSuccessTitle": "リクエストを受け付けました",
-      "signupVerificationRequiredDescription": "この情報でアカウントを利用できる場合は受信トレイをご確認ください。サインインまたは確認メールのリクエストも利用できます。"
+      "signupVerificationRequiredDescription": "このメールアドレスでアカウントを作成できる場合は、確認リンクを送信します。"
     }
   },
   "landing": {
