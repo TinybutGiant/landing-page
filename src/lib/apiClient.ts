@@ -1,3 +1,8 @@
+import {
+  CANONICAL_PRODUCTION_API_ORIGIN,
+  normalizeConfiguredOrigin,
+} from '@/lib/publicOrigins';
+
 const isLocalHost =
   window.location.hostname === "localhost" ||
   window.location.hostname === "127.0.0.1" ||
@@ -16,6 +21,14 @@ function resolveApiBaseUrl(): string {
   const configuredApiUrl = normalizeApiBaseUrl(import.meta.env.VITE_API_URL);
 
   if (configuredApiUrl) {
+    if (
+      import.meta.env.PROD &&
+      normalizeConfiguredOrigin(configuredApiUrl) !== CANONICAL_PRODUCTION_API_ORIGIN
+    ) {
+      throw new Error(
+        `VITE_API_URL must be ${CANONICAL_PRODUCTION_API_ORIGIN} in production.`
+      );
+    }
     return configuredApiUrl;
   }
 
@@ -36,6 +49,9 @@ export const API_BASE = resolveApiBaseUrl();
 
 export function resolveApiUrl(path: string): string {
   if (isAbsoluteUrl(path)) {
+    if (import.meta.env.PROD && new URL(path).origin !== CANONICAL_PRODUCTION_API_ORIGIN) {
+      throw new Error('Production API requests may only target the canonical API origin.');
+    }
     return path;
   }
 

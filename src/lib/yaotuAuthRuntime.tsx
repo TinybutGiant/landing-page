@@ -13,12 +13,13 @@ import {
 
 import { useToast } from '@/hooks/use-toast';
 import { API_BASE } from '@/lib/apiClient';
+import {
+  CANONICAL_PRODUCTION_WEB_ORIGIN,
+  normalizeConfiguredOrigin,
+} from '@/lib/publicOrigins';
 
-const DEFAULT_MARKETPLACE_ORIGIN = 'https://www.ahhh-yaotu.com';
-const ALLOWED_PRODUCTION_AUTH_ORIGINS = new Set([
-  DEFAULT_MARKETPLACE_ORIGIN,
-  'https://ahhh-yaotu.onrender.com',
-]);
+const DEFAULT_MARKETPLACE_ORIGIN = CANONICAL_PRODUCTION_WEB_ORIGIN;
+const ALLOWED_PRODUCTION_AUTH_ORIGINS = new Set([DEFAULT_MARKETPLACE_ORIGIN]);
 
 const authApiClient = createAuthApiClient({
   apiBaseUrl: API_BASE,
@@ -138,9 +139,18 @@ export function addSignupEmailPrefillFragment(
 }
 
 export function getMarketplaceOrigin(): string {
-  return trimTrailingSlash(
+  const candidate = trimTrailingSlash(
     import.meta.env.VITE_MARKETPLACE_ORIGIN || DEFAULT_MARKETPLACE_ORIGIN
   );
+  if (
+    import.meta.env.PROD &&
+    normalizeConfiguredOrigin(candidate) !== CANONICAL_PRODUCTION_WEB_ORIGIN
+  ) {
+    throw new Error(
+      `VITE_MARKETPLACE_ORIGIN must be ${CANONICAL_PRODUCTION_WEB_ORIGIN} in production.`
+    );
+  }
+  return candidate;
 }
 
 export function getMarketplaceUrl(path: string): string {
