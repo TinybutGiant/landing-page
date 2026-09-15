@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import html2pdf from "html2pdf.js";
-import { ChevronLeft, ChevronRight, Info, Save } from "lucide-react";
+import { ChevronLeft, ChevronRight, Info, Save, X } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useIntl } from "react-intl";
 import { useLocation } from "wouter";
@@ -406,39 +406,43 @@ const BecomeGuidePage = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-white to-orange-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+    <div className="become-guide-page min-h-screen">
+      <div className="become-guide-orb" aria-hidden />
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="min-h-screen"
+        transition={{ duration: 0.36, ease: [0.22, 1, 0.36, 1] }}
+        className="relative min-h-screen"
       >
-        <div className="bg-gradient-to-r from-yellow-400 to-orange-500 p-6 text-white">
-          <div className="mx-auto max-w-4xl">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-3xl font-bold">
-                  {intl.formatMessage({ id: "becomeGuide.title" })}
-                </h1>
-                <p className="mt-2 text-yellow-100">
-                  {intl.formatMessage({ id: "becomeGuide.subtitle" })}
-                </p>
-              </div>
+        <header className="become-guide-masthead">
+          <div className="mx-auto flex w-full max-w-[82rem] items-center justify-between px-5 py-4 sm:px-8">
+            <button
+              type="button"
+              onClick={() => setLocation("/")}
+              className="become-guide-brand"
+              aria-label="YaoTu home"
+            >
+              <img src="/yaotu-logo.png" alt="YaoTu" />
+            </button>
+            <div className="flex items-center gap-3">
+              <span className="hidden text-sm font-semibold text-[#625f55] sm:inline">
+                {intl.formatMessage({ id: "becomeGuide.title" })}
+              </span>
               <button
                 type="button"
                 onClick={() => setLocation("/")}
-                className="text-2xl text-white/80 hover:text-white"
-                aria-label="Close"
+                className="become-guide-close"
+                aria-label="Back to home"
               >
-                &times;
+                <X className="h-5 w-5" aria-hidden />
               </button>
             </div>
           </div>
-        </div>
+        </header>
 
         <FounderNoteMail />
 
-        <div className="mx-auto max-w-4xl p-6">
+        <main className="guide-form-stage mx-auto w-full max-w-5xl px-4 pb-20 pt-10 sm:px-6 sm:pt-14">
           <TooltipProvider>
             <GuideForm
               config={config}
@@ -455,7 +459,7 @@ const BecomeGuidePage = () => {
               initialStep={initialStep}
             />
           </TooltipProvider>
-        </div>
+        </main>
 
         <div id="print-root" className="hidden print:block" />
       </motion.div>
