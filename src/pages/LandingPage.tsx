@@ -24,7 +24,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/i18n/LanguageProvider";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import TeamMemberMarquee from "@/components/TeamMemberMarquee";
-import { featuredTeamMembers, teamMemberRows } from "@/data/teamMembers";
+import { localizeTeamMembers } from "@/data/teamMembers";
 import { getMarketplaceUrl } from "@/lib/yaotuAuthRuntime";
 
 const DISPLAY_FONT =
@@ -341,6 +341,12 @@ const LandingPage = () => {
   const { isAuthenticated } = useAuth();
   const { messages, locale } = useLanguage();
   const t = (key: string, fallback: string) => messages[key] || fallback;
+  const localizedTeamMembers = localizeTeamMembers(t);
+  const featuredTeamMembers = localizedTeamMembers.slice(0, 6);
+  const teamMemberRows = [
+    localizedTeamMembers.slice(6, 10),
+    localizedTeamMembers.slice(10),
+  ];
 
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [guideActiveStep, setGuideActiveStep] = useState(0);
