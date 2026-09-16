@@ -177,23 +177,23 @@ function FeaturedMemberCard({
 }) {
   const sizeStyles = {
     sm: {
-      card: "min-h-[12.5rem] px-3 py-5 sm:min-h-[13.25rem] sm:px-4 sm:py-5",
+      card: "min-h-[13.5rem] px-3 py-5 sm:min-h-[14.5rem] sm:px-4 sm:py-5",
       avatar: "h-14 w-14 sm:h-16 sm:w-16",
       icon: "h-6 w-6 sm:h-7 sm:w-7",
       name: "text-sm sm:text-base",
-      summary: "text-xs sm:text-[0.8125rem]",
+      summary: "text-xs sm:text-sm",
     },
     md: {
-      card: "min-h-[14rem] px-4 py-6 sm:min-h-[14.75rem] sm:px-5 sm:py-6",
-      avatar: "h-[4.25rem] w-[4.25rem] sm:h-[4.75rem] sm:w-[4.75rem]",
-      icon: "h-7 w-7 sm:h-8 sm:w-8",
+      card: "min-h-[16rem] px-4 py-6 sm:min-h-[17.5rem] sm:px-5 sm:py-7",
+      avatar: "h-[4.5rem] w-[4.5rem] sm:h-[5.5rem] sm:w-[5.5rem]",
+      icon: "h-8 w-8 sm:h-9 sm:w-9",
       name: "text-base sm:text-lg",
       summary: "text-xs sm:text-sm",
     },
     lg: {
-      card: "min-h-[15.5rem] px-4 py-6 sm:min-h-[16.5rem] sm:px-5 sm:py-7",
-      avatar: "h-[4.75rem] w-[4.75rem] sm:h-[5.5rem] sm:w-[5.5rem]",
-      icon: "h-8 w-8 sm:h-9 sm:w-9",
+      card: "min-h-[18.5rem] px-4 py-7 sm:min-h-[20.5rem] sm:px-6 sm:py-8",
+      avatar: "h-20 w-20 sm:h-24 sm:w-24",
+      icon: "h-9 w-9 sm:h-10 sm:w-10",
       name: "text-lg sm:text-xl",
       summary: "text-sm",
     },
@@ -214,17 +214,17 @@ function FeaturedMemberCard({
         interactive
       />
       <p
-        className={`relative z-10 mt-3 font-semibold tracking-[-0.01em] text-gray-900 ${sizeStyles.name}`}
+        className={`relative z-10 mt-4 font-semibold tracking-[-0.01em] text-gray-900 ${sizeStyles.name}`}
       >
         {member.name}
       </p>
       {member.status === "former" ? (
-        <div className="relative z-10 mt-1.5">
+        <div className="relative z-10 mt-2">
           <FormerBadge label={formerLabel} />
         </div>
       ) : null}
       <p
-        className={`relative z-10 mt-1.5 line-clamp-2 leading-snug text-gray-500 ${sizeStyles.summary}`}
+        className={`relative z-10 mt-2 line-clamp-2 leading-relaxed text-gray-600 ${sizeStyles.summary}`}
       >
         {member.summary ?? member.role}
       </p>
