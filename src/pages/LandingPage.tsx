@@ -291,33 +291,29 @@ const LandingPage = () => {
       </section>
 
       <main className="relative z-10 bg-white">
-        <section className="section-shell bg-[#fffaf0]" aria-labelledby="why-title">
+        <section className="section-shell bg-white" aria-labelledby="why-title">
           <div className="section-heading-row">
-            <h2 id="why-title">Why Choose YaoTu?</h2>
-            <p>Explore the city with locals who know it best.</p>
+            <h2 id="why-title">{t("landing.features.title", "Why Choose YaoTu?")}</h2>
+            <p>{t("landing.features.subtitle", "Explore the city with locals who know it best.")}</p>
           </div>
           <div className="feature-grid mt-12">
             {features.map((feature, index) => (
-              <motion.div
+              <motion.article
                 key={feature.title}
-                className="h-full"
-                initial={prefersReducedMotion ? false : { opacity: 0, y: 28 }}
+                className="feature-card"
+                initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "0px 0px -80px 0px" }}
                 transition={{
-                  duration: 0.55,
-                  delay: index * 0.09,
+                  duration: 0.5,
+                  delay: index * 0.08,
                   ease: [0.16, 1, 0.3, 1],
                 }}
               >
-                <Card className={`feature-card feature-card-${index + 1} h-full`}>
-                  <CardHeader>
-                    <div className="feature-icon">{featureIcons[index]}</div>
-                    <CardTitle>{feature.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent><CardDescription>{feature.description}</CardDescription></CardContent>
-                </Card>
-              </motion.div>
+                <div className="feature-icon">{featureIcons[index]}</div>
+                <h3>{feature.title}</h3>
+                <p>{feature.description}</p>
+              </motion.article>
             ))}
           </div>
         </section>
