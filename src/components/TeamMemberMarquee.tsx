@@ -177,23 +177,23 @@ function FeaturedMemberCard({
 }) {
   const sizeStyles = {
     sm: {
-      card: "min-h-[13.5rem] px-3 py-5 sm:min-h-[14.5rem] sm:px-4 sm:py-5",
+      card: "min-h-[12.5rem] px-3 py-5 sm:min-h-[13.25rem] sm:px-4 sm:py-5",
       avatar: "h-14 w-14 sm:h-16 sm:w-16",
       icon: "h-6 w-6 sm:h-7 sm:w-7",
       name: "text-sm sm:text-base",
-      summary: "text-xs sm:text-sm",
+      summary: "text-xs sm:text-[0.8125rem]",
     },
     md: {
-      card: "min-h-[16rem] px-4 py-6 sm:min-h-[17.5rem] sm:px-5 sm:py-7",
-      avatar: "h-[4.5rem] w-[4.5rem] sm:h-[5.5rem] sm:w-[5.5rem]",
-      icon: "h-8 w-8 sm:h-9 sm:w-9",
+      card: "min-h-[14rem] px-4 py-6 sm:min-h-[14.75rem] sm:px-5 sm:py-6",
+      avatar: "h-[4.25rem] w-[4.25rem] sm:h-[4.75rem] sm:w-[4.75rem]",
+      icon: "h-7 w-7 sm:h-8 sm:w-8",
       name: "text-base sm:text-lg",
       summary: "text-xs sm:text-sm",
     },
     lg: {
-      card: "min-h-[18.5rem] px-4 py-7 sm:min-h-[20.5rem] sm:px-6 sm:py-8",
-      avatar: "h-20 w-20 sm:h-24 sm:w-24",
-      icon: "h-9 w-9 sm:h-10 sm:w-10",
+      card: "min-h-[15.5rem] px-4 py-6 sm:min-h-[16.5rem] sm:px-5 sm:py-7",
+      avatar: "h-[4.75rem] w-[4.75rem] sm:h-[5.5rem] sm:w-[5.5rem]",
+      icon: "h-8 w-8 sm:h-9 sm:w-9",
       name: "text-lg sm:text-xl",
       summary: "text-sm",
     },
@@ -203,11 +203,10 @@ function FeaturedMemberCard({
     <button
       type="button"
       onClick={() => onSelect(member)}
-      className={`group relative flex h-full w-full flex-col items-center overflow-hidden rounded-2xl border border-gray-200 bg-white/80 text-center shadow-lg backdrop-blur-sm transition-shadow hover:shadow-xl ${sizeStyles.card}`}
+      className={`group relative flex h-full w-full flex-col items-center overflow-hidden rounded-2xl border border-gray-200 bg-white text-center shadow-sm transition-shadow hover:shadow-md ${sizeStyles.card}`}
       data-cursor-hover
       aria-label={`${member.name}, ${member.role}`}
     >
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-yellow-50/50 to-orange-50/50 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
       <MemberAvatar
         member={member}
         avatarClassName={sizeStyles.avatar}
@@ -215,17 +214,17 @@ function FeaturedMemberCard({
         interactive
       />
       <p
-        className={`relative z-10 mt-4 font-semibold text-gray-900 ${sizeStyles.name}`}
+        className={`relative z-10 mt-3 font-semibold tracking-[-0.01em] text-gray-900 ${sizeStyles.name}`}
       >
         {member.name}
       </p>
       {member.status === "former" ? (
-        <div className="relative z-10 mt-2">
+        <div className="relative z-10 mt-1.5">
           <FormerBadge label={formerLabel} />
         </div>
       ) : null}
       <p
-        className={`relative z-10 mt-2 line-clamp-2 leading-relaxed text-gray-600 ${sizeStyles.summary}`}
+        className={`relative z-10 mt-1.5 line-clamp-2 leading-snug text-gray-500 ${sizeStyles.summary}`}
       >
         {member.summary ?? member.role}
       </p>
@@ -250,7 +249,6 @@ function MarqueeCard({
       data-cursor-hover
       aria-label={`${member.name}, ${member.role}`}
     >
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-yellow-50/50 to-orange-50/50 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
       <MemberAvatar
         member={member}
         avatarClassName="h-14 w-14 sm:h-16 sm:w-16"
@@ -464,7 +462,7 @@ export default function TeamMemberMarquee({
 
   return (
     <>
-      <section className="relative overflow-hidden py-20">
+      <section className="relative py-20 sm:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-10 max-w-3xl sm:mb-12">
             <div className="border-l-2 border-[#FFD511] pl-4 sm:pl-5">

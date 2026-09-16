@@ -6,10 +6,30 @@ const linkedIn = (href: string): NonNullable<TeamMemberCard["links"]>[number] =>
 });
 
 /**
- * Order follows the Yaotu team roster.
- * Featured = first 6 (sm · md · lg · lg · md · sm). Rest scroll below.
+ * Featured = first 6 (sm · md · lg · lg · md · sm).
+ * Display order: 5 Wenyan · 3 Kaiqing · 1 Shengyu · 2 Siti · 4 Taiye · 6 Eva
  */
 export const teamMembers: TeamMemberCard[] = [
+  {
+    id: "wenyan-chen",
+    name: "Wenyan Chen",
+    role: "Marketing",
+    status: "active",
+    summary: "Marketing",
+    bio: "Wenyan Chen is part of the Yaotu team as Marketing.",
+    avatarSrc: "/team/wenyan-chen.png",
+    links: [linkedIn("https://www.linkedin.com/in/wenyanchen927/")],
+  },
+  {
+    id: "kaiqing-li",
+    name: "Kaiqing Li",
+    role: "UI & Visual Design Intern",
+    status: "active",
+    summary: "UI & Visual Design Intern",
+    bio: "Kaiqing Li is part of the Yaotu team as UI & Visual Design Intern.",
+    avatarSrc: "/team/kaiqing-li.png",
+    links: [linkedIn("https://www.linkedin.com/in/kaiqing-li")],
+  },
   {
     id: "shengyu-liu",
     name: "Shengyu Liu",
@@ -29,6 +49,26 @@ export const teamMembers: TeamMemberCard[] = [
     bio: "Siti Li is part of the Yaotu team as UI/UX Designer.",
     avatarSrc: "/team/siti-li.png",
     links: [linkedIn("https://www.linkedin.com/in/siti-li-34731b231")],
+  },
+  {
+    id: "taiye-chen",
+    name: "Taiye Chen",
+    role: "Marketplace Strategy Planning Associate",
+    status: "active",
+    summary: "Marketplace Strategy Planning",
+    bio: "Taiye Chen is part of the Yaotu team as Marketplace Strategy Planning Associate.",
+    avatarSrc: "/team/taiye-chen.png",
+    links: [linkedIn("https://www.linkedin.com/in/taiye-chen/")],
+  },
+  {
+    id: "eva-zhang",
+    name: "Eva Zhang",
+    role: "Finance Operations",
+    status: "active",
+    summary: "Finance Operations",
+    bio: "Eva Zhang is part of the Yaotu team as Finance Operations.",
+    avatarSrc: "/team/eva-zhang.png",
+    links: [linkedIn("https://www.linkedin.com/in/eva-z-6696621bb")],
   },
   {
     id: "wenjie-zhang",
@@ -71,16 +111,6 @@ export const teamMembers: TeamMemberCard[] = [
     links: [linkedIn("https://www.linkedin.com/in/xuning-li")],
   },
   {
-    id: "kaiqing-li",
-    name: "Kaiqing Li",
-    role: "UI & Visual Design Intern",
-    status: "active",
-    summary: "UI & Visual Design Intern",
-    bio: "Kaiqing Li is part of the Yaotu team as UI & Visual Design Intern.",
-    avatarSrc: "/team/kaiqing-li.png",
-    links: [linkedIn("https://www.linkedin.com/in/kaiqing-li")],
-  },
-  {
     id: "yitian-wu",
     name: "Yitian Wu",
     role: "Software Developer",
@@ -89,16 +119,6 @@ export const teamMembers: TeamMemberCard[] = [
     bio: "Yitian Wu is part of the Yaotu team as Software Developer.",
     avatarSrc: "/team/yitian-wu.png",
     links: [linkedIn("https://www.linkedin.com/in/yitian-wu07/")],
-  },
-  {
-    id: "taiye-chen",
-    name: "Taiye Chen",
-    role: "Marketplace Strategy Planning Associate",
-    status: "active",
-    summary: "Marketplace Strategy Planning",
-    bio: "Taiye Chen is part of the Yaotu team as Marketplace Strategy Planning Associate.",
-    avatarSrc: "/team/taiye-chen.png",
-    links: [linkedIn("https://www.linkedin.com/in/taiye-chen/")],
   },
   {
     id: "chengying-xin",
@@ -129,24 +149,6 @@ export const teamMembers: TeamMemberCard[] = [
     bio: "Siqi Yao is part of the Yaotu team as Full-stack Engineer.",
     avatarSrc: "/team/siqi-yao.png",
     links: [linkedIn("https://www.linkedin.com/in/abigail-siqi-yao")],
-  },
-  {
-    id: "wenyan-chen",
-    name: "Wenyan Chen",
-    role: "Marketing",
-    status: "active",
-    summary: "Marketing",
-    bio: "Wenyan Chen is part of the Yaotu team as Marketing.",
-    links: [linkedIn("https://www.linkedin.com/in/wenyanchen927/")],
-  },
-  {
-    id: "eva-zhang",
-    name: "Eva Zhang",
-    role: "Finance Operations",
-    status: "active",
-    summary: "Finance Operations",
-    bio: "Eva Zhang is part of the Yaotu team as Finance Operations.",
-    links: [linkedIn("https://www.linkedin.com/in/eva-z-6696621bb")],
   },
 ];
 
