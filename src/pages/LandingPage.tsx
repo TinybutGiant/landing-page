@@ -1,6 +1,5 @@
-import { FormEvent, useEffect, useRef, useState, type ReactNode } from "react";
-import { createPortal } from "react-dom";
-import { AnimatePresence, motion } from "framer-motion";
+import { useState, type ReactNode } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import {
   ArrowRight,
   CalendarCheck,
@@ -9,14 +8,14 @@ import {
   Globe2,
   MapPin,
   ShieldCheck,
-  Sparkles,
-  X,
 } from "lucide-react";
 import CursorFollow from "@/components/CursorFollow";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import ScrollToTopButton from "@/components/ScrollToTopButton";
 import TeamMemberMarquee from "@/components/TeamMemberMarquee";
+import { FlowStoryRow } from "@/components/HowYaotuWorks";
 import { localizeTeamMembers } from "@/data/teamMembers";
+import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -25,13 +24,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useLanguage } from "@/i18n/LanguageProvider";
 
-type JourneyMode = "traveler" | "guide";
-
-type JourneyStep = {
+type StepItem = {
   title: string;
   image: string;
   description: string;
@@ -52,157 +47,9 @@ const featureIcons: ReactNode[] = [
   <MapPin className="h-6 w-6" aria-hidden key="expert" />,
 ];
 
-const WaitlistModal = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
-  const [submitted, setSubmitted] = useState(false);
-  const nameRef = useRef<HTMLInputElement>(null);
-  const doneRef = useRef<HTMLButtonElement>(null);
-  const dialogRef = useRef<HTMLDivElement>(null);
-  const returnFocusRef = useRef<HTMLElement | null>(null);
-
-  useEffect(() => {
-    if (!open) return;
-    returnFocusRef.current = document.activeElement as HTMLElement | null;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    window.setTimeout(() => nameRef.current?.focus(), 80);
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        onClose();
-        return;
-      }
-      if (event.key !== "Tab") return;
-      const focusable = Array.from(
-        dialogRef.current?.querySelectorAll<HTMLElement>(
-          'button:not([disabled]), input:not([disabled]), [href], [tabindex]:not([tabindex="-1"])'
-        ) ?? []
-      ).filter((element) => element.offsetParent !== null);
-      if (focusable.length === 0) return;
-      const first = focusable[0];
-      const last = focusable[focusable.length - 1];
-      if (!dialogRef.current?.contains(document.activeElement)) {
-        event.preventDefault();
-        first.focus();
-      } else if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault();
-        last.focus();
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault();
-        first.focus();
-      }
-    };
-    window.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", onKeyDown);
-      returnFocusRef.current?.focus();
-    };
-  }, [open, onClose]);
-
-  useEffect(() => {
-    if (!open) setSubmitted(false);
-  }, [open]);
-
-  useEffect(() => {
-    if (submitted) window.setTimeout(() => doneRef.current?.focus(), 60);
-  }, [submitted]);
-
-  const submit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    window.localStorage.setItem(
-      "yaotuWaitlistSubmission",
-      JSON.stringify({
-        name: String(data.get("name") || ""),
-        email: String(data.get("email") || ""),
-        submittedAt: new Date().toISOString(),
-      })
-    );
-    setSubmitted(true);
-  };
-
-  return createPortal(
-    <AnimatePresence>
-      {open && (
-        <motion.div
-          className="waitlist-overlay fixed inset-0 z-[100] flex items-center justify-center p-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.18 }}
-        >
-          <button
-            type="button"
-            aria-label="Close waitlist form"
-            className="waitlist-backdrop absolute inset-0"
-            onClick={onClose}
-          />
-          <motion.div
-            ref={dialogRef}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="waitlist-title"
-            className="waitlist-dialog relative w-full max-w-lg p-6 sm:p-9"
-            initial={{ opacity: 0, y: 18, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 12, scale: 0.98 }}
-            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <button
-              type="button"
-              onClick={onClose}
-              aria-label="Close"
-              className="waitlist-close absolute right-5 top-5 flex h-10 w-10 items-center justify-center rounded-full"
-            >
-              <X className="h-5 w-5" />
-            </button>
-            {submitted ? (
-              <div className="waitlist-success py-8 text-center" aria-live="polite">
-                <div className="waitlist-mark mx-auto flex h-12 w-12 items-center justify-center rounded-full">
-                  <Sparkles className="h-5 w-5" aria-hidden />
-                </div>
-                <h2 id="waitlist-title" className="mt-6 text-3xl font-bold tracking-[-0.03em]">
-                  Details saved.
-                </h2>
-                <p className="mx-auto mt-3 max-w-sm leading-7 text-[#625f55]">
-                  This preview saves your details in this browser only. Connect the production waitlist endpoint before launch to enroll visitors.
-                </p>
-                <Button ref={doneRef} className="yaotu-button waitlist-primary-button mt-7" onClick={onClose}>Done</Button>
-              </div>
-            ) : (
-              <>
-                <div className="waitlist-intro text-center">
-                  <div className="waitlist-mark mx-auto flex h-12 w-12 items-center justify-center rounded-full">
-                    <Compass className="h-5 w-5" aria-hidden />
-                  </div>
-                  <h2 id="waitlist-title" className="mx-auto mt-6 text-3xl font-bold tracking-[-0.03em] sm:text-4xl">
-                    Explore with a local.
-                  </h2>
-                  <p className="mx-auto mt-3 max-w-md leading-7 text-[#625f55]">
-                    Join the waitlist and be first to hear when guide booking opens.
-                  </p>
-                </div>
-                <form className="waitlist-form mt-7 space-y-5" onSubmit={submit}>
-                  <div className="space-y-2">
-                    <Label htmlFor="waitlist-name">Name</Label>
-                    <Input ref={nameRef} id="waitlist-name" name="name" autoComplete="name" required className="h-12 rounded-[10px] border-[#cbc5b3] bg-white focus-visible:ring-[#c99800]" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="waitlist-email">Email</Label>
-                    <Input id="waitlist-email" name="email" type="email" autoComplete="email" required className="h-12 rounded-[10px] border-[#cbc5b3] bg-white focus-visible:ring-[#c99800]" />
-                  </div>
-                  <Button type="submit" className="yaotu-button waitlist-primary-button h-12 w-full">Join the Waitlist</Button>
-                </form>
-              </>
-            )}
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>,
-    document.body
-  );
-};
-
 const LandingPage = () => {
+  const prefersReducedMotion = useReducedMotion();
+  const { isAuthenticated } = useAuth();
   const { messages } = useLanguage();
   const t = (key: string, fallback: string) => messages[key] || fallback;
   const localizedTeamMembers = localizeTeamMembers(t);
@@ -211,19 +58,22 @@ const LandingPage = () => {
     localizedTeamMembers.slice(6, 10),
     localizedTeamMembers.slice(10),
   ];
-  const [waitlistOpen, setWaitlistOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
-  const [journeyMode, setJourneyMode] = useState<JourneyMode>("traveler");
-
-  const triggerWaitlistOnHowHover = () => {
-    const supportsHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
-    if (!supportsHover || waitlistOpen || window.sessionStorage.getItem("yaotuHowModalShown")) return;
-    window.sessionStorage.setItem("yaotuHowModalShown", "true");
-    setWaitlistOpen(true);
+  const [guideActiveStep, setGuideActiveStep] = useState(0);
+  const [guideOperationsActiveStep, setGuideOperationsActiveStep] = useState(0);
+  const [travelerActiveStep, setTravelerActiveStep] = useState(0);
+  const handleBecomeGuide = () => {
+    window.location.href = "/become-guide";
   };
 
-  const scrollToGuide = () => {
-    document.getElementById("become-guide-cta")?.scrollIntoView({ behavior: "smooth", block: "center" });
+  const handleTravelerWaitlist = () => {
+    window.location.href = "/early-access";
+  };
+
+  const handleViewApplicationStatus = () => {
+    window.location.href = isAuthenticated
+      ? "/view-application-status"
+      : "/login?redirect=/view-application-status";
   };
 
   const features = [
@@ -245,23 +95,112 @@ const LandingPage = () => {
     },
   ];
 
-  const journeys: Record<JourneyMode, JourneyStep[]> = {
-    traveler: [
-      { title: "Find a Local", image: "/hero-scene-kyoto.png", description: "Discover verified locals who match your interests and travel style." },
-      { title: "Book Instantly", image: "/hero-scene-fuji.png", description: "Choose a time that works and confirm your experience with confidence." },
-      { title: "Explore Together", image: "/hero-scene-torii.png", description: "Meet your local and experience the city beyond the usual route." },
-    ],
-    guide: [
-      { title: "Open a Slot", image: "/hero-scene-kyoto.png", description: "Share when you’re available and the experiences you know best." },
-      { title: "Book Instantly", image: "/hero-scene-fuji.png", description: "Receive confirmed bookings without the back-and-forth." },
-      { title: "Explore Together", image: "/hero-scene-torii.png", description: "Welcome curious travelers and show them your city your way." },
-    ],
-  };
+  const travelerSteps: StepItem[] = [
+    {
+      title: t("landing.howTraveler.step1", "Discover Guides"),
+      description: t(
+        "landing.howTraveler.step1Desc",
+        "Browse local Guides by city, interests, language, and the kind of experience you want."
+      ),
+      image: "/screenshots/traveler-discover.png",
+    },
+    {
+      title: t("landing.howTraveler.step2", "Explore Guide profiles and experiences"),
+      description: t(
+        "landing.howTraveler.step2Desc",
+        "Explore each Guide's background, service style, and available experiences before you decide."
+      ),
+      image: "/screenshots/traveler-profile.png",
+    },
+    {
+      title: t("landing.howTraveler.step3", "Choose a time and book"),
+      description: t(
+        "landing.howTraveler.step3Desc",
+        "Choose a time and complete your booking directly through Yaotu when the marketplace opens."
+      ),
+      image: "/screenshots/traveler-book.png",
+    },
+  ];
+
+  const guideSteps: StepItem[] = [
+    {
+      title: t("landing.howGuide.step1", "Complete your profile"),
+      description: t(
+        "landing.howGuide.step1Desc",
+        "Add your local knowledge, service areas, availability, and qualification materials."
+      ),
+      image: "/screenshots/guide-qualification.png",
+    },
+    {
+      title: t("landing.howGuide.step2", "Submit your application"),
+      description: t(
+        "landing.howGuide.step2Desc",
+        "Send your Guide application for review once your profile details are ready."
+      ),
+      image: "/screenshots/guide-apply.png",
+    },
+    {
+      title: t("landing.howGuide.step3", "View your application status"),
+      description: t(
+        "landing.howGuide.step3Desc",
+        "Sign in or create an account to return anytime and continue from your current progress."
+      ),
+      image: "/screenshots/guide-status.png",
+    },
+  ];
+
+  const guideOperationsSteps: StepItem[] = [
+    {
+      title: t("landing.howGuideOperations.step1", "Publish your experience"),
+      description: t(
+        "landing.howGuideOperations.step1Desc",
+        "Set your experience details, location, availability, duration, and pricing before making it available to Travelers."
+      ),
+      image: "/screenshots/guide-publish.png",
+    },
+    {
+      title: t("landing.howGuideOperations.step2", "Manage Traveler bookings"),
+      description: t(
+        "landing.howGuideOperations.step2Desc",
+        "Review upcoming bookings, Traveler details, schedules, and booking status from your Guide workspace."
+      ),
+      image: "/screenshots/guide-bookings.png",
+    },
+    {
+      title: t("landing.howGuideOperations.step3", "Track earnings and payouts"),
+      description: t(
+        "landing.howGuideOperations.step3Desc",
+        "See your earnings, payout status, and payout history, and manage withdrawals through Yaotu."
+      ),
+      image: "/screenshots/guide-earnings.png",
+    },
+  ];
 
   const team = [
-    { name: "Design Team", initials: "DT", quote: "Good design should feel invisible. We simplify every interaction so you can focus on exploring, not figuring out how the app works." },
-    { name: "Engineering Team", initials: "ET", quote: "We build a platform that's fast, reliable, and secure—so you can travel with confidence." },
-    { name: "Research Team", initials: "RT", quote: "We listen first. Every feature is shaped by real traveler and local guide insights." },
+    {
+      name: t("landing.team.designName", "Design Team"),
+      initials: "DT",
+      quote: t(
+        "landing.team.design",
+        "Good design should feel invisible. We simplify every interaction so you can focus on exploring, not figuring out how the app works."
+      ),
+    },
+    {
+      name: t("landing.team.engineeringName", "Engineering Team"),
+      initials: "ET",
+      quote: t(
+        "landing.team.engineering",
+        "We build a platform that's fast, reliable, and secure—so you can travel with confidence."
+      ),
+    },
+    {
+      name: t("landing.team.researchName", "Research Team"),
+      initials: "RT",
+      quote: t(
+        "landing.team.research",
+        "We listen first. Every feature is shaped by real traveler and local guide insights."
+      ),
+    },
   ];
 
   const faqs = [
@@ -317,15 +256,37 @@ const LandingPage = () => {
             <figure className="hero-photo hero-photo-d"><img src="/hero-scene-coast.png" alt="" /></figure>
           </div>
           <div className="relative z-20 max-w-4xl" data-hero-copy>
-            <p className="hero-display" aria-hidden="true">
-              <span className="hero-display-ahhh">ahhh</span>{" "}
+            <p className="hero-display">
+              <span className="hero-display-affix">www.</span>
+              <span className="hero-display-ahhh">ahhh</span>
+              <span className="hero-display-hyphen">-</span>
               <span className="hero-display-yaotu">yaotu</span>
+              <span className="hero-display-affix">.com</span>
             </p>
-            <p className="mx-auto mt-6 max-w-2xl text-balance text-lg leading-8 text-[#49463e] sm:text-xl">
-              Connect with verified locals who match your interests, travel style, and schedule.
+            <p className="hero-tagline mx-auto mt-4 max-w-xl text-balance">
+              {t(
+                "landing.hero.tagline",
+                "Apply to become one of our first local Guides in Japan, or register for Traveler Early Access."
+              )}
             </p>
+            <div className="pointer-events-auto mt-6 flex w-full flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
+              <button
+                type="button"
+                className="yaotu-button min-h-12 w-full px-6 sm:w-auto"
+                onClick={handleBecomeGuide}
+              >
+                {t("landing.hero.guideCta", "Become a Local Guide")}
+              </button>
+              <button
+                type="button"
+                className="yaotu-secondary-button min-h-12 w-full px-6 sm:w-auto"
+                onClick={handleTravelerWaitlist}
+              >
+                {t("landing.hero.waitlistCta", "Get Traveler Early Access")}
+              </button>
+            </div>
           </div>
-          <p className="hero-explore-cue absolute bottom-3 left-1/2 hidden -translate-x-1/2 text-xs font-semibold uppercase tracking-[0.14em] text-[#7a725f] md:block">Move to explore</p>
+          <p className="hero-explore-cue absolute bottom-3 left-1/2 hidden -translate-x-1/2 text-xs font-semibold uppercase tracking-[0.14em] text-[#7a725f] md:block">Scroll to explore</p>
         </div>
       </section>
 
@@ -337,71 +298,96 @@ const LandingPage = () => {
           </div>
           <div className="feature-grid mt-12">
             {features.map((feature, index) => (
-              <Card key={feature.title} className={`feature-card feature-card-${index + 1}`}>
-                <CardHeader>
-                  <div className="feature-icon">{featureIcons[index]}</div>
-                  <CardTitle>{feature.title}</CardTitle>
-                </CardHeader>
-                <CardContent><CardDescription>{feature.description}</CardDescription></CardContent>
-              </Card>
-            ))}
-          </div>
-          <div className="mt-10 flex flex-col items-stretch justify-center gap-4 sm:flex-row sm:items-center">
-            <Button
-              className="yaotu-button min-h-12 w-full px-6 sm:w-auto"
-              onClick={() => setWaitlistOpen(true)}
-            >
-              Join the Waitlist to Explore Guides
-            </Button>
-            <button
-              type="button"
-              className="yaotu-secondary-button min-h-12 w-full px-6 sm:w-auto"
-              onClick={scrollToGuide}
-            >
-              Become a Local Guide
-            </button>
-          </div>
-        </section>
-
-        <section className="section-shell" aria-labelledby="how-title" onMouseEnter={triggerWaitlistOnHowHover}>
-          <div className="section-heading-row">
-            <h2 id="how-title">How It Works</h2>
-            <p>Book a local experience in just three simple steps.</p>
-          </div>
-          <div className="mx-auto mt-10 flex w-fit rounded-xl bg-[#f2ecd4] p-1" role="tablist" aria-label="How Yaotu works">
-            {(["traveler", "guide"] as JourneyMode[]).map((mode) => (
-              <button key={mode} type="button" role="tab" aria-selected={journeyMode === mode} className={`journey-tab ${journeyMode === mode ? "is-active" : ""}`} onClick={() => setJourneyMode(mode)}>
-                As {mode === "traveler" ? "Traveler" : "Guide"}
-              </button>
-            ))}
-          </div>
-          <div className="journey-flow mt-10">
-            {journeys[journeyMode].map((step, index) => (
-              <article className="journey-step" key={`${journeyMode}-${step.title}`}>
-                <div className="journey-image-wrap"><img src={step.image} alt="" className="journey-image" loading="lazy" /></div>
-                <div className="journey-step-copy mt-5">
-                  <span className="journey-number" aria-hidden>{index + 1}</span>
-                  <div>
-                    <h3 className="text-xl font-bold tracking-[-0.02em]">{step.title}</h3>
-                    <p className="mt-2 leading-7 text-[#625f55]">{step.description}</p>
-                  </div>
-                </div>
-                {index < journeys[journeyMode].length - 1 && <ArrowRight className="journey-arrow" aria-hidden />}
-              </article>
+              <motion.div
+                key={feature.title}
+                className="h-full"
+                initial={prefersReducedMotion ? false : { opacity: 0, y: 28 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "0px 0px -80px 0px" }}
+                transition={{
+                  duration: 0.55,
+                  delay: index * 0.09,
+                  ease: [0.16, 1, 0.3, 1],
+                }}
+              >
+                <Card className={`feature-card feature-card-${index + 1} h-full`}>
+                  <CardHeader>
+                    <div className="feature-icon">{featureIcons[index]}</div>
+                    <CardTitle>{feature.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent><CardDescription>{feature.description}</CardDescription></CardContent>
+                </Card>
+              </motion.div>
             ))}
           </div>
         </section>
 
-        <section className="section-shell bg-[#fffaf0]" aria-labelledby="team-title">
+        <section className="relative overflow-x-clip bg-white" aria-labelledby="how-title">
+          <div className="section-shell pb-4 pt-6 sm:pb-6">
+            <div className="section-heading-row">
+              <h2 id="how-title">{t("landing.howTraveler.sectionTitle", "How Yaotu works")}</h2>
+            </div>
+          </div>
+          <div className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8 lg:pb-20">
+            <FlowStoryRow
+              primary
+              title={t("landing.howGuide.title", "Become a local Guide with Yaotu")}
+              status={t("landing.howGuide.eyebrow", "Applications open")}
+              description={t(
+                "landing.howGuide.subtitle",
+                "Join the first community of local Guides we're building in Japan. Complete your profile, submit your application, then sign in to track your progress."
+              )}
+              steps={guideSteps}
+              activeStep={guideActiveStep}
+              onStepChange={setGuideActiveStep}
+              label={t("landing.howGuide.title", "Become a local Guide with Yaotu")}
+              ctaLabel={t("landing.howGuide.cta", "Become a Local Guide")}
+              onCtaClick={handleBecomeGuide}
+            />
+            <FlowStoryRow
+              imageFirstOnDesktop
+              tone="warm"
+              title={t("landing.howGuideOperations.title", "Start hosting with Yaotu")}
+              status={t("landing.howGuideOperations.eyebrow", "After approval")}
+              description={t(
+                "landing.howGuideOperations.subtitle",
+                "Once approved, create and publish your local experiences, manage Traveler bookings, and track your earnings and payouts directly through Yaotu."
+              )}
+              steps={guideOperationsSteps}
+              activeStep={guideOperationsActiveStep}
+              onStepChange={setGuideOperationsActiveStep}
+              label={t("landing.howGuideOperations.title", "Start hosting with Yaotu")}
+              ctaLabel={t("landing.howGuide.cta", "Become a Local Guide")}
+              onCtaClick={handleBecomeGuide}
+            />
+            <FlowStoryRow
+              title={t("landing.howTraveler.title", "Preview the Traveler experience")}
+              status={t("landing.howTraveler.eyebrow", "Coming Soon")}
+              description={t(
+                "landing.howTraveler.subtitle",
+                "The Traveler marketplace is coming soon. You'll be able to discover local Guides in Japan, explore their profiles and experiences, and book directly through Yaotu. Register for Early Access now."
+              )}
+              steps={travelerSteps}
+              activeStep={travelerActiveStep}
+              onStepChange={setTravelerActiveStep}
+              label={t("landing.howTraveler.title", "Preview the Traveler experience")}
+              ctaLabel={t("landing.howTraveler.cta", "Get Traveler Early Access")}
+              onCtaClick={handleTravelerWaitlist}
+            />
+          </div>
+        </section>
+
+        <section className="section-shell team-intro-section bg-[#fffaf0]" aria-labelledby="team-title">
           <div className="section-heading-row">
-            <h2 id="team-title">From Our Team</h2>
-            <p>Built by people who care about better travel experiences.</p>
+            <h2 id="team-title">{t("landing.team.title", "From Our Team")}</h2>
+            <p>{t("landing.team.subtitle", "Built by people who care about better travel experiences.")}</p>
           </div>
           <div className="team-grid mt-12">
             {team.map((member, index) => (
               <Card key={member.name} className={`team-card team-card-${index + 1}`}>
                 <CardContent className="team-card-content p-7 sm:p-8">
-                  <p className="team-quote text-base font-medium leading-7 text-[#292524]">“{member.quote}”</p>
+                  <span className="team-quote-mark" aria-hidden>“</span>
+                  <p className="team-quote">{member.quote}</p>
                   <div className="team-profile">
                     <div className="team-avatar" aria-hidden>{member.initials}</div>
                     <p className="team-author">{member.name}</p>
@@ -460,16 +446,32 @@ const LandingPage = () => {
             <Globe2 className="h-8 w-8 text-white" aria-hidden />
             <h2 id="final-cta-title" className="mt-8 max-w-4xl text-white">Share your expertise and connect with curious travelers</h2>
             <div className="mt-9 flex flex-col items-start gap-5 sm:flex-row sm:items-center">
-              <Button className="min-h-12 rounded-[10px] border border-white/70 bg-transparent px-6 font-bold text-white shadow-none hover:bg-white hover:text-[#171714]" onClick={() => { window.location.href = "/become-guide"; }}>
-                Become a Local Guide <ArrowRight className="ml-2 h-4 w-4" aria-hidden />
+              <Button className="min-h-12 rounded-[10px] border border-white/70 bg-transparent px-6 font-bold text-white shadow-none hover:bg-white hover:text-[#171714]" onClick={handleBecomeGuide}>
+                {t("landing.cta.becomeGuide", "Apply to Become a Local Guide")} <ArrowRight className="ml-2 h-4 w-4" aria-hidden />
               </Button>
-              <p className="max-w-md text-left text-sm leading-6 text-white/80">Bring your local knowledge to travelers looking for a more personal way to explore.</p>
+              <p className="max-w-md text-left text-sm leading-6 text-white/80">
+                {t(
+                  "landing.cta.subtitle",
+                  "Apply as a local Guide and help build Yaotu's first Japan experience network."
+                )}
+              </p>
             </div>
+            <p className="relative z-10 mt-6 text-sm font-semibold text-white/80">
+              <span>{t("landing.cta.viewApplicationStatusPrefix", "Already Applied?")}</span>{" "}
+              <button
+                type="button"
+                className="underline decoration-white/40 underline-offset-4 transition-colors hover:text-white"
+                onClick={handleViewApplicationStatus}
+              >
+                {t(
+                  "landing.cta.viewApplicationStatusAction",
+                  "View Your Application Status"
+                )}
+              </button>
+            </p>
           </div>
         </section>
       </main>
-
-      <WaitlistModal open={waitlistOpen} onClose={() => setWaitlistOpen(false)} />
     </div>
   );
 };

@@ -4,10 +4,8 @@ import { useLocation } from 'wouter';
 
 import { useAuth } from '@/context/AuthContext';
 import { readRedirectParam } from '@/lib/authRedirects';
-import { useLanguage } from '@/i18n/LanguageProvider';
 import {
   getCanonicalVerifyEmailPath,
-  getMarketplaceUrl,
   useYaoTuAuthRuntime,
 } from '@/lib/yaotuAuthRuntime';
 
@@ -26,13 +24,9 @@ const guideLoginContinuation = (redirectTo: string | null): string => {
 
 const LoginPage = () => {
   const runtime = useYaoTuAuthRuntime();
-  const { locale } = useLanguage();
   const { completeAuthSession, user } = useAuth();
   const [, setLocation] = useLocation();
   const redirectTo = useMemo(() => readRedirectParam(DEFAULT_REDIRECT), []);
-  const travelerWaitlistUrl = getMarketplaceUrl(
-    `/signup?locale=${encodeURIComponent(locale)}`
-  );
 
   useEffect(() => {
     if (!user) return;
@@ -60,7 +54,7 @@ const LoginPage = () => {
         <p className="font-medium text-stone-700 dark:text-gray-200">New to Yaotu?</p>
         <div className="mt-2 flex flex-wrap gap-3">
           <a
-            href={travelerWaitlistUrl}
+            href="/early-access"
             className="font-semibold text-primary underline-offset-2 hover:text-primary/90 hover:underline"
           >
             Join Traveler Waitlist

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import html2pdf from "html2pdf.js";
-import { ChevronLeft, ChevronRight, Info, Save, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Info, Save } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useIntl } from "react-intl";
 import { useLocation } from "wouter";
@@ -16,6 +16,7 @@ import {
 } from "@replit/guide-form";
 
 import ApplicationQualificationUploader from "@/components/ApplicationQualificationUploader";
+import YaotuAppChrome from "@/components/YaotuAppChrome";
 import { YearMonthPicker } from "@/components/YearMonthPicker";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -415,31 +416,7 @@ const BecomeGuidePage = () => {
         transition={{ duration: 0.36, ease: [0.22, 1, 0.36, 1] }}
         className="relative min-h-screen"
       >
-        <header className="become-guide-masthead">
-          <div className="mx-auto flex w-full max-w-[82rem] items-center justify-between px-5 py-4 sm:px-8">
-            <button
-              type="button"
-              onClick={() => setLocation("/")}
-              className="become-guide-brand"
-              aria-label="YaoTu home"
-            >
-              <img src="/yaotu-logo.png" alt="YaoTu" />
-            </button>
-            <div className="flex items-center gap-3">
-              <span className="hidden text-sm font-semibold text-[#625f55] sm:inline">
-                {intl.formatMessage({ id: "becomeGuide.title" })}
-              </span>
-              <button
-                type="button"
-                onClick={() => setLocation("/")}
-                className="become-guide-close"
-                aria-label="Back to home"
-              >
-                <X className="h-5 w-5" aria-hidden />
-              </button>
-            </div>
-          </div>
-        </header>
+        <YaotuAppChrome title={intl.formatMessage({ id: "becomeGuide.title" })} />
 
         <FounderNoteMail />
 

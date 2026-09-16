@@ -2,6 +2,9 @@ import { Route, Router } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import LandingPage from "@/pages/LandingPage";
 import BecomeGuidePage from "@/pages/BecomeGuidePage";
+import EarlyAccessPage from "@/pages/EarlyAccessPage";
+import WaitlistConfirmPage from "@/pages/WaitlistConfirmPage";
+import WaitlistUnsubscribePage from "@/pages/WaitlistUnsubscribePage";
 import SignupPage from "@/pages/SignupPage";
 import LoginPage from "@/pages/LoginPage";
 import ForgotPasswordPage from "@/pages/ForgotPasswordPage";
@@ -32,6 +35,9 @@ const App = () => {
           <Router>
             <Route path="/" component={LandingPage} />
             <Route path="/become-guide" component={BecomeGuidePage} />
+            <Route path="/early-access" component={EarlyAccessPage} />
+            <Route path="/waitlist/confirm" component={WaitlistConfirmPage} />
+            <Route path="/waitlist/unsubscribe" component={WaitlistUnsubscribePage} />
             <Route path="/signup" component={SignupPage} />
             <Route path="/login" component={LoginPage} />
             <Route path="/forgot-password" component={ForgotPasswordPage} />

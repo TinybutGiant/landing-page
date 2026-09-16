@@ -3,13 +3,12 @@ import { SignUpForm } from '@yaotu/auth';
 import { GUIDE_APPLICATION_IDENTITY_INTENT_STORAGE_KEY } from '@replit/guide-form';
 import { useLocation } from 'wouter';
 
+import YaotuAppChrome from '@/components/YaotuAppChrome';
 import { useAuth } from '@/context/AuthContext';
 import { readRedirectParam, rememberPostEmailVerificationRedirect } from '@/lib/authRedirects';
-import { useLanguage } from '@/i18n/LanguageProvider';
 import {
   addSignupEmailPrefillFragment,
   getCanonicalVerifyEmailPath,
-  getMarketplaceUrl,
   useYaoTuAuthRuntime,
 } from '@/lib/yaotuAuthRuntime';
 import { resolveApiUrl } from '@/lib/apiClient';
@@ -36,69 +35,48 @@ function readSignupIntentParam(): string | null {
 }
 
 function PreLaunchSignupGate({ invalidIntent = false }: { invalidIntent?: boolean }) {
-  const { locale } = useLanguage();
-  const travelerWaitlistUrl = getMarketplaceUrl(
-    `/signup?locale=${encodeURIComponent(locale)}`
-  );
-
   return (
-    <main className="min-h-screen bg-white px-4 py-12 text-gray-900">
-      <section className="mx-auto flex w-full max-w-5xl flex-col gap-8">
-        <div className="max-w-2xl">
-          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#B88A00]">
-            Pre-launch access
-          </p>
-          <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
-            Yaotu account creation opens through the Guide application checkpoint.
-          </h1>
-          <p className="mt-4 text-base leading-7 text-gray-600">
+    <div className="become-guide-page min-h-screen">
+      <div className="become-guide-orb" aria-hidden />
+      <YaotuAppChrome title="Yaotu account" />
+      <main className="guide-form-stage mx-auto w-full max-w-5xl px-4 pb-20 pt-10 sm:px-6 sm:pt-14">
+        <div className="mx-auto max-w-[56rem]">
+          <h1>Yaotu account creation opens through the Guide application checkpoint.</h1>
+          <p>
             Travelers can join early access without creating an account. Guide applicants should
             start the guide application and create an account at the onboarding checkpoint.
           </p>
           {invalidIntent && (
-            <p className="mt-4 rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+            <p className="early-access-notice" role="alert">
               This guide application account link has expired or was already used. Continue from
               your guide application to request a new link.
             </p>
           )}
-        </div>
-
-        <div className="grid gap-5 md:grid-cols-2">
-          <div className="rounded-lg border border-gray-200 bg-gray-50 p-5">
-            <h2 className="text-xl font-semibold">Join the Traveler Waitlist</h2>
-            <p className="mt-2 text-sm leading-6 text-gray-600">
-              Traveler early access is handled on the main Yaotu site.
-            </p>
-            <a
-              href={travelerWaitlistUrl}
-              className="mt-5 inline-flex min-h-11 w-full items-center justify-center rounded-md bg-[#FFD511] px-4 py-2 text-sm font-semibold text-gray-900 hover:bg-[#e9c20f]"
-            >
-              Join Waitlist
-            </a>
-          </div>
-
-          <div className="rounded-lg border border-gray-200 p-5">
-            <h2 className="text-xl font-semibold">Apply as a Guide</h2>
-            <p className="mt-2 text-sm leading-6 text-gray-600">
-              Start the application first. Account setup appears only when your guide application
-              reaches the identity checkpoint.
-            </p>
-            <a
-              href="/become-guide"
-              className="mt-5 inline-flex min-h-11 w-full items-center justify-center rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold hover:border-[#B88A00] hover:text-[#B88A00]"
-            >
-              Become a Guide
-            </a>
-            <a
-              href="/login"
-              className="mt-3 inline-flex min-h-11 w-full items-center justify-center rounded-md px-4 py-2 text-sm font-semibold text-gray-600 hover:text-[#B88A00]"
-            >
-              Existing user sign in
-            </a>
+          <div className="early-access-split">
+            <section className="early-access-card">
+              <h2>Join Traveler Early Access</h2>
+              <p>Traveler early access uses the same landing-page form as the homepage CTA.</p>
+              <a href="/early-access" className="yaotu-button mt-5 inline-flex min-h-12 w-full px-6">
+                Get Traveler Early Access
+              </a>
+            </section>
+            <section className="early-access-card">
+              <h2>Apply as a Guide</h2>
+              <p>
+                Start the application first. Account setup appears only when your guide application
+                reaches the identity checkpoint.
+              </p>
+              <a href="/become-guide" className="yaotu-secondary-button mt-5 inline-flex min-h-12 w-full px-6">
+                Become a Local Guide
+              </a>
+              <a href="/login" className="mt-3 inline-flex min-h-12 w-full items-center justify-center px-4 text-sm font-bold text-[#625f55] hover:text-[#171714]">
+                Existing user sign in
+              </a>
+            </section>
           </div>
         </div>
-      </section>
-    </main>
+      </main>
+    </div>
   );
 }
 
@@ -162,9 +140,9 @@ const SignupPage = () => {
 
   if (intentStatus === 'checking') {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-white px-4 text-gray-900">
-        <p className="text-sm text-gray-600">Checking account link...</p>
-      </main>
+      <div className="become-guide-page flex min-h-screen items-center justify-center px-4">
+        <p className="text-sm font-medium text-[#625f55]">Checking account link...</p>
+      </div>
     );
   }
 

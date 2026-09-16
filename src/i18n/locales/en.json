@@ -271,6 +271,11 @@
       "resendSent": "If that email has a pending early access request, a new link has been sent.",
       "confirmError": "We couldn't confirm this link. Please request a new confirmation email.",
       "backHome": "Back to home",
+      "joinTitle": "Join the Traveler Waitlist",
+      "joinBody": "Get notified when traveler marketplace access opens.",
+      "guideBoxTitle": "Apply as a Guide",
+      "guideBoxBody": "Start the application first. Account setup appears only when your guide application reaches the identity checkpoint.",
+      "existingSignIn": "Existing user sign in",
       "unsubscribeTitle": "Unsubscribe from early access updates",
       "unsubscribeBody": "Select Unsubscribe to stop receiving future Yaotu early access updates.",
       "unsubscribeButton": "Unsubscribe",
@@ -291,7 +296,9 @@
       "subtitle": "Apply as a local Guide and help build Yaotu's first Japan experience network.",
       "startNow": "Start Now",
       "becomeGuide": "Apply to Become a Local Guide",
-      "viewApplicationStatus": "Already Applied? View Your Application Status"
+      "viewApplicationStatus": "Already Applied? View Your Application Status",
+      "viewApplicationStatusPrefix": "Already Applied?",
+      "viewApplicationStatusAction": "View Your Application Status"
     }
   },
   "becomeGuide": {
