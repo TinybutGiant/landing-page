@@ -620,7 +620,24 @@
       "backToEdit": "返回编辑",
       "submitting": "提交中...",
       "submitApplication": "确认提交申请",
-      "serviceAreas": "可服务地区"
+      "serviceAreas": "可服务地区",
+      "missingFieldLabels": {
+        "serviceAreas": "可服务地区",
+        "step2Q1Answer": "第 2 页 Q1 回答",
+        "step2Q1Score": "第 2 页 Q1 评分",
+        "step2Q3Answer": "第 2 页 Q2 回答",
+        "step2Q3Score": "第 2 页 Q2 评分",
+        "step2Q4Answer": "第 2 页 Q3 回答",
+        "step2Q4Score": "第 2 页 Q3 评分",
+        "step3Q6Answer": "第 3 页 Q4 回答",
+        "step3Q6Score": "第 3 页 Q4 评分",
+        "step3Q7Answer": "第 3 页 Q5 回答",
+        "step3Q8Strengths": "第 3 页 Q6 优势",
+        "step3Q8Score": "第 3 页 Q6 评分",
+        "step3Q8Example": "第 3 页 Q6 示例",
+        "step3Q9Description": "第 3 页 Q7 动机",
+        "requiredInformation": "必填信息"
+      }
     },
     "toast": {
       "draftConflictTitle": "发现已保存的申请",

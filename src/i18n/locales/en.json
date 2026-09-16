@@ -620,7 +620,24 @@
       "backToEdit": "Back to Edit",
       "submitting": "Submitting...",
       "submitApplication": "Confirm Submit Application",
-      "serviceAreas": "Service areas"
+      "serviceAreas": "Service areas",
+      "missingFieldLabels": {
+        "serviceAreas": "Service areas",
+        "step2Q1Answer": "Step 2 Q1 answer",
+        "step2Q1Score": "Step 2 Q1 score",
+        "step2Q3Answer": "Step 2 Q2 answer",
+        "step2Q3Score": "Step 2 Q2 score",
+        "step2Q4Answer": "Step 2 Q3 answer",
+        "step2Q4Score": "Step 2 Q3 score",
+        "step3Q6Answer": "Step 3 Q4 answer",
+        "step3Q6Score": "Step 3 Q4 score",
+        "step3Q7Answer": "Step 3 Q5 answer",
+        "step3Q8Strengths": "Step 3 Q6 strengths",
+        "step3Q8Score": "Step 3 Q6 score",
+        "step3Q8Example": "Step 3 Q6 example",
+        "step3Q9Description": "Step 3 Q7 motivation",
+        "requiredInformation": "Required information"
+      }
     },
     "toast": {
       "draftConflictTitle": "Saved application found",
