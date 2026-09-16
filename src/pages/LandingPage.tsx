@@ -5,7 +5,6 @@ import {
   CalendarCheck,
   ChevronDown,
   Compass,
-  Globe2,
   MapPin,
   ShieldCheck,
 } from "lucide-react";
@@ -442,21 +441,21 @@ const LandingPage = () => {
         </section>
 
         <section id="become-guide-cta" className="final-cta" aria-labelledby="final-cta-title">
-          <div className="relative z-10 mx-auto flex max-w-[82rem] flex-col items-start px-5 py-20 text-left sm:px-8 sm:py-24 lg:px-12">
-            <Globe2 className="h-8 w-8 text-white" aria-hidden />
-            <h2 id="final-cta-title" className="mt-8 max-w-4xl text-white">Share your expertise and connect with curious travelers</h2>
-            <div className="mt-9 flex flex-col items-start gap-5 sm:flex-row sm:items-center">
-              <Button className="min-h-12 rounded-[10px] border border-white/70 bg-transparent px-6 font-bold text-white shadow-none hover:bg-white hover:text-[#171714]" onClick={handleBecomeGuide}>
-                {t("landing.cta.becomeGuide", "Apply to Become a Local Guide")} <ArrowRight className="ml-2 h-4 w-4" aria-hidden />
-              </Button>
-              <p className="max-w-md text-left text-sm leading-6 text-white/80">
-                {t(
-                  "landing.cta.subtitle",
-                  "Apply as a local Guide and help build Yaotu's first Japan experience network."
-                )}
-              </p>
-            </div>
-            <p className="relative z-10 mt-6 text-sm font-semibold text-white/80">
+          <div className="relative z-10 mx-auto flex max-w-[42rem] flex-col items-center px-5 py-20 text-center sm:px-8 sm:py-24">
+            <h2 id="final-cta-title">
+              {t("landing.cta.title", "Ready to help shape travel in Japan?")}
+            </h2>
+            <p className="final-cta-subtitle">
+              {t(
+                "landing.cta.subtitle",
+                "Apply as a local Guide and help build Yaotu's first Japan experience network."
+              )}
+            </p>
+            <Button className="final-cta-button mt-9 min-h-12 px-6" onClick={handleBecomeGuide}>
+              {t("landing.cta.becomeGuide", "Apply to Become a Local Guide")}{" "}
+              <ArrowRight className="ml-2 h-4 w-4" aria-hidden />
+            </Button>
+            <p className="final-cta-status mt-6">
               <span>{t("landing.cta.viewApplicationStatusPrefix", "Already Applied?")}</span>{" "}
               <button
                 type="button"

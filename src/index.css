@@ -898,6 +898,43 @@ html {
   background: #171714;
 }
 
+.final-cta h2 {
+  max-width: none;
+  color: #ffffff;
+  font-size: clamp(2rem, 4.4vw, 3.25rem);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+}
+
+.final-cta-subtitle {
+  margin-top: 1.25rem;
+  max-width: 36rem;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 1.125rem;
+  font-weight: 400;
+  line-height: 1.65;
+}
+
+.final-cta-button {
+  border-radius: 10px;
+  background: #facc14;
+  color: #171714;
+  font-weight: 700;
+  box-shadow: 0 4px 0 #ca8a04;
+}
+
+.final-cta-button:hover {
+  background: #ffda3a;
+  color: #171714;
+}
+
+.final-cta-status {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
 .final-cta::after {
   content: "";
   position: absolute;
