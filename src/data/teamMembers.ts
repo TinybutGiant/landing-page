@@ -5,6 +5,10 @@ const linkedIn = (href: string): NonNullable<TeamMemberCard["links"]>[number] =>
   href,
 });
 
+/**
+ * Order follows the Yaotu team roster.
+ * Featured = first 6 (sm · md · lg · lg · md · sm). Rest scroll below.
+ */
 export const teamMembers: TeamMemberCard[] = [
   {
     id: "shengyu-liu",
@@ -24,6 +28,7 @@ export const teamMembers: TeamMemberCard[] = [
     summary: "UI/UX Designer",
     bio: "Siti Li is part of the Yaotu team as UI/UX Designer.",
     avatarSrc: "/team/siti-li.png",
+    links: [linkedIn("https://www.linkedin.com/in/siti-li-34731b231")],
   },
   {
     id: "wenjie-zhang",
@@ -88,10 +93,10 @@ export const teamMembers: TeamMemberCard[] = [
   {
     id: "taiye-chen",
     name: "Taiye Chen",
-    role: "Marketplace Strategy & Planning Associate",
+    role: "Marketplace Strategy Planning Associate",
     status: "active",
-    summary: "Marketplace Strategy & Planning",
-    bio: "Taiye Chen is part of the Yaotu team as Marketplace Strategy & Planning Associate.",
+    summary: "Marketplace Strategy Planning",
+    bio: "Taiye Chen is part of the Yaotu team as Marketplace Strategy Planning Associate.",
     avatarSrc: "/team/taiye-chen.png",
     links: [linkedIn("https://www.linkedin.com/in/taiye-chen/")],
   },
@@ -125,8 +130,26 @@ export const teamMembers: TeamMemberCard[] = [
     avatarSrc: "/team/siqi-yao.png",
     links: [linkedIn("https://www.linkedin.com/in/abigail-siqi-yao")],
   },
+  {
+    id: "wenyan-chen",
+    name: "Wenyan Chen",
+    role: "Marketing",
+    status: "active",
+    summary: "Marketing",
+    bio: "Wenyan Chen is part of the Yaotu team as Marketing.",
+    links: [linkedIn("https://www.linkedin.com/in/wenyanchen927/")],
+  },
+  {
+    id: "eva-zhang",
+    name: "Eva Zhang",
+    role: "Finance Operations",
+    status: "active",
+    summary: "Finance Operations",
+    bio: "Eva Zhang is part of the Yaotu team as Finance Operations.",
+    links: [linkedIn("https://www.linkedin.com/in/eva-z-6696621bb")],
+  },
 ];
 
 export const featuredTeamMembers = teamMembers.slice(0, 6);
 
-export const teamMemberRows = [teamMembers.slice(6, 9), teamMembers.slice(9)];
+export const teamMemberRows = [teamMembers.slice(6, 10), teamMembers.slice(10)];

@@ -133,7 +133,7 @@ function MemberAvatar({
 }) {
   return (
     <div
-      className={`relative z-10 flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#FFF7CC] text-gray-900 shadow-sm ${avatarClassName}`}
+      className={`relative z-10 flex shrink-0 items-center justify-center overflow-hidden rounded-full text-gray-900 shadow-sm ${avatarClassName}`}
       aria-hidden
     >
       {member.avatarSrc ? (
