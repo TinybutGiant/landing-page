@@ -145,7 +145,7 @@ const QualificationUploader = (props: any) => (
 );
 
 const BecomeGuidePage = () => {
-  const { user, logout } = useAuth();
+  const { user, loading, logout } = useAuth();
   const { toast } = useToast();
   const intl = useIntl();
   const [, setLocation] = useLocation();
@@ -269,6 +269,7 @@ const BecomeGuidePage = () => {
               (user as unknown as { emailVerified?: boolean; emailverified?: boolean } | null)
                 ?.emailverified
           ),
+        isLoading: () => loading,
       },
       callbacks: {
         onVerificationRequired: (redirectTo) => {
@@ -343,7 +344,7 @@ const BecomeGuidePage = () => {
         resumePath: RESUME_PATH,
       },
     }),
-    [applicationSource, archiveApplicationPdf, intl, logout, setLocation, toast, user]
+    [applicationSource, archiveApplicationPdf, intl, loading, logout, setLocation, toast, user]
   );
 
   const uiComponents = useMemo<UIComponents>(

@@ -133,7 +133,7 @@ function MemberAvatar({
 }) {
   return (
     <div
-      className={`relative z-10 flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#FFF7CC] text-gray-900 shadow-sm ${avatarClassName}`}
+      className={`relative z-10 flex shrink-0 items-center justify-center overflow-hidden rounded-full text-gray-900 shadow-sm ${avatarClassName}`}
       aria-hidden
     >
       {member.avatarSrc ? (
@@ -203,11 +203,10 @@ function FeaturedMemberCard({
     <button
       type="button"
       onClick={() => onSelect(member)}
-      className={`group relative flex h-full w-full flex-col items-center overflow-hidden rounded-2xl border border-gray-200 bg-white/80 text-center shadow-lg backdrop-blur-sm transition-shadow hover:shadow-xl ${sizeStyles.card}`}
+      className={`group relative flex h-full w-full flex-col items-center overflow-hidden rounded-2xl border border-gray-200 bg-white text-center shadow-sm transition-shadow hover:shadow-md ${sizeStyles.card}`}
       data-cursor-hover
       aria-label={`${member.name}, ${member.role}`}
     >
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-yellow-50/50 to-orange-50/50 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
       <MemberAvatar
         member={member}
         avatarClassName={sizeStyles.avatar}
@@ -215,7 +214,7 @@ function FeaturedMemberCard({
         interactive
       />
       <p
-        className={`relative z-10 mt-4 font-semibold text-gray-900 ${sizeStyles.name}`}
+        className={`relative z-10 mt-4 font-semibold tracking-[-0.01em] text-gray-900 ${sizeStyles.name}`}
       >
         {member.name}
       </p>
@@ -250,7 +249,6 @@ function MarqueeCard({
       data-cursor-hover
       aria-label={`${member.name}, ${member.role}`}
     >
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-yellow-50/50 to-orange-50/50 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
       <MemberAvatar
         member={member}
         avatarClassName="h-14 w-14 sm:h-16 sm:w-16"
@@ -464,7 +462,7 @@ export default function TeamMemberMarquee({
 
   return (
     <>
-      <section className="relative overflow-hidden py-20">
+      <section className="relative py-20 sm:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-10 max-w-3xl sm:mb-12">
             <div className="border-l-2 border-[#FFD511] pl-4 sm:pl-5">

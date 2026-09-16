@@ -16,7 +16,7 @@ import CursorFollow from "@/components/CursorFollow";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import ScrollToTopButton from "@/components/ScrollToTopButton";
 import TeamMemberMarquee from "@/components/TeamMemberMarquee";
-import { featuredTeamMembers, teamMemberRows } from "@/data/teamMembers";
+import { localizeTeamMembers } from "@/data/teamMembers";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -205,6 +205,12 @@ const WaitlistModal = ({ open, onClose }: { open: boolean; onClose: () => void }
 const LandingPage = () => {
   const { messages } = useLanguage();
   const t = (key: string, fallback: string) => messages[key] || fallback;
+  const localizedTeamMembers = localizeTeamMembers(t);
+  const featuredTeamMembers = localizedTeamMembers.slice(0, 6);
+  const teamMemberRows = [
+    localizedTeamMembers.slice(6, 10),
+    localizedTeamMembers.slice(10),
+  ];
   const [waitlistOpen, setWaitlistOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [journeyMode, setJourneyMode] = useState<JourneyMode>("traveler");
