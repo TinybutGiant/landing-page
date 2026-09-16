@@ -210,15 +210,43 @@ html {
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.16);
 }
 
+.early-access-page .guide-form-stage {
+  display: flex;
+  justify-content: center;
+}
+
+.early-access-intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.early-access-page .guide-form-stage h1 {
+  max-width: min(16ch, 100%) !important;
+  margin-inline: auto;
+  text-align: center;
+  text-wrap: balance;
+}
+
+.early-access-page .guide-form-stage h1 + p {
+  max-width: min(38rem, 100%) !important;
+  margin-top: 1.25rem;
+  margin-inline: auto;
+  text-align: center;
+}
+
 .early-access-card {
   display: flex;
   flex-direction: column;
+  min-height: 100%;
   max-width: 100%;
-  padding: 1.5rem;
+  padding: 2rem;
   border: 1px solid #e5e7eb;
   border-radius: 16px;
   background: #ffffff;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  text-align: left;
 }
 
 .early-access-card h2 {
@@ -232,22 +260,46 @@ html {
 }
 
 .early-access-card p {
-  margin: 0.5rem 0 0;
+  margin: 0.75rem 0 0;
   color: #625f55;
   font-size: 1rem;
   line-height: 1.75;
 }
 
+.early-access-card-copy {
+  flex: 0 0 auto;
+}
+
+.early-access-card-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding-top: 1.75rem;
+}
+
+.early-access-card-footer {
+  flex: 1 1 auto;
+  justify-content: flex-end;
+  margin-top: auto;
+  padding-top: 2.25rem;
+}
+
+.early-access-card-footer .early-access-signin {
+  margin-top: -0.5rem;
+}
+
 .early-access-split {
   display: grid;
-  gap: 1rem;
-  margin-top: 2.5rem;
+  width: 100%;
+  gap: 1.5rem;
+  margin-top: 3.5rem;
   align-items: stretch;
 }
 
 @media (min-width: 768px) {
   .early-access-split {
     grid-template-columns: 1fr 1fr;
+    gap: 1.75rem;
   }
 }
 
@@ -899,7 +951,7 @@ html {
 }
 
 .final-cta h2 {
-  max-width: none;
+  max-width: 18ch;
   color: #ffffff;
   font-size: clamp(2rem, 4.4vw, 3.25rem);
   font-weight: 700;
@@ -914,6 +966,7 @@ html {
   font-size: 1.125rem;
   font-weight: 400;
   line-height: 1.65;
+  text-align: left;
 }
 
 .final-cta-button {

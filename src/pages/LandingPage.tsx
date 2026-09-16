@@ -5,6 +5,7 @@ import {
   CalendarCheck,
   ChevronDown,
   Compass,
+  Globe2,
   MapPin,
   ShieldCheck,
 } from "lucide-react";
@@ -441,8 +442,9 @@ const LandingPage = () => {
         </section>
 
         <section id="become-guide-cta" className="final-cta" aria-labelledby="final-cta-title">
-          <div className="relative z-10 mx-auto flex max-w-[42rem] flex-col items-center px-5 py-20 text-center sm:px-8 sm:py-24">
-            <h2 id="final-cta-title">
+          <div className="relative z-10 mx-auto flex max-w-[82rem] flex-col items-start px-5 py-20 text-left sm:px-8 sm:py-24 lg:px-12">
+            <Globe2 className="h-8 w-8 text-white" aria-hidden />
+            <h2 id="final-cta-title" className="mt-8">
               {t("landing.cta.title", "Ready to help shape travel in Japan?")}
             </h2>
             <p className="final-cta-subtitle">
