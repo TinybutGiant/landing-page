@@ -5,11 +5,8 @@ const linkedIn = (href: string): NonNullable<TeamMemberCard["links"]>[number] =>
   href,
 });
 
-/**
- * Featured = first 6 (sm · md · lg · lg · md · sm).
- * Display order: 5 Wenyan · 3 Kaiqing · 1 Shengyu · 2 Siti · 4 Taiye · 6 Eva
- */
-export const teamMembers: TeamMemberCard[] = [
+/** Featured = first 6 (sm · md · lg · lg · md · sm). Rest scroll below. */
+const teamMembers: TeamMemberCard[] = [
   {
     id: "wenyan-chen",
     name: "Wenyan Chen",
@@ -152,6 +149,22 @@ export const teamMembers: TeamMemberCard[] = [
   },
 ];
 
-export const featuredTeamMembers = teamMembers.slice(0, 6);
+const translationKey = (id: string) =>
+  id.replace(/-([a-z])/g, (_, letter: string) => letter.toUpperCase());
 
-export const teamMemberRows = [teamMembers.slice(6, 10), teamMembers.slice(10)];
+export function localizeTeamMembers(
+  t: (key: string, fallback: string) => string
+): TeamMemberCard[] {
+  return teamMembers.map((member) => {
+    const key = translationKey(member.id);
+    return {
+      ...member,
+      role: t(`landing.teamMembers.${key}Role`, member.role),
+      summary: t(
+        `landing.teamMembers.${key}Summary`,
+        member.summary ?? member.role
+      ),
+      bio: t(`landing.teamMembers.${key}Bio`, member.bio),
+    };
+  });
+}
