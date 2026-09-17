@@ -414,7 +414,7 @@ export default function TeamMemberMarquee({
   return (
     <>
       <section className="relative overflow-hidden bg-[#fffaf0] pb-[clamp(5rem,9vw,8rem)]">
-        <div className="section-shell team-roster-shell border-t border-[#d6cfb7]/70">
+        <div className="section-shell team-roster-shell">
           <div className="section-heading-row mb-10 sm:mb-12">
             <h2>{title}</h2>
             {featuredSubtitle ? <p>{featuredSubtitle}</p> : null}
