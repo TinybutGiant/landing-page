@@ -639,7 +639,13 @@
         "requiredInformation": "必須情報"
       }
     },
+    "applicationStateUnavailableTitle": "申請状況を一時的に取得できません",
+    "applicationStateUnavailableDesc": "この申請を編集できるか安全に確認できませんでした。再試行するか、申請状況をご確認ください。",
+    "applicationStateRetry": "再試行",
+    "applicationStateViewStatus": "申請状況を確認",
     "toast": {
+      "submitSuccessTitle": "申請書を提出しました",
+      "submitSuccessDesc": "申請書が提出されました。1～3営業日以内に審査いたします。",
       "draftConflictTitle": "保存済みの申請があります",
       "draftConflictDesc": "アカウントに保存済みの申請を続けてください。ブラウザの下書きはローカルに保持されています。",
       "genericErrorTitle": "問題が発生しました",

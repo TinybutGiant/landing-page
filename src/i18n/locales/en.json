@@ -639,7 +639,13 @@
         "requiredInformation": "Required information"
       }
     },
+    "applicationStateUnavailableTitle": "Application status is temporarily unavailable",
+    "applicationStateUnavailableDesc": "We could not safely determine whether this application is editable. Try again or view your application status.",
+    "applicationStateRetry": "Try again",
+    "applicationStateViewStatus": "View application status",
     "toast": {
+      "submitSuccessTitle": "Application submitted",
+      "submitSuccessDesc": "Your application was submitted. We will review it within 1–3 business days.",
       "draftConflictTitle": "Saved application found",
       "draftConflictDesc": "Continue the saved application on your account. Your browser draft was kept locally.",
       "genericErrorTitle": "Something went wrong",

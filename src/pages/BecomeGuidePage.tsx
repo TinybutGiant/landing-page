@@ -10,6 +10,7 @@ import {
   FounderNoteMail,
   GUIDE_APPLICATION_IDENTITY_INTENT_STORAGE_KEY,
   GuideForm,
+  resolveGuideApplicationContinuation,
   type GuideFormConfig,
   type GuideFormDestination,
   type UIComponents,
@@ -53,7 +54,7 @@ import { useToast } from "@/hooks/use-toast";
 import { pathWithRedirect, rememberPostEmailVerificationRedirect } from "@/lib/authRedirects";
 import { apiRequest } from "@/lib/queryClient";
 import { resolveApiUrl } from "@/lib/apiClient";
-import { getCanonicalVerifyEmailPath } from "@/lib/yaotuAuthRuntime";
+import { getCanonicalVerifyEmailPath, getMarketplaceUrl } from "@/lib/yaotuAuthRuntime";
 
 const RESUME_PATH = DEFAULT_RESUME_PATH;
 const DESTINATIONS_QUERY_KEY = ["/api/v2/destinations", "JP"] as const;
@@ -63,6 +64,12 @@ const DESTINATIONS_CACHE_TTL_MS = 10 * 60 * 1000;
 type CachedDestinations = {
   cachedAt: number;
   destinations: GuideFormDestination[];
+};
+
+type GuideApplicationState = {
+  hasApplication: boolean;
+  applicationStatus?: string;
+  applicationId?: string | number;
 };
 
 const readCachedDestinations = (): GuideFormDestination[] | undefined => {
@@ -151,6 +158,45 @@ const BecomeGuidePage = () => {
   const [, setLocation] = useLocation();
   const initialStep = useMemo(readInitialStep, []);
   const applicationSource = useMemo(readApplicationSource, []);
+  const applicationStateQuery = useQuery<GuideApplicationState>({
+    queryKey: ["/api/v2/guide-applications/status", "become-guide-entry", user?.id],
+    queryFn: () => apiRequest("GET", "/api/v2/guide-applications/status"),
+    enabled: !loading && Boolean(user),
+    staleTime: 0,
+    retry: 1,
+  });
+  const continuationIntent = resolveGuideApplicationContinuation({
+    authenticated: Boolean(user),
+    hasGuideProfile: Boolean(user?.isGuide),
+    hasApplication: applicationStateQuery.data?.hasApplication ?? false,
+    applicationStatus: applicationStateQuery.data?.applicationStatus,
+  });
+
+  useEffect(() => {
+    if (
+      loading ||
+      !user ||
+      !applicationStateQuery.isSuccess ||
+      applicationStateQuery.isFetching
+    ) {
+      return;
+    }
+
+    if (continuationIntent === "guide_home") {
+      window.location.assign(getMarketplaceUrl("/guide-dashboard"));
+      return;
+    }
+    if (continuationIntent === "view_status") {
+      setLocation("/view-application-status");
+    }
+  }, [
+    applicationStateQuery.isSuccess,
+    applicationStateQuery.isFetching,
+    continuationIntent,
+    loading,
+    setLocation,
+    user,
+  ]);
   const destinationsQuery = useQuery<GuideFormDestination[]>({
     queryKey: DESTINATIONS_QUERY_KEY,
     queryFn: async () => {
@@ -239,6 +285,7 @@ const BecomeGuidePage = () => {
       resolveApiUrl,
       // Source attribution only; @replit/guide-form owns the Guide Application state machine.
       applicationSource,
+      applicationContinuation: continuationIntent,
       apiEndpoints: {
         loadDraft: "/api/v2/guide-applications/draft",
         saveDraft: "/api/v2/guide-applications/draft",
@@ -276,7 +323,13 @@ const BecomeGuidePage = () => {
           rememberPostEmailVerificationRedirect(redirectTo);
           window.location.assign(getCanonicalVerifyEmailPath(guideLoginContinuation(redirectTo)));
         },
-        onHandoffConflict: () => {
+        onHandoffConflict: (conflict) => {
+          if (
+            conflict.reason === "submitted_application" ||
+            conflict.reason === "guide_profile_exists"
+          ) {
+            return;
+          }
           toast({
             title: intl.formatMessage({
               id: "becomeGuide.toast.draftConflictTitle",
@@ -293,6 +346,9 @@ const BecomeGuidePage = () => {
         onHandoffSuccess: () => {
           sessionStorage.removeItem(GUIDE_APPLICATION_IDENTITY_INTENT_STORAGE_KEY);
         },
+        onNavigateToStatus: () => setLocation("/view-application-status"),
+        onNavigateToGuideHome: () =>
+          window.location.assign(getMarketplaceUrl("/guide-dashboard")),
         onError: (error) => {
           if (isTokenExpiredError(error)) {
             console.info("Guide application session expired; continuing with anonymous draft.");
@@ -327,8 +383,15 @@ const BecomeGuidePage = () => {
         onSuccess: (payload) => {
           const applicationId = extractApplicationId(payload);
           toast({
-            title: intl.formatMessage({ id: "becomeGuide.toast.submitSuccessTitle" }),
-            description: intl.formatMessage({ id: "becomeGuide.toast.submitSuccessDesc" }),
+            title: intl.formatMessage({
+              id: "becomeGuide.toast.submitSuccessTitle",
+              defaultMessage: "Application submitted",
+            }),
+            description: intl.formatMessage({
+              id: "becomeGuide.toast.submitSuccessDesc",
+              defaultMessage:
+                "Your application was submitted. We will review it within 1–3 business days.",
+            }),
             variant: "success",
           });
           if (applicationId) {
@@ -344,7 +407,17 @@ const BecomeGuidePage = () => {
         resumePath: RESUME_PATH,
       },
     }),
-    [applicationSource, archiveApplicationPdf, intl, loading, logout, setLocation, toast, user]
+    [
+      applicationSource,
+      archiveApplicationPdf,
+      continuationIntent,
+      intl,
+      loading,
+      logout,
+      setLocation,
+      toast,
+      user,
+    ]
   );
 
   const uiComponents = useMemo<UIComponents>(
@@ -405,6 +478,60 @@ const BecomeGuidePage = () => {
     () => apiRequest("GET", "/api/v2/service-categories/with-subcategories"),
     []
   );
+
+  const isResolvingCanonicalState =
+    loading ||
+    (Boolean(user) && (applicationStateQuery.isPending || applicationStateQuery.isFetching));
+  const isLeavingGuideForm =
+    Boolean(user) &&
+    applicationStateQuery.isSuccess &&
+    (continuationIntent === "view_status" || continuationIntent === "guide_home");
+
+  if (isResolvingCanonicalState || isLeavingGuideForm) return null;
+
+  if (user && applicationStateQuery.isError) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-yellow-50 via-white to-orange-50 p-6">
+        <Card className="w-full max-w-lg">
+          <CardHeader>
+            <CardTitle>
+              {intl.formatMessage({
+                id: "becomeGuide.applicationStateUnavailableTitle",
+                defaultMessage: "Application status is temporarily unavailable",
+              })}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p>
+              {intl.formatMessage({
+                id: "becomeGuide.applicationStateUnavailableDesc",
+                defaultMessage:
+                  "We could not safely determine whether this application is editable. Try again or view your application status.",
+              })}
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <Button type="button" onClick={() => void applicationStateQuery.refetch()}>
+                {intl.formatMessage({
+                  id: "becomeGuide.applicationStateRetry",
+                  defaultMessage: "Try again",
+                })}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setLocation("/view-application-status")}
+              >
+                {intl.formatMessage({
+                  id: "becomeGuide.applicationStateViewStatus",
+                  defaultMessage: "View application status",
+                })}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-white to-orange-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">

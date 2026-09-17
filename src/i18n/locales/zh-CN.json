@@ -639,7 +639,13 @@
         "requiredInformation": "必填信息"
       }
     },
+    "applicationStateUnavailableTitle": "暂时无法获取申请状态",
+    "applicationStateUnavailableDesc": "我们暂时无法安全确认这份申请是否仍可编辑。请重试或查看申请状态。",
+    "applicationStateRetry": "重试",
+    "applicationStateViewStatus": "查看申请状态",
     "toast": {
+      "submitSuccessTitle": "申请提交成功",
+      "submitSuccessDesc": "您的申请已成功提交，我们将在 1–3 个工作日内审核。",
       "draftConflictTitle": "发现已保存的申请",
       "draftConflictDesc": "请继续账号中已保存的申请。浏览器草稿已保留在本地。",
       "genericErrorTitle": "出现问题",
