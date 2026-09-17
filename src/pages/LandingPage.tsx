@@ -373,14 +373,14 @@ const LandingPage = () => {
           </div>
         </section>
 
-        <section className="section-shell team-intro-section bg-[#fffaf0]" aria-labelledby="team-title">
+        <section className="section-shell team-intro-section bg-white" aria-labelledby="team-title">
           <div className="section-heading-row">
             <h2 id="team-title">{t("landing.team.title", "From Our Team")}</h2>
             <p>{t("landing.team.subtitle", "Built by people who care about better travel experiences.")}</p>
           </div>
           <div className="team-grid mt-12">
-            {team.map((member, index) => (
-              <Card key={member.name} className={`team-card team-card-${index + 1}`}>
+            {team.map((member) => (
+              <Card key={member.name} className="team-card border-0">
                 <CardContent className="team-card-content p-7 sm:p-8">
                   <span className="team-quote-mark" aria-hidden>“</span>
                   <p className="team-quote">{member.quote}</p>
