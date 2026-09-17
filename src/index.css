@@ -633,7 +633,6 @@ html {
   margin-inline: auto;
 }
 
-.feature-card,
 .team-card {
   border: 1px solid #e5e7eb;
   border-radius: 16px;
@@ -656,8 +655,17 @@ html {
   flex-direction: column;
   align-items: flex-start;
   padding: 1.5rem 1.5rem 1.75rem;
+  border: 0;
+  border-radius: 16px;
   background: #fffaf0;
+  box-shadow:
+    0 1px 2px rgba(66, 52, 12, 0.04),
+    0 8px 24px rgba(66, 52, 12, 0.07);
   text-align: left;
+  transform: translateZ(0);
+  transition:
+    transform 220ms var(--ease-out),
+    box-shadow 220ms var(--ease-out);
 }
 
 .feature-card .feature-icon {
@@ -780,7 +788,9 @@ html {
   }
 
   .feature-card:hover {
-    border-color: #d6cfb7;
+    box-shadow:
+      0 2px 6px rgba(66, 52, 12, 0.05),
+      0 14px 32px rgba(66, 52, 12, 0.1);
   }
 
   .feature-card:hover .feature-icon {
