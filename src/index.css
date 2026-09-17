@@ -633,17 +633,6 @@ html {
   margin-inline: auto;
 }
 
-.team-card {
-  border: 1px solid #e5e7eb;
-  border-radius: 16px;
-  background: white;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
-  transform: translateZ(0);
-  transition:
-    transform 220ms var(--ease-out),
-    box-shadow 220ms var(--ease-out);
-}
-
 .feature-grid {
   display: grid;
   gap: 1rem;
@@ -657,10 +646,10 @@ html {
   padding: 1.5rem 1.5rem 1.75rem;
   border: 0;
   border-radius: 16px;
-  background: #fffaf0;
+  background: white;
   box-shadow:
-    0 1px 2px rgba(66, 52, 12, 0.04),
-    0 8px 24px rgba(66, 52, 12, 0.07);
+    0 18px 42px rgba(66, 52, 12, 0.08),
+    0 3px 10px rgba(66, 52, 12, 0.05);
   text-align: left;
   transform: translateZ(0);
   transition:
@@ -705,10 +694,10 @@ html {
   min-height: 17rem;
   border: 0;
   border-radius: 16px;
-  background: #fffaf0;
+  background: white;
   box-shadow:
-    0 1px 2px rgba(66, 52, 12, 0.04),
-    0 8px 24px rgba(66, 52, 12, 0.07);
+    0 18px 42px rgba(66, 52, 12, 0.08),
+    0 3px 10px rgba(66, 52, 12, 0.05);
   text-align: center;
   transform: translateZ(0);
   transition:
@@ -796,8 +785,8 @@ html {
   .feature-card:hover,
   .team-card:hover {
     box-shadow:
-      0 2px 6px rgba(66, 52, 12, 0.05),
-      0 14px 32px rgba(66, 52, 12, 0.1);
+      0 22px 48px rgba(66, 52, 12, 0.1),
+      0 4px 12px rgba(66, 52, 12, 0.06);
     transform: translateY(-4px);
   }
 
