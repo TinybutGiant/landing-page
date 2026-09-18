@@ -99,27 +99,6 @@ function getMemberLinks(
     .filter((link): link is MemberLink => Boolean(link));
 }
 
-type FeaturedSize = "sm" | "md" | "lg";
-
-const FEATURED_SIZE_BY_INDEX_6: FeaturedSize[] = [
-  "sm",
-  "md",
-  "lg",
-  "lg",
-  "md",
-  "sm",
-];
-
-function getFeaturedSize(index: number, total: number): FeaturedSize {
-  if (total === 6) return FEATURED_SIZE_BY_INDEX_6[index] ?? "sm";
-
-  const middle = (total - 1) / 2;
-  const distance = Math.abs(index - middle);
-  if (distance <= 0.5) return "lg";
-  if (distance <= 1.5) return "md";
-  return "sm";
-}
-
 function MemberAvatar({
   member,
   avatarClassName,
@@ -158,7 +137,7 @@ function MemberAvatar({
 
 function FormerBadge({ label }: { label: string }) {
   return (
-    <span className="inline-flex shrink-0 items-center rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 text-[0.6875rem] font-semibold uppercase tracking-wide text-gray-500">
+    <span className="inline-flex shrink-0 items-center rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 text-xs font-semibold uppercase tracking-wide text-gray-500">
       {label}
     </span>
   );
@@ -168,54 +147,26 @@ function FeaturedMemberCard({
   member,
   onSelect,
   formerLabel,
-  size = "md",
 }: {
   member: TeamMemberCard;
   onSelect: (member: TeamMemberCard) => void;
   formerLabel: string;
-  size?: FeaturedSize;
 }) {
-  const sizeStyles = {
-    sm: {
-      card: "min-h-[13.5rem] px-3 py-5 sm:min-h-[14.5rem] sm:px-4 sm:py-5",
-      avatar: "h-14 w-14 sm:h-16 sm:w-16",
-      icon: "h-6 w-6 sm:h-7 sm:w-7",
-      name: "text-sm sm:text-base",
-      summary: "text-xs sm:text-sm",
-    },
-    md: {
-      card: "min-h-[16rem] px-4 py-6 sm:min-h-[17.5rem] sm:px-5 sm:py-7",
-      avatar: "h-[4.5rem] w-[4.5rem] sm:h-[5.5rem] sm:w-[5.5rem]",
-      icon: "h-8 w-8 sm:h-9 sm:w-9",
-      name: "text-base sm:text-lg",
-      summary: "text-xs sm:text-sm",
-    },
-    lg: {
-      card: "min-h-[18.5rem] px-4 py-7 sm:min-h-[20.5rem] sm:px-6 sm:py-8",
-      avatar: "h-20 w-20 sm:h-24 sm:w-24",
-      icon: "h-9 w-9 sm:h-10 sm:w-10",
-      name: "text-lg sm:text-xl",
-      summary: "text-sm",
-    },
-  }[size];
-
   return (
     <button
       type="button"
       onClick={() => onSelect(member)}
-      className={`group relative flex h-full w-full flex-col items-center overflow-hidden rounded-2xl border border-gray-200 bg-white text-center shadow-sm transition-shadow hover:shadow-md ${sizeStyles.card}`}
+      className="group relative flex min-h-64 w-full flex-col items-center overflow-hidden rounded-[16px] border border-[#e5e7eb] bg-white px-4 py-6 text-center shadow-[0_1px_4px_rgba(0,0,0,0.06)] transition-[transform,box-shadow] duration-200 hover:-translate-y-1 hover:shadow-[0_10px_24px_rgba(66,52,12,0.10)] sm:px-5 sm:py-7"
       data-cursor-hover
       aria-label={`${member.name}, ${member.role}`}
     >
       <MemberAvatar
         member={member}
-        avatarClassName={sizeStyles.avatar}
-        iconClassName={sizeStyles.icon}
+        avatarClassName="h-20 w-20"
+        iconClassName="h-8 w-8"
         interactive
       />
-      <p
-        className={`relative z-10 mt-4 font-semibold tracking-[-0.01em] text-gray-900 ${sizeStyles.name}`}
-      >
+      <p className="relative z-10 mt-4 text-base font-semibold text-[#171714]">
         {member.name}
       </p>
       {member.status === "former" ? (
@@ -224,7 +175,7 @@ function FeaturedMemberCard({
         </div>
       ) : null}
       <p
-        className={`relative z-10 mt-2 line-clamp-2 leading-relaxed text-gray-600 ${sizeStyles.summary}`}
+        className="relative z-10 mt-2 line-clamp-2 text-sm leading-relaxed text-[#625f55]"
       >
         {member.summary ?? member.role}
       </p>
@@ -245,7 +196,7 @@ function MarqueeCard({
     <button
       type="button"
       onClick={() => onSelect(member)}
-      className="group relative flex w-[min(88vw,22rem)] shrink-0 items-center gap-4 overflow-hidden rounded-2xl border border-gray-200 bg-white/80 px-4 py-3.5 text-left shadow-lg backdrop-blur-sm transition-shadow hover:shadow-xl sm:w-[24rem] sm:px-5 sm:py-4"
+      className="group relative flex w-[min(88vw,22rem)] shrink-0 items-center gap-4 overflow-hidden rounded-[16px] border border-[#e5e7eb] bg-white px-4 py-3.5 text-left shadow-[0_1px_4px_rgba(0,0,0,0.06)] transition-[transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_20px_rgba(66,52,12,0.09)] sm:w-[24rem] sm:px-5 sm:py-4"
       data-cursor-hover
       aria-label={`${member.name}, ${member.role}`}
     >
@@ -325,7 +276,7 @@ function MemberLinkButton({
       href={href}
       target="_blank"
       rel="noreferrer noopener"
-      className="inline-flex cursor-pointer items-center gap-2 rounded-full border-2 border-[#FFD511] bg-white px-4 py-2 text-sm font-semibold text-gray-900 transition-colors hover:bg-[#FFF7CC] active:scale-[0.98]"
+      className="inline-flex cursor-pointer items-center gap-2 rounded-[10px] border border-[#d6cfb7] bg-white px-4 py-2 text-sm font-semibold text-[#171714] shadow-[0_1px_4px_rgba(0,0,0,0.06)] transition-colors hover:bg-[#fffaf0] active:scale-[0.98]"
       data-cursor-hover
     >
       <Icon className="h-4 w-4 shrink-0" strokeWidth={1.75} />
@@ -363,7 +314,7 @@ function TeamMemberModal({
     >
       <button
         type="button"
-        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+        className="absolute inset-0 bg-[#171714]/45 backdrop-blur-sm"
         aria-label={labels.closeLabel}
         onClick={onClose}
       />
@@ -374,12 +325,12 @@ function TeamMemberModal({
         initial={{ opacity: 0, y: 20, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 12, scale: 0.98 }}
-        className="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl sm:p-8"
+        className="relative w-full max-w-md rounded-[16px] bg-white/95 p-6 shadow-[0_16px_48px_rgba(0,0,0,0.16)] sm:p-8"
       >
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-4 top-4 text-gray-400 transition-colors hover:text-gray-700"
+          className="absolute right-4 top-4 rounded-[10px] p-2 text-[#625f55] transition-colors hover:bg-[#f7f2df] hover:text-[#171714]"
           aria-label={labels.closeLabel}
         >
           <X className="h-5 w-5" />
@@ -462,46 +413,24 @@ export default function TeamMemberMarquee({
 
   return (
     <>
-      <section className="relative py-20 sm:py-24">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-10 max-w-3xl sm:mb-12">
-            <div className="border-l-2 border-[#FFD511] pl-4 sm:pl-5">
-              <h2 className="text-3xl font-bold leading-tight tracking-tight text-gray-900 sm:text-4xl lg:text-[2.5rem] lg:leading-[1.15]">
-                {title}
-              </h2>
-              {featuredSubtitle ? (
-                <p className="mt-3 text-base leading-relaxed text-gray-600 sm:text-lg">
-                  {featuredSubtitle}
-                </p>
-              ) : null}
-            </div>
+      <section className="relative overflow-hidden bg-[#fffaf0] pb-[clamp(5rem,9vw,8rem)]">
+        <div className="section-shell team-roster-shell">
+          <div className="section-heading-row mb-10 sm:mb-12">
+            <h2>{title}</h2>
+            {featuredSubtitle ? <p>{featuredSubtitle}</p> : null}
           </div>
 
           {hasFeatured ? (
-            <div className="flex flex-wrap items-end justify-center gap-3 sm:gap-3 lg:flex-nowrap lg:gap-4">
-              {featured.map((member, index) => {
-                const size = getFeaturedSize(index, featured.length);
-                const widthClass =
-                  size === "lg"
-                    ? "lg:flex-[1.3]"
-                    : size === "md"
-                      ? "lg:flex-[1.05]"
-                      : "lg:flex-[0.85]";
-
-                return (
-                  <div
-                    key={member.id}
-                    className={`w-[calc(50%-0.375rem)] sm:w-[calc(33.333%-0.5rem)] lg:w-auto lg:min-w-0 ${widthClass}`}
-                  >
-                    <FeaturedMemberCard
-                      member={member}
-                      onSelect={setSelectedMember}
-                      formerLabel={formerLabel}
-                      size={size}
-                    />
-                  </div>
-                );
-              })}
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6 lg:gap-4">
+              {featured.map((member) => (
+                <div key={member.id} className="min-w-0">
+                  <FeaturedMemberCard
+                    member={member}
+                    onSelect={setSelectedMember}
+                    formerLabel={formerLabel}
+                  />
+                </div>
+              ))}
             </div>
           ) : null}
         </div>

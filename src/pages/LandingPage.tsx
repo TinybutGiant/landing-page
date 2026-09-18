@@ -1,34 +1,30 @@
-import {
-  useRef,
-  useState,
-  useEffect,
-  type ReactNode,
-  type CSSProperties,
-} from "react";
-import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
-import { Button } from "@/components/ui/button";
+import { useState, type ReactNode } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import {
   ArrowRight,
-  ArrowLeft,
+  CalendarCheck,
+  ChevronDown,
+  Compass,
+  Globe2,
   MapPin,
-  Heart,
-  Globe,
-  Shield,
-  Plus,
-  X,
+  ShieldCheck,
 } from "lucide-react";
 import CursorFollow from "@/components/CursorFollow";
-import BlendCursor from "@/components/BlendCursor";
-import ScrollToTopButton from "@/components/ScrollToTopButton";
-import { useAuth } from "@/context/AuthContext";
-import { useLanguage } from "@/i18n/LanguageProvider";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import ScrollToTopButton from "@/components/ScrollToTopButton";
 import TeamMemberMarquee from "@/components/TeamMemberMarquee";
+import { FlowStoryRow } from "@/components/HowYaotuWorks";
 import { localizeTeamMembers } from "@/data/teamMembers";
-import { getMarketplaceUrl } from "@/lib/yaotuAuthRuntime";
-
-const DISPLAY_FONT =
-  '"Open Runde", "Helvetica Neue", Helvetica, Arial, sans-serif';
+import { useAuth } from "@/context/AuthContext";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { useLanguage } from "@/i18n/LanguageProvider";
 
 type StepItem = {
   title: string;
@@ -36,310 +32,25 @@ type StepItem = {
   description: string;
 };
 
-const StepFlow = ({
-  steps,
-  label,
-  activeIndex,
-  onActiveChange,
-  title,
-  eyebrow,
-  description,
-  ctaLabel,
-  onCtaClick,
-  primary = false,
-  imageFirstOnDesktop = false,
-}: {
-  steps: StepItem[];
-  label: string;
-  activeIndex?: number;
-  onActiveChange?: (index: number) => void;
-  title: string;
-  eyebrow?: string;
-  description: string;
-  ctaLabel?: string;
-  onCtaClick?: () => void;
-  primary?: boolean;
-  imageFirstOnDesktop?: boolean;
-}) => {
-  const [internalActive, setInternalActive] = useState(0);
-  const [direction, setDirection] = useState(1);
-  const active = activeIndex ?? internalActive;
-  const current = steps[active];
+const heroImages = [
+  "/hero-scene-bamboo.png",
+  "/hero-scene-torii.png",
+  "/hero-scene-kyoto.png",
+  "/hero-scene-fuji.png",
+  "/hero-scene-coast.png",
+];
 
-  const goTo = (next: number) => {
-    const clamped = Math.max(0, Math.min(steps.length - 1, next));
-    if (clamped === active) return;
-    setDirection(clamped > active ? 1 : -1);
-    setInternalActive(clamped);
-    onActiveChange?.(clamped);
-  };
-
-  const canGoPrev = active > 0;
-  const canGoNext = active < steps.length - 1;
-
-  const media = (
-    <img
-      src={current.image}
-      alt={current.title}
-      className="h-full w-full object-cover object-top"
-      loading="lazy"
-      draggable={false}
-    />
-  );
-
-  const ctaClasses = primary
-    ? "h-auto min-h-[3.5rem] whitespace-normal rounded-full px-8 py-4 text-center text-base font-semibold leading-snug shadow-md sm:text-lg"
-    : "h-auto min-h-[3.5rem] whitespace-normal rounded-full border-2 border-[#FFD511] bg-white px-8 py-4 text-center text-base font-semibold leading-snug text-gray-900 shadow-none hover:bg-[#FFF7CC] sm:text-lg";
-
-  const sideArrowClass =
-    "absolute top-1/2 z-20 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-gray-900/70 text-white shadow-lg backdrop-blur-sm transition-colors hover:bg-gray-900/90 sm:h-12 sm:w-12";
-
-  const badgeClass = primary
-    ? "inline-flex w-fit shrink-0 rounded-full bg-[#FFD511]/20 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-900"
-    : "inline-flex w-fit shrink-0 rounded-full border border-[#FFD511] bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-700";
-
-  return (
-    <div className="w-full">
-      <div className="relative px-5 sm:px-12 lg:px-14">
-        {canGoPrev ? (
-          <button
-            type="button"
-            onClick={() => goTo(active - 1)}
-            aria-label={`${label}: previous step`}
-            className={`${sideArrowClass} left-0`}
-            data-cursor-hover
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </button>
-        ) : null}
-        {canGoNext ? (
-          <button
-            type="button"
-            onClick={() => goTo(active + 1)}
-            aria-label={`${label}: next step`}
-            className="absolute top-1/2 right-0 z-20 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-[#FFD511] text-gray-900 shadow-lg transition-colors hover:bg-[#E5C00F] sm:h-12 sm:w-12"
-            data-cursor-hover
-          >
-            <ArrowRight className="h-5 w-5" />
-          </button>
-        ) : null}
-
-        <div className="overflow-hidden">
-          <div
-            className={`grid items-start gap-6 p-1 sm:gap-8 sm:p-2 lg:gap-10 lg:p-3 ${
-              imageFirstOnDesktop
-                ? "lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:[grid-template-areas:'media_copy']"
-                : "lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:[grid-template-areas:'copy_media']"
-            }`}
-          >
-            <div className="order-1 flex min-w-0 flex-col justify-center text-left lg:[grid-area:copy]">
-              <div className="flex items-center gap-2.5">
-                {steps.map((item, index) => (
-                  <button
-                    key={item.title}
-                    type="button"
-                    onClick={() => goTo(index)}
-                    aria-label={`${label}: step ${index + 1}`}
-                    aria-current={index === active}
-                    className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold transition-colors sm:h-9 sm:w-9 ${
-                      index === active
-                        ? "bg-[#FFD511] text-gray-900"
-                        : "bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700"
-                    }`}
-                    data-cursor-hover
-                  >
-                    {index + 1}
-                  </button>
-                ))}
-              </div>
-
-              <AnimatePresence mode="wait" custom={direction}>
-                <motion.div
-                  key={current.title}
-                  custom={direction}
-                  initial={{ opacity: 0, x: direction * 28 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: direction * -28 }}
-                  transition={{ duration: 0.28, ease: "easeOut" }}
-                  className="lg:min-h-[29rem]"
-                >
-                  <h3 className="mt-3 max-w-xl text-balance text-2xl font-bold leading-snug text-gray-900 sm:mt-4 sm:text-3xl lg:text-[2.15rem] lg:leading-[1.2]">
-                    {active === 0 ? title : current.title}
-                  </h3>
-
-                  {eyebrow ? (
-                    <span className={`${badgeClass} mt-3`}>{eyebrow}</span>
-                  ) : null}
-
-                  {active === 0 ? (
-                    <p className="mt-4 max-w-xl text-sm leading-relaxed text-gray-600 sm:text-base">
-                      {description}
-                    </p>
-                  ) : null}
-
-                  <div
-                    className={`max-w-xl border-l-2 border-[#FFD511] pl-4 sm:pl-5 ${
-                      active === 0 ? "mt-6 sm:mt-7" : "mt-4 sm:mt-5"
-                    }`}
-                  >
-                    {active === 0 ? (
-                      <>
-                        <p className="flex items-start gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-gray-500 sm:gap-2.5">
-                          <span
-                            className="shrink-0 font-normal normal-case tracking-normal text-gray-500"
-                            aria-hidden
-                          >
-                            {["①", "②", "③"][active]}
-                          </span>
-                          <span>{current.title}</span>
-                        </p>
-                        <p className="mt-2 text-sm leading-relaxed text-gray-700 sm:text-base">
-                          {current.description}
-                        </p>
-                      </>
-                    ) : (
-                      <p className="text-sm leading-relaxed text-gray-700 sm:text-base">
-                        {current.description}
-                      </p>
-                    )}
-                  </div>
-
-                  {ctaLabel && onCtaClick && (
-                    <div className="mt-7 hidden lg:block">
-                      <Button
-                        size="lg"
-                        variant={primary ? "default" : "outline"}
-                        className={ctaClasses}
-                        onClick={onCtaClick}
-                        data-cursor-hover
-                      >
-                        {ctaLabel}
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                      </Button>
-                    </div>
-                  )}
-                </motion.div>
-              </AnimatePresence>
-            </div>
-
-            <div className="order-2 w-full min-w-0 self-start lg:[grid-area:media]">
-              <div className="aspect-[16/10] w-full overflow-hidden rounded-2xl border border-gray-200 bg-[#fbfaf3]">
-                <AnimatePresence mode="wait" custom={direction}>
-                  <motion.div
-                    key={current.title}
-                    custom={direction}
-                    initial={{ opacity: 0, x: direction * 28 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: direction * -28 }}
-                    transition={{ duration: 0.28, ease: "easeOut" }}
-                    className="h-full w-full"
-                  >
-                    {media}
-                  </motion.div>
-                </AnimatePresence>
-              </div>
-
-            </div>
-
-            {ctaLabel && onCtaClick && (
-              <div className="order-3 lg:hidden">
-                <Button
-                  size="lg"
-                  variant={primary ? "default" : "outline"}
-                  className={`${ctaClasses} w-full justify-center`}
-                  onClick={onCtaClick}
-                  data-cursor-hover
-                >
-                  {ctaLabel}
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-3 flex items-center justify-center gap-2.5 lg:-mt-24">
-        {steps.map((item, index) => (
-          <button
-            key={item.title}
-            type="button"
-            onClick={() => goTo(index)}
-            aria-label={`${label}: step ${index + 1}`}
-            aria-current={index === active}
-            className={`h-2.5 rounded-full transition-all ${
-              index === active
-                ? "w-7 bg-[#FFD511]"
-                : "w-2.5 bg-gray-300 hover:bg-gray-400"
-            }`}
-            data-cursor-hover
-          />
-        ))}
-      </div>
-    </div>
-  );
-};
-
-const FlowStoryRow = ({
-  title,
-  eyebrow,
-  description,
-  steps,
-  activeStep,
-  onStepChange,
-  label,
-  ctaLabel,
-  onCtaClick,
-  primary = false,
-  tone = "white",
-  imageFirstOnDesktop = false,
-}: {
-  title: string;
-  eyebrow?: string;
-  description: string;
-  steps: StepItem[];
-  activeStep: number;
-  onStepChange: (index: number) => void;
-  label: string;
-  ctaLabel?: string;
-  onCtaClick?: () => void;
-  primary?: boolean;
-  tone?: "white" | "warm";
-  imageFirstOnDesktop?: boolean;
-}) => {
-  return (
-    <div className="relative py-10 sm:py-12 lg:py-14">
-      {tone === "warm" ? (
-        <div
-          className="pointer-events-none absolute inset-y-0 left-1/2 w-screen -translate-x-1/2 bg-[#fbfaf3]"
-          aria-hidden
-        />
-      ) : null}
-      <div className="relative">
-        <StepFlow
-          steps={steps}
-          label={label}
-          activeIndex={activeStep}
-          onActiveChange={onStepChange}
-          title={title}
-          eyebrow={eyebrow}
-          description={description}
-          ctaLabel={ctaLabel}
-          onCtaClick={onCtaClick}
-          primary={primary}
-          imageFirstOnDesktop={imageFirstOnDesktop}
-        />
-      </div>
-    </div>
-  );
-};
+const featureIcons: ReactNode[] = [
+  <ShieldCheck className="h-6 w-6" aria-hidden key="safe" />,
+  <CalendarCheck className="h-6 w-6" aria-hidden key="booking" />,
+  <Compass className="h-6 w-6" aria-hidden key="authentic" />,
+  <MapPin className="h-6 w-6" aria-hidden key="expert" />,
+];
 
 const LandingPage = () => {
-  const heroRef = useRef<HTMLDivElement>(null);
-  const ctaRef = useRef<HTMLDivElement>(null);
-
+  const prefersReducedMotion = useReducedMotion();
   const { isAuthenticated } = useAuth();
-  const { messages, locale } = useLanguage();
+  const { messages } = useLanguage();
   const t = (key: string, fallback: string) => messages[key] || fallback;
   const localizedTeamMembers = localizeTeamMembers(t);
   const featuredTeamMembers = localizedTeamMembers.slice(0, 6);
@@ -347,81 +58,40 @@ const LandingPage = () => {
     localizedTeamMembers.slice(6, 10),
     localizedTeamMembers.slice(10),
   ];
-
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [guideActiveStep, setGuideActiveStep] = useState(0);
   const [guideOperationsActiveStep, setGuideOperationsActiveStep] = useState(0);
   const [travelerActiveStep, setTravelerActiveStep] = useState(0);
-  const travelerWaitlistUrl = getMarketplaceUrl(
-    `/signup?locale=${encodeURIComponent(locale)}`
-  );
+  const handleBecomeGuide = () => {
+    window.location.href = "/become-guide";
+  };
 
-  useEffect(() => {
-    let timer: ReturnType<typeof setTimeout> | null = null;
-    const onScroll = () => {
-      document.documentElement.classList.add("is-scrolling");
-      if (timer) clearTimeout(timer);
-      timer = setTimeout(() => {
-        document.documentElement.classList.remove("is-scrolling");
-      }, 120);
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      if (timer) clearTimeout(timer);
-      document.documentElement.classList.remove("is-scrolling");
-    };
-  }, []);
+  const handleTravelerWaitlist = () => {
+    window.location.href = "/early-access";
+  };
 
-  const { scrollYProgress } = useScroll({
-    target: heroRef,
-    offset: ["start start", "end start"],
-  });
-  const orbsY = useTransform(scrollYProgress, [0, 1], [0, -90]);
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.65], [1, 0]);
+  const handleViewApplicationStatus = () => {
+    window.location.href = isAuthenticated
+      ? "/view-application-status"
+      : "/login?redirect=/view-application-status";
+  };
 
-  const { scrollYProgress: ctaScrollProgress } = useScroll({
-    target: ctaRef,
-    offset: ["start end", "end start"],
-  });
-  const ctaParallaxY = useTransform(ctaScrollProgress, [0, 1], ["12%", "-18%"]);
-
-  const features: {
-    icon: ReactNode;
-    title: string;
-    description: string;
-  }[] = [
+  const features = [
     {
-      icon: <Shield className="h-6 w-6" />,
       title: t("landing.features.safeSecure", "Safe & Secure"),
-      description: t(
-        "landing.features.safeSecureDesc",
-        "Every Guide is verified, with safety features built into every booking."
-      ),
+      description: t("landing.features.safeSecureDesc", "Every local is verified, with safety features built into every booking."),
     },
     {
-      icon: <Heart className="h-6 w-6" />,
       title: t("landing.features.flexibleBooking", "Flexible Booking"),
-      description: t(
-        "landing.features.flexibleBookingDesc",
-        "Skip the back-and-forth and book with\u00A0confidence."
-      ),
+      description: t("landing.features.flexibleBookingDesc", "Skip the back-and-forth and book with confidence."),
     },
     {
-      icon: <Globe className="h-6 w-6" />,
       title: t("landing.features.authenticExperiences", "Authentic Experiences"),
-      description: t(
-        "landing.features.authenticExperiencesDesc",
-        "Go beyond generic routes and see Japan through local context."
-      ),
+      description: t("landing.features.authenticExperiencesDesc", "Experience the city beyond the guidebooks."),
     },
     {
-      icon: <MapPin className="h-6 w-6" />,
       title: t("landing.features.expertGuides", "Expert Guides"),
-      description: t(
-        "landing.features.expertGuidesDesc",
-        "Verified local Guides with practical knowledge of Japan's neighborhoods, culture, and everyday details."
-      ),
+      description: t("landing.features.expertGuidesDesc", "Verified locals with deep knowledge of the city."),
     },
   ];
 
@@ -435,10 +105,7 @@ const LandingPage = () => {
       image: "/screenshots/traveler-discover.png",
     },
     {
-      title: t(
-        "landing.howTraveler.step2",
-        "Explore Guide profiles and experiences"
-      ),
+      title: t("landing.howTraveler.step2", "Explore Guide profiles and experiences"),
       description: t(
         "landing.howTraveler.step2Desc",
         "Explore each Guide's background, service style, and available experiences before you decide."
@@ -512,21 +179,24 @@ const LandingPage = () => {
   const team = [
     {
       name: t("landing.team.designName", "Design Team"),
-      text: t(
+      initials: "DT",
+      quote: t(
         "landing.team.design",
         "Good design should feel invisible. We simplify every interaction so you can focus on exploring, not figuring out how the app works."
       ),
     },
     {
       name: t("landing.team.engineeringName", "Engineering Team"),
-      text: t(
+      initials: "ET",
+      quote: t(
         "landing.team.engineering",
         "We build a platform that's fast, reliable, and secure—so you can travel with confidence."
       ),
     },
     {
       name: t("landing.team.researchName", "Research Team"),
-      text: t(
+      initials: "RT",
+      quote: t(
         "landing.team.research",
         "We listen first. Every feature is shaped by real traveler and local guide insights."
       ),
@@ -535,306 +205,130 @@ const LandingPage = () => {
 
   const faqs = [
     {
-      q: t("landing.faq.q1", "What is Ahhh Yaotu?"),
-      a: t(
-        "landing.faq.a1",
-        "Ahhh Yaotu is building a Japan-focused marketplace that connects Travelers with verified local Guides for personal, flexible experiences."
-      ),
+      question: t("landing.faq.q1", "What is Ahhh Yaotu?"),
+      answer: t("landing.faq.a1", "Ahhh Yaotu is building a Japan-focused marketplace that connects travelers with verified local guides for personal, flexible experiences."),
     },
     {
-      q: t("landing.faq.q2", "How are local guides verified?"),
-      a: t(
-        "landing.faq.a2",
-        "Every Guide goes through a review and verification process so the first local Guide network in Japan starts with safety and trust."
-      ),
+      question: t("landing.faq.q2", "How are local guides verified?"),
+      answer: t("landing.faq.a2", "Every guide goes through a review and verification process designed to make safety and trust part of every experience."),
     },
     {
-      q: t("landing.faq.q3", "How do I get early access?"),
-      a: t(
-        "landing.faq.a3",
-        "Select Get Traveler Early Access, leave your name and email, and confirm your email. Once the first local Guides in Japan are ready, we'll prioritize inviting confirmed Travelers to experience Yaotu."
-      ),
+      question: t("landing.faq.q3", "How do I get early access?"),
+      answer: t("landing.faq.a3", "Join the traveler waitlist with your name and email. We’ll prioritize inviting confirmed travelers when the first guide experiences are ready."),
     },
     {
-      q: t("landing.faq.q4", "How can I become a local guide?"),
-      a: t(
-        "landing.faq.a4",
-        "Select Become a Local Guide to open the application. Share your Japan local knowledge, service preferences, and availability."
-      ),
+      question: t("landing.faq.q4", "How can I become a local guide?"),
+      answer: t("landing.faq.a4", "Start an application and share your local knowledge, service preferences, and availability with the Yaotu team."),
     },
   ];
 
-  const handleViewApplicationStatus = () => {
-    window.location.href = isAuthenticated
-      ? "/view-application-status"
-      : "/login?redirect=/view-application-status";
-  };
-
-  const handleBecomeGuide = () => {
-    window.location.href = "/become-guide";
-  };
-
-  const handleTravelerWaitlist = () => {
-    window.location.href = travelerWaitlistUrl;
-  };
-
   return (
-    <div
-      className="min-h-screen bg-gradient-to-br from-yellow-50 via-white to-orange-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 landing-blend-cursor"
-    >
-      <BlendCursor enabled />
+    <div className="yaotu-landing min-h-screen overflow-x-clip bg-white text-[#020817]">
+      <div className="hero-fixed-orb" aria-hidden />
       <ScrollToTopButton />
-      <div className="fixed top-4 right-4 z-50">
-        <LanguageSwitcher />
-      </div>
 
-      {/* Hero */}
-      <div
-        ref={heroRef}
-        id="hero-section"
-        className="landing-hero relative flex min-h-screen items-center overflow-hidden"
-        style={
-          {
-            "--hero-tagline-size":
-              "clamp(0.95rem, calc(var(--hero-title-size) * 0.185), 1.6rem)",
-          } as CSSProperties
-        }
-      >
-        <motion.div
-          className="pointer-events-none absolute inset-0 overflow-hidden will-change-transform"
-          style={{ y: orbsY, opacity: heroOpacity }}
-          aria-hidden
-        >
-          <div
-            className="hero-blob hero-blob-float-a absolute -right-40 -top-40 h-80 w-80 rounded-full opacity-70 mix-blend-multiply"
-            style={{ backgroundColor: "#FFD511" }}
+      <section id="hero-section" className="relative isolate flex h-screen h-[100svh] flex-col overflow-hidden px-5 pb-16 pt-6 sm:px-8 lg:px-12">
+        <div className="relative z-20 mx-auto flex w-full max-w-[94rem] items-center justify-between">
+          <h1 className="yaotu-wordmark" aria-label="YaoTu">
+            <img src="/yaotu-logo.png" alt="YaoTu" className="yaotu-logo-image" />
+          </h1>
+          <LanguageSwitcher />
+        </div>
+
+        <div className="absolute inset-0 z-[1] hidden md:block" aria-hidden>
+          <CursorFollow
+            images={heroImages}
+            containerSelector="#hero-section"
+            fadeSelector="[data-hero-copy]"
+            cycleMode="sequential"
           />
-          <div
-            className="hero-blob hero-blob-float-b absolute -bottom-40 -left-40 h-80 w-80 rounded-full opacity-70 mix-blend-multiply"
-            style={{ backgroundColor: "#FFA500" }}
-          />
-          <div
-            className="hero-blob hero-blob-float-c absolute left-40 top-40 h-80 w-80 rounded-full opacity-70 mix-blend-multiply"
-            style={{ backgroundColor: "#FF8C00" }}
-          />
-        </motion.div>
+        </div>
 
-        <CursorFollow
-          containerSelector="#hero-section"
-          cycleMode="sequential"
-        />
-
-        <motion.div
-          className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center px-5 sm:px-8"
-          style={{ opacity: heroOpacity }}
-        >
-          <div className="relative flex max-w-full -translate-y-[2vh] flex-col items-center text-center sm:-translate-y-[1vh]">
-            <div
-              className="pointer-events-none absolute left-1/2 top-[46%] -z-10 h-[56vh] w-[96vw] max-w-6xl -translate-x-1/2 -translate-y-1/2"
-              style={{
-                background:
-                  "radial-gradient(closest-side, rgba(255,255,255,0.92) 35%, rgba(255,255,255,0.55) 65%, rgba(255,255,255,0))",
-              }}
-              aria-hidden
-            />
-
-            <motion.h1
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.5 }}
-              className="flex max-w-full cursor-default select-none items-baseline justify-center whitespace-nowrap font-bold text-gray-900"
-              style={{
-                fontFamily: DISPLAY_FONT,
-                fontSize: "var(--hero-title-size)",
-                lineHeight: "0.9",
-                fontWeight: 700,
-                letterSpacing: "-0.02em",
-                textShadow:
-                  "0 0 16px rgba(255,255,255,0.95), 0 0 40px rgba(255,255,255,0.8)",
-              }}
-              aria-label="www.ahhh-yaotu.com"
-            >
-              <motion.span
-                initial={{ opacity: 0, y: 18 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.55, delay: 0.7 }}
-                className="shrink-0 text-gray-900"
-                style={{ fontSize: "0.47em", fontWeight: 500 }}
-              >
-                www.
-              </motion.span>
-              <motion.span
-                initial={{ opacity: 0, y: 18 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.55, delay: 0.85 }}
-                className="shrink-0 text-gray-900"
-              >
-                ahhh-yaotu
-              </motion.span>
-              <motion.span
-                initial={{ opacity: 0, y: 18 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.55, delay: 1 }}
-                className="shrink-0 text-gray-900"
-                style={{ fontSize: "0.47em", fontWeight: 500 }}
-              >
-                .com
-              </motion.span>
-            </motion.h1>
-
-            <motion.p
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.65, delay: 1.15 }}
-              className="mx-auto text-center text-gray-700"
-              style={{
-                fontFamily: DISPLAY_FONT,
-                fontWeight: 500,
-                lineHeight: 1.5,
-                letterSpacing: "0.01em",
-                fontSize: "var(--hero-tagline-size)",
-                width: "min(40rem, 92vw)",
-                marginTop: "calc(var(--hero-title-size) * 0.22)",
-                textShadow:
-                  "0 0 14px rgba(255,255,255,0.95), 0 0 32px rgba(255,255,255,0.75)",
-              }}
-            >
+        <div className="relative z-10 mx-auto flex w-full max-w-[94rem] flex-1 flex-col items-center justify-center text-center">
+          <div className="hero-orbit" aria-hidden>
+            <span className="hero-satellite hero-satellite-a" />
+            <span className="hero-satellite hero-satellite-b" />
+          </div>
+          <div className="hero-static-gallery" aria-hidden>
+            <figure className="hero-photo hero-photo-a"><img src="/hero-scene-bamboo.png" alt="" /></figure>
+            <figure className="hero-photo hero-photo-b"><img src="/hero-scene-torii.png" alt="" /></figure>
+            <figure className="hero-photo hero-photo-c"><img src="/hero-scene-kyoto.png" alt="" /></figure>
+            <figure className="hero-photo hero-photo-d"><img src="/hero-scene-coast.png" alt="" /></figure>
+          </div>
+          <div className="relative z-20 max-w-4xl" data-hero-copy>
+            <p className="hero-display">
+              <span className="hero-display-affix">www.</span>
+              <span className="hero-display-ahhh">ahhh</span>
+              <span className="hero-display-hyphen">-</span>
+              <span className="hero-display-yaotu">yaotu</span>
+              <span className="hero-display-affix">.com</span>
+            </p>
+            <p className="hero-tagline mx-auto mt-4 max-w-xl text-balance">
               {t(
                 "landing.hero.tagline",
                 "Apply to become one of our first local Guides in Japan, or register for Traveler Early Access."
               )}
-            </motion.p>
-
-            <motion.div
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.55, delay: 1.35 }}
-              className="pointer-events-auto mt-7 flex w-full max-w-xl flex-col items-stretch gap-3 sm:mt-8 sm:max-w-none sm:flex-row sm:items-center sm:justify-center sm:gap-4"
-            >
-              <motion.div whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }}>
-                <Button
-                  size="lg"
-                  className="h-auto min-h-[3.25rem] w-full whitespace-normal rounded-full px-6 py-3.5 text-center text-sm font-semibold leading-snug shadow-md sm:w-auto sm:min-w-[14rem] sm:px-8 sm:text-base"
-                  onClick={handleBecomeGuide}
-                  data-cursor-hover
-                >
-                  {t("landing.hero.guideCta", "Become a Local Guide")}
-                </Button>
-              </motion.div>
-              <motion.div whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }}>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="h-auto min-h-[3.25rem] w-full whitespace-normal rounded-full border-2 border-[#FFD511] bg-white/95 px-6 py-3.5 text-center text-sm font-semibold leading-snug text-gray-900 shadow-none hover:bg-[#FFF7CC] sm:w-auto sm:min-w-[14rem] sm:px-8 sm:text-base"
-                  onClick={handleTravelerWaitlist}
-                  data-cursor-hover
-                >
-                  {t("landing.hero.waitlistCta", "Get Traveler Early Access")}
-                </Button>
-              </motion.div>
-            </motion.div>
-          </div>
-        </motion.div>
-      </div>
-
-
-      {/* Features */}
-      <motion.section
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        viewport={{ once: true }}
-        className="relative overflow-hidden bg-white/50 py-20 backdrop-blur-sm dark:bg-gray-800/50"
-      >
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="mb-16 text-center"
-          >
-            <h2 className="mb-4 text-3xl font-bold text-gray-900 dark:text-white sm:text-4xl">
-              {t("landing.features.title", "Why Choose YaoTu?")}
-            </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300">
-              {t(
-                "landing.features.subtitle",
-                "Explore Japan with locals who know the places, habits, and context behind the route."
-              )}
             </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
-            {features.map((feature, index) => (
-              <motion.div
-                key={feature.title}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="group relative text-center"
-                whileHover={{ y: -10 }}
-                data-cursor-hover
+            <div className="pointer-events-auto mt-6 flex w-full flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
+              <button
+                type="button"
+                className="yaotu-button min-h-12 w-full px-6 sm:w-auto"
+                onClick={handleBecomeGuide}
               >
-                <motion.div
-                  whileHover={{
-                    scale: 1.1,
-                    rotate: [0, -5, 5, 0],
-                    boxShadow: "0 20px 40px rgba(255, 213, 17, 0.3)",
-                  }}
-                  transition={{ duration: 0.4 }}
-                  className="relative mx-auto mb-6 flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl text-white shadow-md transition-shadow group-hover:shadow-lg"
-                  style={{
-                    background: "linear-gradient(to right, #FFD511, #FFA500)",
-                  }}
-                >
-                  <div className="pointer-events-none absolute inset-0 bg-white/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                  <motion.div
-                    whileHover={{ scale: 1.1, rotate: 5 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    {feature.icon}
-                  </motion.div>
-                </motion.div>
-                <motion.h3
-                  className="mb-3 text-xl font-semibold text-gray-900 dark:text-white"
-                  whileHover={{ color: "#E5A800" }}
-                  transition={{ duration: 0.3 }}
-                >
-                  {feature.title}
-                </motion.h3>
-                <motion.p
-                  className="text-gray-600 dark:text-gray-300"
-                  whileHover={{ scale: 1.02 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  {feature.description}
-                </motion.p>
-                <div className="pointer-events-none absolute inset-0 -z-10 rounded-2xl bg-gradient-to-r from-yellow-50 to-orange-50 opacity-0 transition-opacity duration-300 group-hover:opacity-100 dark:from-gray-800/50 dark:to-gray-700/50" />
-              </motion.div>
+                {t("landing.hero.guideCta", "Become a Local Guide")}
+              </button>
+              <button
+                type="button"
+                className="yaotu-secondary-button min-h-12 w-full px-6 sm:w-auto"
+                onClick={handleTravelerWaitlist}
+              >
+                {t("landing.hero.waitlistCta", "Get Traveler Early Access")}
+              </button>
+            </div>
+          </div>
+          <p className="hero-explore-cue absolute bottom-3 left-1/2 hidden -translate-x-1/2 text-xs font-semibold uppercase tracking-[0.14em] text-[#7a725f] md:block">Scroll to explore</p>
+        </div>
+      </section>
+
+      <main className="relative z-10 bg-white">
+        <section className="section-shell bg-white" aria-labelledby="why-title">
+          <div className="section-heading-row">
+            <h2 id="why-title">{t("landing.features.title", "Why Choose YaoTu?")}</h2>
+            <p>{t("landing.features.subtitle", "Explore the city with locals who know it best.")}</p>
+          </div>
+          <div className="feature-grid mt-12">
+            {features.map((feature, index) => (
+              <motion.article
+                key={feature.title}
+                className="feature-card"
+                initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "0px 0px -80px 0px" }}
+                transition={{
+                  duration: 0.5,
+                  delay: index * 0.08,
+                  ease: [0.16, 1, 0.3, 1],
+                }}
+              >
+                <div className="feature-icon">{featureIcons[index]}</div>
+                <h3>{feature.title}</h3>
+                <p>{feature.description}</p>
+              </motion.article>
             ))}
           </div>
-        </div>
-      </motion.section>
+        </section>
 
-      {/* How it works */}
-      <section className="relative bg-white">
-        <div className="mx-auto max-w-7xl px-4 pb-16 pt-24 sm:px-6 sm:pb-20 sm:pt-28 lg:px-8 lg:pb-24">
-          <div className="mb-14 text-center sm:mb-16">
-            <h2 className="text-4xl font-bold leading-tight text-gray-900 sm:text-5xl lg:text-6xl">
-              {t("landing.howTraveler.sectionTitle", "How Yaotu works")}
-            </h2>
+        <section className="relative overflow-x-clip bg-white" aria-labelledby="how-title">
+          <div className="section-shell pb-4 pt-6 sm:pb-6">
+            <div className="section-heading-row">
+              <h2 id="how-title">{t("landing.howTraveler.sectionTitle", "How Yaotu works")}</h2>
+            </div>
           </div>
-
-          <div className="flex flex-col">
+          <div className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8 lg:pb-20">
             <FlowStoryRow
               primary
-              title={t(
-                "landing.howGuide.title",
-                "Become a local Guide with Yaotu"
-              )}
-              eyebrow={t("landing.howGuide.eyebrow", "Applications open")}
+              title={t("landing.howGuide.title", "Become a local Guide with Yaotu")}
+              status={t("landing.howGuide.eyebrow", "Applications open")}
               description={t(
                 "landing.howGuide.subtitle",
                 "Join the first community of local Guides we're building in Japan. Complete your profile, submit your application, then sign in to track your progress."
@@ -846,18 +340,11 @@ const LandingPage = () => {
               ctaLabel={t("landing.howGuide.cta", "Become a Local Guide")}
               onCtaClick={handleBecomeGuide}
             />
-
             <FlowStoryRow
               imageFirstOnDesktop
               tone="warm"
-              title={t(
-                "landing.howGuideOperations.title",
-                "Start hosting with Yaotu"
-              )}
-              eyebrow={t(
-                "landing.howGuideOperations.eyebrow",
-                "After approval"
-              )}
+              title={t("landing.howGuideOperations.title", "Start hosting with Yaotu")}
+              status={t("landing.howGuideOperations.eyebrow", "After approval")}
               description={t(
                 "landing.howGuideOperations.subtitle",
                 "Once approved, create and publish your local experiences, manage Traveler bookings, and track your earnings and payouts directly through Yaotu."
@@ -865,20 +352,13 @@ const LandingPage = () => {
               steps={guideOperationsSteps}
               activeStep={guideOperationsActiveStep}
               onStepChange={setGuideOperationsActiveStep}
-              label={t(
-                "landing.howGuideOperations.title",
-                "Start hosting with Yaotu"
-              )}
+              label={t("landing.howGuideOperations.title", "Start hosting with Yaotu")}
               ctaLabel={t("landing.howGuide.cta", "Become a Local Guide")}
               onCtaClick={handleBecomeGuide}
             />
-
             <FlowStoryRow
-              title={t(
-                "landing.howTraveler.title",
-                "Preview the Traveler experience"
-              )}
-              eyebrow={t("landing.howTraveler.eyebrow", "Coming Soon")}
+              title={t("landing.howTraveler.title", "Preview the Traveler experience")}
+              status={t("landing.howTraveler.eyebrow", "Coming Soon")}
               description={t(
                 "landing.howTraveler.subtitle",
                 "The Traveler marketplace is coming soon. You'll be able to discover local Guides in Japan, explore their profiles and experiences, and book directly through Yaotu. Register for Early Access now."
@@ -886,265 +366,109 @@ const LandingPage = () => {
               steps={travelerSteps}
               activeStep={travelerActiveStep}
               onStepChange={setTravelerActiveStep}
-              label={t(
-                "landing.howTraveler.title",
-                "Preview the Traveler experience"
-              )}
-              ctaLabel={t(
-                "landing.howTraveler.cta",
-                "Get Traveler Early Access"
-              )}
+              label={t("landing.howTraveler.title", "Preview the Traveler experience")}
+              ctaLabel={t("landing.howTraveler.cta", "Get Traveler Early Access")}
               onCtaClick={handleTravelerWaitlist}
             />
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Team */}
-      <motion.section
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        viewport={{ once: true }}
-        className="relative overflow-hidden py-20"
-      >
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="mb-16 text-center"
-          >
-            <h2 className="mb-4 text-3xl font-bold text-gray-900 dark:text-white sm:text-4xl">
-              {t("landing.team.title", "From Our Team")}
-            </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300">
-              {t(
-                "landing.team.subtitle",
-                "Built by people who care about better travel experiences."
-              )}
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-3 md:items-stretch">
-            {team.map((member, index) => (
-              <motion.div
-                key={member.name}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="group relative flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white/80 p-6 shadow-lg backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/80"
-                whileHover={{
-                  y: -10,
-                  scale: 1.02,
-                  boxShadow: "0 25px 50px rgba(0, 0, 0, 0.15)",
-                }}
-                data-cursor-hover
-              >
-                <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-yellow-50/50 to-orange-50/50 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                <p className="relative z-10 mb-4 flex-1 italic text-gray-600 dark:text-gray-300">
-                  &ldquo;{member.text}&rdquo;
-                </p>
-                <div className="relative z-10 mt-auto font-semibold text-gray-900 dark:text-white">
-                  {member.name}
-                </div>
-              </motion.div>
+        <section className="section-shell team-intro-section bg-white" aria-labelledby="team-title">
+          <div className="section-heading-row">
+            <h2 id="team-title">{t("landing.team.title", "From Our Team")}</h2>
+            <p>{t("landing.team.subtitle", "Built by people who care about better travel experiences.")}</p>
+          </div>
+          <div className="team-grid mt-12">
+            {team.map((member) => (
+              <Card key={member.name} className="team-card border-0">
+                <CardContent className="team-card-content p-7 sm:p-8">
+                  <span className="team-quote-mark" aria-hidden>“</span>
+                  <p className="team-quote">{member.quote}</p>
+                  <div className="team-profile">
+                    <div className="team-avatar" aria-hidden>{member.initials}</div>
+                    <p className="team-author">{member.name}</p>
+                  </div>
+                </CardContent>
+              </Card>
             ))}
           </div>
-        </div>
-      </motion.section>
+        </section>
 
-      {/* Meet the team */}
-      <TeamMemberMarquee
-        title={t("landing.teamMembers.title", "Meet the team")}
-        featuredSubtitle={t(
-          "landing.teamMembers.featuredSubtitle",
-          "The people building Yaotu."
-        )}
-        featured={featuredTeamMembers}
-        rows={teamMemberRows}
-        closeLabel={t("common.close", "Close")}
-        connectLabel={t("landing.teamMembers.connect", "Connect")}
-        linkedInLabel={t("landing.teamMembers.linkedIn", "LinkedIn")}
-        portfolioLabel={t("landing.teamMembers.portfolio", "Portfolio")}
-        contactLabel={t("landing.teamMembers.contact", "Contact")}
-        formerLabel={t("landing.teamMembers.former", "Former")}
-      />
+        <TeamMemberMarquee
+          title={t("landing.teamMembers.title", "Meet the team")}
+          featuredSubtitle={t(
+            "landing.teamMembers.featuredSubtitle",
+            "The people building Yaotu."
+          )}
+          featured={featuredTeamMembers}
+          rows={teamMemberRows}
+          closeLabel={t("common.close", "Close")}
+          connectLabel={t("landing.teamMembers.connect", "Connect")}
+          linkedInLabel={t("landing.teamMembers.linkedIn", "LinkedIn")}
+          portfolioLabel={t("landing.teamMembers.portfolio", "Portfolio")}
+          contactLabel={t("landing.teamMembers.contact", "Contact")}
+          formerLabel={t("landing.teamMembers.former", "Former")}
+        />
 
-      {/* FAQ */}
-      <section className="bg-white/50 py-20 backdrop-blur-sm">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-16">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.55 }}
-              viewport={{ once: true }}
-              className="lg:col-span-4 lg:sticky lg:top-24 lg:self-start"
-            >
-              <h2 className="mb-4 text-3xl font-bold text-gray-900 sm:text-4xl">
-                {t("landing.faq.title", "FAQ")}
-              </h2>
-              <p className="text-xl text-gray-600 dark:text-gray-300">
-                {t("landing.faq.subtitle", "Everything you need to know.")}
-              </p>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.55, delay: 0.1 }}
-              viewport={{ once: true }}
-              className="divide-y divide-gray-200 overflow-hidden rounded-2xl border border-gray-200 bg-white/90 lg:col-span-8"
-            >
-              {faqs.map((item, index) => {
+        <section className="section-shell" aria-labelledby="faq-title">
+          <div className="faq-layout">
+            <div>
+              <h2 id="faq-title">FAQ</h2>
+              <p className="mt-4 leading-7 text-[#625f55]">Everything you need to know.</p>
+            </div>
+            <div className="faq-list">
+              {faqs.map((faq, index) => {
                 const isOpen = openFaq === index;
                 return (
-                  <div key={item.q}>
-                    <button
-                      type="button"
-                      className="flex w-full items-center justify-between gap-6 px-5 py-5 text-left font-medium text-gray-900 transition-colors hover:bg-yellow-50/60 sm:px-6"
-                      onClick={() => setOpenFaq(isOpen ? null : index)}
-                      aria-expanded={isOpen}
-                      data-cursor-hover
-                    >
-                      <span>{item.q}</span>
-                      <Plus
-                        className={`h-5 w-5 shrink-0 text-gray-400 transition-transform duration-300 ${
-                          isOpen ? "rotate-45" : ""
-                        }`}
-                      />
+                  <div key={faq.question} className={`faq-card ${isOpen ? "is-open" : ""}`}>
+                    <button type="button" className="faq-trigger font-bold" aria-expanded={isOpen} aria-controls={`faq-answer-${index}`} onClick={() => setOpenFaq(isOpen ? null : index)}>
+                      <span>{faq.question}</span>
+                      <span className="faq-toggle" aria-hidden>
+                        <ChevronDown className={`h-4 w-4 transition-transform ${isOpen ? "rotate-180" : ""}`} />
+                      </span>
                     </button>
-                    <AnimatePresence initial={false}>
-                      {isOpen && (
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: "auto", opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.25 }}
-                          className="overflow-hidden"
-                        >
-                          <p className="px-5 pb-5 leading-relaxed text-gray-600 sm:px-6">
-                            {item.a}
-                          </p>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
+                    <div id={`faq-answer-${index}`} className={`faq-answer ${isOpen ? "is-open" : ""}`}>
+                      <p className="w-full leading-7 text-[#625f55]">{faq.answer}</p>
+                    </div>
                   </div>
                 );
               })}
-            </motion.div>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Bottom CTA */}
-      <motion.section
-        ref={ctaRef}
-        id="become-guide-cta"
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        viewport={{ once: true }}
-        className="relative overflow-hidden py-20"
-        style={{ background: "linear-gradient(to right, #FFD511, #FFA500)" }}
-      >
-        <motion.div
-          className="pointer-events-none absolute inset-0 opacity-10"
-          style={{ y: ctaParallaxY }}
-          aria-hidden
-        >
-          <div className="absolute left-10 top-10 h-32 w-32 rounded-full bg-white blur-xl" />
-          <div className="absolute bottom-10 right-10 h-24 w-24 rounded-full bg-white blur-xl" />
-          <div className="absolute left-1/4 top-1/2 h-16 w-16 rounded-full bg-white blur-xl" />
-        </motion.div>
-
-        <div className="relative z-10 mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="mb-6 text-3xl font-bold text-white sm:text-4xl"
-            whileHover={{
-              scale: 1.05,
-              textShadow: "0 0 30px rgba(255, 255, 255, 0.5)",
-            }}
-          >
-            {t("landing.cta.title", "Ready to help shape travel in Japan?")}
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            viewport={{ once: true }}
-            className="mb-8 text-xl text-white"
-            whileHover={{ scale: 1.02 }}
-          >
-            {t(
-              "landing.cta.subtitle",
-              "Apply as a local Guide and help build Yaotu's first Japan experience network."
-            )}
-          </motion.p>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            viewport={{ once: true }}
-            className="flex flex-col items-center gap-4"
-          >
-            <motion.div
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.95 }}
-              transition={{ duration: 0.2 }}
-            >
-              <Button
-                size="lg"
-                className="group relative h-auto max-w-full overflow-hidden whitespace-normal rounded-full bg-white px-6 py-3 text-center text-sm font-semibold leading-snug shadow-lg transition-all duration-300 hover:bg-gray-100 hover:shadow-2xl sm:px-8 sm:text-base"
-                style={{ color: "#FFD511" }}
-                onClick={handleBecomeGuide}
-                data-cursor-hover
-              >
-                <motion.span
-                  className="relative z-10 flex items-center"
-                  whileHover={{ x: 2 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  {t("landing.cta.becomeGuide", "Apply to Become a Local Guide")}
-                  <motion.span
-                    className="ml-2 inline-flex"
-                    whileHover={{ x: 3 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <ArrowRight className="h-5 w-5" />
-                  </motion.span>
-                </motion.span>
-                <span className="absolute inset-0 translate-x-[-100%] bg-yellow-100 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100" />
-              </Button>
-            </motion.div>
-            <motion.button
-              type="button"
-              onClick={handleViewApplicationStatus}
-              className="mt-2 text-lg text-white/80 underline transition-colors duration-300 hover:text-white"
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.35 }}
-              viewport={{ once: true }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              data-cursor-hover
-            >
+        <section id="become-guide-cta" className="final-cta" aria-labelledby="final-cta-title">
+          <div className="relative z-10 mx-auto flex max-w-[82rem] flex-col items-start px-5 py-20 text-left sm:px-8 sm:py-24 lg:px-12">
+            <Globe2 className="h-8 w-8 text-white" aria-hidden />
+            <h2 id="final-cta-title" className="mt-8">
+              {t("landing.cta.title", "Ready to help shape travel in Japan?")}
+            </h2>
+            <p className="final-cta-subtitle">
               {t(
-                "landing.cta.viewApplicationStatus",
-                "Already Applied? View Your Application Status"
+                "landing.cta.subtitle",
+                "Apply as a local Guide and help build Yaotu's first Japan experience network."
               )}
-            </motion.button>
-          </motion.div>
-        </div>
-      </motion.section>
-
+            </p>
+            <Button className="final-cta-button mt-9 min-h-12 px-6" onClick={handleBecomeGuide}>
+              {t("landing.cta.becomeGuide", "Apply to Become a Local Guide")}{" "}
+              <ArrowRight className="ml-2 h-4 w-4" aria-hidden />
+            </Button>
+            <p className="final-cta-status mt-6">
+              <span>{t("landing.cta.viewApplicationStatusPrefix", "Already Applied?")}</span>{" "}
+              <button
+                type="button"
+                className="underline decoration-white/40 underline-offset-4 transition-colors hover:text-white"
+                onClick={handleViewApplicationStatus}
+              >
+                {t(
+                  "landing.cta.viewApplicationStatusAction",
+                  "View Your Application Status"
+                )}
+              </button>
+            </p>
+          </div>
+        </section>
+      </main>
     </div>
   );
 };

@@ -171,9 +171,9 @@
       "xiangyingQiRole": "业务分析实习生",
       "xiangyingQiSummary": "业务分析实习生",
       "xiangyingQiBio": "Xiangying Qi 是 Yaotu 的业务分析实习生。",
-      "xuningLiRole": "UX 设计师",
-      "xuningLiSummary": "UX 设计师",
-      "xuningLiBio": "Xuning Li 是 Yaotu 的 UX 设计师。",
+      "xuningLiRole": "产品设计师",
+      "xuningLiSummary": "产品设计师",
+      "xuningLiBio": "Xuning Li 是 Yaotu 的产品设计师。",
       "yitianWuRole": "软件开发工程师",
       "yitianWuSummary": "软件开发工程师",
       "yitianWuBio": "Yitian Wu 是 Yaotu 的软件开发工程师。",
@@ -271,6 +271,11 @@
       "resendSent": "如果该邮箱仍有待确认的优先邀请申请，我们已经发送新的确认链接。",
       "confirmError": "暂时无法确认该链接。请重新请求确认邮件。",
       "backHome": "返回首页",
+      "joinTitle": "加入 Traveler 优先名单",
+      "joinBody": "市场开放接待 Traveler 时，我们会通知你。",
+      "guideBoxTitle": "申请成为 Guide",
+      "guideBoxBody": "请先提交申请。账号只会在 Guide 入驻的身份确认环节创建。",
+      "existingSignIn": "已有账号，登录",
       "unsubscribeTitle": "取消接收优先体验更新",
       "unsubscribeBody": "点击取消订阅，即可停止接收 Yaotu 首批体验相关邮件。",
       "unsubscribeButton": "取消订阅",
@@ -291,7 +296,9 @@
       "subtitle": "申请成为本地 Guide，和 Yaotu 一起建立首批日本体验网络。",
       "startNow": "立即开始",
       "becomeGuide": "申请成为本地地陪",
-      "viewApplicationStatus": "已申请？查看您的申请状态"
+      "viewApplicationStatus": "已申请？查看您的申请状态",
+      "viewApplicationStatusPrefix": "已申请？",
+      "viewApplicationStatusAction": "查看您的申请状态"
     }
   },
   "becomeGuide": {
