@@ -1,6 +1,9 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
-import type { SignInSuccess } from "@yaotu/auth";
-import { AuthUser, logout, getUserData, isAuthenticated, storeAuthData } from "@/lib/auth";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import type { AuthenticatedUser, SignInSuccess } from "@yaotu/auth";
+
+import { resolveApiUrl } from "@/lib/apiClient";
+import { logout, restoreAuthSession, storeAuthData } from "@/lib/auth";
+import type { AuthUser } from "@/lib/auth";
 
 interface AuthContextType {
   user: AuthUser | null;
@@ -12,7 +15,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-function normalizePackageAuthUser(result: SignInSuccess): AuthUser {
+function normalizeAuthUser(result: AuthenticatedUser, token: string): AuthUser {
   return {
     ...result,
     fullName: result.fullName ?? "",
@@ -21,33 +24,37 @@ function normalizePackageAuthUser(result: SignInSuccess): AuthUser {
     profilePicture: result.profilePicture ?? undefined,
     readReceiptsEnabled: result.readReceiptsEnabled ?? true,
     joinedDate: result.joinedDate ?? "",
-    token: result.token,
+    token,
   };
+}
+
+async function fetchCurrentAuthUser(token: string): Promise<AuthUser> {
+  const response = await fetch(resolveApiUrl("/api/me"), {
+    headers: { Authorization: `Bearer ${token}` },
+    cache: "no-store",
+  });
+
+  if (!response.ok) throw new Error(`Current user validation failed: ${response.status}`);
+
+  return normalizeAuthUser((await response.json()) as AuthenticatedUser, token);
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Check for existing session on mount
   useEffect(() => {
-    const checkAuth = () => {
-      try {
-        const userData = getUserData();
-        if (userData) {
-          console.log('AuthContext: Found existing user data:', userData);
-          setUser(userData);
-        } else {
-          console.log('AuthContext: No existing user data found');
-        }
-      } catch (error) {
-        console.error('AuthContext: Error checking auth:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    let cancelled = false;
 
-    checkAuth();
+    void restoreAuthSession(fetchCurrentAuthUser).then((authenticatedUser) => {
+      if (cancelled) return;
+      if (authenticatedUser) setUser(authenticatedUser);
+      setLoading(false);
+    });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const handleLogout = () => {
@@ -58,7 +65,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const completeAuthSession = async (result: SignInSuccess): Promise<AuthUser> => {
     try {
       setLoading(true);
-      const authUser = normalizePackageAuthUser(result);
+      const authUser = normalizeAuthUser(result, result.token);
       storeAuthData(result.token, authUser);
       setUser(authUser);
       return authUser;
@@ -67,23 +74,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // 计算认证状态，优先使用user状态，如果没有则检查localStorage
-  const authStatus = user ? true : (() => {
-    try {
-      return isAuthenticated();
-    } catch {
-      return false;
-    }
-  })();
-
   return (
-    <AuthContext.Provider value={{ 
-      user, 
-      loading, 
-      isAuthenticated: authStatus,
-      logout: handleLogout,
-      completeAuthSession
-    }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        isAuthenticated: Boolean(user),
+        logout: handleLogout,
+        completeAuthSession,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -96,4 +96,3 @@ export function useAuth() {
   }
   return context;
 }
-

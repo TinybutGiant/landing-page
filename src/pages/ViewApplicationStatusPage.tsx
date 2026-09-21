@@ -28,7 +28,7 @@ import {
 } from "lucide-react";
 import { useToast } from "../hooks/use-toast";
 import { apiRequest } from "../lib/queryClient";
-import { isAuthenticated } from "../lib/auth";
+import { useAuth } from "@/context/AuthContext";
 import { 
   triggerLazyEvaluationForApprovedApplication,
   getUserGuideStatus 
@@ -59,39 +59,39 @@ export default function ViewApplicationStatusPage() {
   const [lazyEvaluationTriggered, setLazyEvaluationTriggered] = useState(false);
   const intl = useIntl();
   const { locale } = useLanguage();
+  const { user, loading: authLoading } = useAuth();
   
   // 检查是否是提交后跳转过来的
   const isJustSubmitted = new URLSearchParams(location.split('?')[1]).get('submitted') === 'true';
-  const isUserAuthenticated = isAuthenticated();
+  const isUserAuthenticated = Boolean(user);
 
   // 认证检查
   useEffect(() => {
-    if (!isUserAuthenticated) {
-      console.log('用户未认证，重定向到登录页面');
+    if (!authLoading && !isUserAuthenticated) {
       setLocation('/login?redirect=/view-application-status');
     }
-  }, [isUserAuthenticated, setLocation]);
+  }, [authLoading, isUserAuthenticated, setLocation]);
 
   // 如果用户未认证，显示加载状态
   // Fetch application details
   const { data: application, isLoading, error } = useQuery<ApplicationDetails>({
-    queryKey: ['/api/v2/guide-applications/my-application'],
+    queryKey: ['/api/v2/guide-applications/my-application', user?.id],
     queryFn: () => apiRequest("GET", "/api/v2/guide-applications/my-application"),
-    enabled: isUserAuthenticated && !!localStorage.getItem('yaotu_token'),
+    enabled: !authLoading && isUserAuthenticated,
   });
 
   // 获取完整申请数据
   const { data: fullApplication } = useQuery({
     queryKey: [`/api/v2/guide-applications/${application?.id}`],
     queryFn: () => apiRequest("GET", `/api/v2/guide-applications/${application?.id}`),
-    enabled: !!application?.id,
+    enabled: !authLoading && isUserAuthenticated && !!application?.id,
   });
 
   // 获取审批历史
   const { data: timelineData, isLoading: timelineLoading, refetch: refetchTimeline } = useQuery<{ timeline: ApprovalTimelineEntry[] }>({
     queryKey: [`/api/v2/guide-application-approvals-v2/timeline/${application?.id}`],
     queryFn: () => apiRequest("GET", `/api/v2/guide-application-approvals-v2/timeline/${application?.id}`),
-    enabled: isUserAuthenticated && !!application?.id && !!localStorage.getItem('yaotu_token'),
+    enabled: !authLoading && isUserAuthenticated && !!application?.id,
     retry: false,
     staleTime: 5 * 60 * 1000,
   });
@@ -99,7 +99,7 @@ export default function ViewApplicationStatusPage() {
   // Lazy evaluation for approved applications
   useEffect(() => {
     const triggerLazyEvaluation = async () => {
-      if (!application || !isUserAuthenticated || lazyEvaluationTriggered) {
+      if (!application || !user || lazyEvaluationTriggered) {
         return;
       }
 
@@ -109,18 +109,7 @@ export default function ViewApplicationStatusPage() {
         setLazyEvaluationTriggered(true);
 
         try {
-          // Get user ID from token
-          const token = localStorage.getItem('yaotu_token');
-          if (!token) return;
-
-          // Decode token to get user ID (assuming JWT format)
-          const payload = JSON.parse(atob(token.split('.')[1]));
-          const userId = payload.id || payload.userId;
-
-          if (!userId) {
-            console.error('[LANDING_PAGE] No user ID found in token');
-            return;
-          }
+          const userId = user.id;
 
           // First check if user is already a guide
           console.log(`[LANDING_PAGE] Checking user guide status for user ${userId}`);
@@ -161,7 +150,7 @@ export default function ViewApplicationStatusPage() {
     };
 
     triggerLazyEvaluation();
-  }, [application, intl, isUserAuthenticated, lazyEvaluationTriggered, toast]);
+  }, [application, intl, lazyEvaluationTriggered, toast, user]);
 
   // 文件上传处理
   const handleFileUpload = async (file: File) => {
@@ -247,7 +236,7 @@ export default function ViewApplicationStatusPage() {
     window.location.href = "/become-guide?resume=1";
   };
 
-  if (!isUserAuthenticated) {
+  if (authLoading || !isUserAuthenticated) {
     return (
       <div className="min-h-screen bg-yellow-50 flex items-center justify-center">
         <div className="text-center">

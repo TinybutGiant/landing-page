@@ -19,16 +19,12 @@ export interface AuthUser {
  * Store authentication data consistently
  */
 export function storeAuthData(token: string, userData: AuthUser): void {
-  // Store token
   localStorage.setItem("yaotu_token", token);
-  console.log("Token stored successfully");
-  
-  // Store user data (without token)
+
   const { token: _, ...userDataWithoutToken } = userData;
-  
+
   localStorage.setItem("yaotu_user", JSON.stringify(userDataWithoutToken));
   localStorage.setItem("yaotu_user_id", userData.id.toString());
-  console.log("User data stored successfully");
 }
 
 /**
@@ -38,7 +34,6 @@ export function clearAuthData(): void {
   localStorage.removeItem("yaotu_token");
   localStorage.removeItem("yaotu_user");
   localStorage.removeItem("yaotu_user_id");
-  console.log("Auth data cleared successfully");
 }
 
 /**
@@ -49,28 +44,26 @@ export function getAuthToken(): string | null {
 }
 
 /**
- * Check if the user is authenticated
+ * Restore a persisted session from the server-authoritative current user.
  */
-export function isAuthenticated(): boolean {
+export async function restoreAuthSession(
+  validateToken: (token: string) => Promise<AuthUser>
+): Promise<AuthUser | null> {
   const token = getAuthToken();
-  const userData = localStorage.getItem("yaotu_user");
-  return !!token && !!userData;
-}
+  if (!token) {
+    clearAuthData();
+    return null;
+  }
 
-/**
- * Get stored user data
- */
-export function getUserData(): AuthUser | null {
-  const userData = localStorage.getItem("yaotu_user");
-  if (!userData) return null;
-  
   try {
-    const parsed = JSON.parse(userData);
-    // Add token from separate storage
-    const token = getAuthToken();
-    return token ? { ...parsed, token } : parsed;
-  } catch (error) {
-    console.error("Failed to parse user data from localStorage:", error);
+    const serverUser = await validateToken(token);
+    if (getAuthToken() !== token) return null;
+
+    const authenticatedUser = { ...serverUser, token };
+    storeAuthData(token, authenticatedUser);
+    return authenticatedUser;
+  } catch {
+    if (getAuthToken() === token) clearAuthData();
     return null;
   }
 }
@@ -80,5 +73,4 @@ export function getUserData(): AuthUser | null {
  */
 export function logout(): void {
   clearAuthData();
-  console.log("User logged out successfully");
 }

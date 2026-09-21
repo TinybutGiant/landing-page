@@ -49,7 +49,7 @@ const featureIcons: ReactNode[] = [
 
 const LandingPage = () => {
   const prefersReducedMotion = useReducedMotion();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, loading: authLoading } = useAuth();
   const { messages } = useLanguage();
   const t = (key: string, fallback: string) => messages[key] || fallback;
   const localizedTeamMembers = localizeTeamMembers(t);
@@ -71,6 +71,7 @@ const LandingPage = () => {
   };
 
   const handleViewApplicationStatus = () => {
+    if (authLoading) return;
     window.location.href = isAuthenticated
       ? "/view-application-status"
       : "/login?redirect=/view-application-status";
@@ -459,6 +460,7 @@ const LandingPage = () => {
                 type="button"
                 className="underline decoration-white/40 underline-offset-4 transition-colors hover:text-white"
                 onClick={handleViewApplicationStatus}
+                disabled={authLoading}
               >
                 {t(
                   "landing.cta.viewApplicationStatusAction",
