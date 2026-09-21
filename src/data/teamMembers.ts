@@ -5,7 +5,7 @@ const linkedIn = (href: string): NonNullable<TeamMemberCard["links"]>[number] =>
   href,
 });
 
-/** Featured = first 6 (sm · md · lg · lg · md · sm). Rest scroll below. */
+/** Featured = first 6. Remaining members scroll in the rows below. */
 const teamMembers: TeamMemberCard[] = [
   {
     id: "wenyan-chen",
@@ -100,12 +100,12 @@ const teamMembers: TeamMemberCard[] = [
   {
     id: "xuning-li",
     name: "Xuning Li",
-    role: "UX Designer",
+    role: "Product Designer",
     status: "active",
-    summary: "UX Designer",
-    bio: "Xuning Li is part of the Yaotu team as UX Designer.",
+    summary: "Product Designer",
+    bio: "Xuning Li is part of the Yaotu team as Product Designer.",
     avatarSrc: "/team/xuning-li.png",
-    links: [linkedIn("https://www.linkedin.com/in/xuning-li")],
+    links: [linkedIn("https://www.linkedin.com/in/xuning-li/")],
   },
   {
     id: "yitian-wu",

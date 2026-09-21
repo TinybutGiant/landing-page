@@ -171,9 +171,9 @@
       "xiangyingQiRole": "ビジネスアナリストインターン",
       "xiangyingQiSummary": "ビジネスアナリストインターン",
       "xiangyingQiBio": "Xiangying Qi は Yaotu チームのビジネスアナリストインターンです。",
-      "xuningLiRole": "UXデザイナー",
-      "xuningLiSummary": "UXデザイナー",
-      "xuningLiBio": "Xuning Li は Yaotu チームの UXデザイナーです。",
+      "xuningLiRole": "プロダクトデザイナー",
+      "xuningLiSummary": "プロダクトデザイナー",
+      "xuningLiBio": "Xuning Li は Yaotu チームのプロダクトデザイナーです。",
       "yitianWuRole": "ソフトウェア開発",
       "yitianWuSummary": "ソフトウェア開発",
       "yitianWuBio": "Yitian Wu は Yaotu チームのソフトウェア開発担当です。",
@@ -271,6 +271,11 @@
       "resendSent": "確認待ちの先行アクセス申請がある場合、新しいリンクを送信しました。",
       "confirmError": "このリンクを確認できませんでした。新しい確認メールをリクエストしてください。",
       "backHome": "ホームに戻る",
+      "joinTitle": "Travelerウェイトリストに登録",
+      "joinBody": "マーケットプレイスの公開時にお知らせします。",
+      "guideBoxTitle": "Guideとして応募",
+      "guideBoxBody": "先に応募を始めてください。アカウント作成はGuideオンボーディングの本人確認ステップで行います。",
+      "existingSignIn": "既存ユーザーはログイン",
       "unsubscribeTitle": "先行アクセスのお知らせを解除",
       "unsubscribeBody": "今後Yaotuの先行アクセス情報を受け取らない場合は「登録解除」を選択してください。",
       "unsubscribeButton": "登録解除",
@@ -291,7 +296,9 @@
       "subtitle": "ローカルGuideとして応募し、Yaotu初の日本体験ネットワーク作りに参加してください。",
       "startNow": "今すぐ始める",
       "becomeGuide": "ローカルGuideに応募する",
-      "viewApplicationStatus": "申請済みの方：申請状況を確認"
+      "viewApplicationStatus": "申請済みの方：申請状況を確認",
+      "viewApplicationStatusPrefix": "申請済みの方：",
+      "viewApplicationStatusAction": "申請状況を確認"
     }
   },
   "becomeGuide": {
