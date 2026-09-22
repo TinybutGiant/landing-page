@@ -10,7 +10,6 @@ import {
   FounderNoteMail,
   GUIDE_APPLICATION_IDENTITY_INTENT_STORAGE_KEY,
   GuideForm,
-  resolveGuideApplicationContinuation,
   type GuideFormConfig,
   type GuideFormDestination,
   type UIComponents,
@@ -55,7 +54,8 @@ import { useToast } from "@/hooks/use-toast";
 import { pathWithRedirect, rememberPostEmailVerificationRedirect } from "@/lib/authRedirects";
 import { apiRequest } from "@/lib/queryClient";
 import { resolveApiUrl } from "@/lib/apiClient";
-import { getCanonicalVerifyEmailPath, getMarketplaceUrl } from "@/lib/yaotuAuthRuntime";
+import { resolveApplicantContinuation } from "@/lib/applicantContinuation";
+import { getCanonicalVerifyEmailPath } from "@/lib/yaotuAuthRuntime";
 
 const RESUME_PATH = DEFAULT_RESUME_PATH;
 const DESTINATIONS_QUERY_KEY = ["/api/v2/destinations", "JP"] as const;
@@ -166,9 +166,7 @@ const BecomeGuidePage = () => {
     staleTime: 0,
     retry: 1,
   });
-  const continuationIntent = resolveGuideApplicationContinuation({
-    authenticated: Boolean(user),
-    hasGuideProfile: Boolean(user?.isGuide),
+  const continuationIntent = resolveApplicantContinuation({
     hasApplication: applicationStateQuery.data?.hasApplication ?? false,
     applicationStatus: applicationStateQuery.data?.applicationStatus,
   });
@@ -183,10 +181,6 @@ const BecomeGuidePage = () => {
       return;
     }
 
-    if (continuationIntent === "guide_home") {
-      window.location.assign(getMarketplaceUrl("/guide-dashboard"));
-      return;
-    }
     if (continuationIntent === "view_status") {
       setLocation("/view-application-status");
     }
@@ -348,8 +342,6 @@ const BecomeGuidePage = () => {
           sessionStorage.removeItem(GUIDE_APPLICATION_IDENTITY_INTENT_STORAGE_KEY);
         },
         onNavigateToStatus: () => setLocation("/view-application-status"),
-        onNavigateToGuideHome: () =>
-          window.location.assign(getMarketplaceUrl("/guide-dashboard")),
         onError: (error) => {
           if (isTokenExpiredError(error)) {
             console.info("Guide application session expired; continuing with anonymous draft.");
@@ -486,7 +478,7 @@ const BecomeGuidePage = () => {
   const isLeavingGuideForm =
     Boolean(user) &&
     applicationStateQuery.isSuccess &&
-    (continuationIntent === "view_status" || continuationIntent === "guide_home");
+    continuationIntent === "view_status";
 
   if (isResolvingCanonicalState || isLeavingGuideForm) return null;
 

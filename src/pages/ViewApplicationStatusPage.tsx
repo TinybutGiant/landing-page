@@ -29,6 +29,7 @@ import {
 import { useToast } from "../hooks/use-toast";
 import { apiRequest } from "../lib/queryClient";
 import { useAuth } from "@/context/AuthContext";
+import { getApprovedGuideLoginPath } from "@/lib/applicantContinuation";
 import { 
   triggerLazyEvaluationForApprovedApplication,
   getUserGuideStatus 
@@ -228,8 +229,7 @@ export default function ViewApplicationStatusPage() {
 
   // 导航处理
   const handleNavigateToGuide = () => {
-    // Redirect to main project's guide dashboard
-    window.location.href = getMarketplaceUrl('/guide-dashboard');
+    window.location.assign(getMarketplaceUrl(getApprovedGuideLoginPath()));
   };
 
   const handleNavigateToBecomeGuide = () => {
@@ -248,38 +248,63 @@ export default function ViewApplicationStatusPage() {
   }
 
   return (
-    <ApplicationStatus
-      application={application}
-      fullApplication={fullApplication}
-      timelineData={timelineData}
-      isLoading={isLoading}
-      error={error}
-      timelineLoading={timelineLoading}
-      isJustSubmitted={isJustSubmitted}
-      onRefetchTimeline={refetchTimeline}
-      onDownloadPDF={handleDownloadPDF}
-      onNavigateToGuide={handleNavigateToGuide}
-      onNavigateToBecomeGuide={handleNavigateToBecomeGuide}
-      onFileUpload={handleFileUpload}
-      onSubmitSupplemental={handleSubmitSupplemental}
-      onToast={handleToast}
-      Card={Card}
-      CardContent={CardContent}
-      CardHeader={CardHeader}
-      CardTitle={CardTitle}
-      Button={Button}
-      Badge={Badge}
-      Textarea={Textarea}
-      Input={Input}
-      Label={Label}
-      CheckCircle={CheckCircle}
-      Clock={Clock}
-      AlertCircle={AlertCircle}
-      XCircle={XCircle}
-      Download={Download}
-      Upload={Upload}
-      FileText={FileText}
-      History={History}
-    />
+    <div className="min-h-screen bg-yellow-50 pb-12">
+      <ApplicationStatus
+        application={application}
+        fullApplication={fullApplication}
+        timelineData={timelineData}
+        isLoading={isLoading}
+        error={error}
+        timelineLoading={timelineLoading}
+        isJustSubmitted={isJustSubmitted}
+        onRefetchTimeline={refetchTimeline}
+        onDownloadPDF={handleDownloadPDF}
+        onNavigateToBecomeGuide={handleNavigateToBecomeGuide}
+        onFileUpload={handleFileUpload}
+        onSubmitSupplemental={handleSubmitSupplemental}
+        onToast={handleToast}
+        Card={Card}
+        CardContent={CardContent}
+        CardHeader={CardHeader}
+        CardTitle={CardTitle}
+        Button={Button}
+        Badge={Badge}
+        Textarea={Textarea}
+        Input={Input}
+        Label={Label}
+        CheckCircle={CheckCircle}
+        Clock={Clock}
+        AlertCircle={AlertCircle}
+        XCircle={XCircle}
+        Download={Download}
+        Upload={Upload}
+        FileText={FileText}
+        History={History}
+      />
+
+      {application?.applicationStatus === 'approved' && (
+        <div className="mx-auto -mt-6 max-w-4xl px-4">
+          <Card className="rounded-2xl border-green-200 shadow-lg">
+            <CardHeader>
+              <CardTitle>
+                {intl.formatMessage({ id: 'viewApplicationStatus.guideDashboardReadyTitle' })}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-gray-600">
+                {intl.formatMessage({ id: 'viewApplicationStatus.guideDashboardReadyDescription' })}
+              </p>
+              <Button
+                type="button"
+                className="bg-yellow-500 text-black hover:bg-yellow-600"
+                onClick={handleNavigateToGuide}
+              >
+                {intl.formatMessage({ id: 'viewApplicationStatus.loginToYaotu' })}
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+    </div>
   );
 }
