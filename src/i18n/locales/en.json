@@ -920,5 +920,13 @@
       "usernameUnavailable": "Username unavailable",
       "usernameUnavailableDescription": "Please choose an available username"
     }
+  },
+  "privacy": {
+    "contact": {
+      "title": "Data Protection Contact",
+      "description": "If you have questions about this privacy policy or wish to exercise your rights, contact us:",
+      "email": "info@ahhh-yaotu.com",
+      "responseTime": "We will respond to your request within 30 days."
+    }
   }
 }
