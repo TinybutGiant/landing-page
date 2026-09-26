@@ -160,8 +160,6 @@ const SignupPage = () => {
       loginPath="/login"
       verifyEmailPath={getCanonicalVerifyEmailPath(guideLoginContinuation(redirectTo))}
       resolveVerifyEmailPath={addSignupEmailPrefillFragment}
-      termsPath="/terms"
-      privacyPath="/privacy"
       onSignupVerificationRequired={(_result, context) => {
         // Verification continues on the main origin, whose sessionStorage is
         // isolated from this landing origin. Do not retain a raw email here.

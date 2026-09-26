@@ -686,28 +686,6 @@
       "body16": "もし、いつかあなたが、自分の街について知っていること、自分の興味や経験を使って、必要なときに人生の選択肢をひとつ増やすことができたなら——<strong>Yaotu は、少なくともひとつ正しいことができたと思います。</strong>"
     }
   },
-  "footer": {
-    "description": "旅行者と専門的なローカルガイドをつなぎ、本格的な文化体験を。",
-    "discover": "発見する",
-    "howItWorks": "仕組み",
-    "featuredGuides": "注目のガイド/体験",
-    "cities": "都市",
-    "travelerCommunity": "旅行者コミュニティ",
-    "guides": "ガイド",
-    "becomeAGuide": "ガイドになる",
-    "guideResources": "リソース",
-    "guideCommunity": "ガイドコミュニティ",
-    "support": "サポート",
-    "helpCenter": "ヘルプセンター",
-    "safetyCenter": "安全",
-    "cancellationPolicies": "キャンセルポリシー",
-    "aboutUs": "私たちについて",
-    "contactUs": "お問い合わせ",
-    "allRightsReserved": "無断転載を禁じます。",
-    "privacyPolicy": "プライバシーポリシー",
-    "termsOfService": "利用規約",
-    "cookiePolicy": "クッキーポリシー"
-  },
   "viewApplicationStatus": {
     "verifyingIdentity": "Verifying identity...",
     "congratulations": "Congratulations!",
@@ -919,14 +897,6 @@
       "agreeToTermsDescription": "Please agree to the terms of service and privacy policy",
       "usernameUnavailable": "Username unavailable",
       "usernameUnavailableDescription": "Please choose an available username"
-    }
-  },
-  "privacy": {
-    "contact": {
-      "title": "データ保護に関する連絡先",
-      "description": "このプライバシー ポリシーについてご質問がある場合、または権利を行使したい場合は、以下までお問い合わせください。",
-      "email": "info@ahhh-yaotu.com",
-      "responseTime": "30 日以内にご要望にお答えいたします。"
     }
   }
 }

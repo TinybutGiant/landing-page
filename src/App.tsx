@@ -11,8 +11,6 @@ import ForgotPasswordPage from "@/pages/ForgotPasswordPage";
 import ResetPasswordPage from "@/pages/ResetPasswordPage";
 import PDFTestPage from "@/pages/PDFTestPage";
 import ViewApplicationStatusPage from "@/pages/ViewApplicationStatusPage";
-import TermsPage from "@/pages/TermsPage";
-import PrivacyPage from "@/pages/PrivacyPage";
 import { AuthProvider } from "@/context/AuthContext";
 import { LanguageProvider } from "@/i18n/LanguageProvider";
 import { Toaster } from "@/components/ui/toaster";
@@ -44,8 +42,6 @@ const App = () => {
             <Route path="/reset-password" component={ResetPasswordPage} />
             <Route path="/pdf-test" component={PDFTestPage} />
             <Route path="/view-application-status" component={ViewApplicationStatusPage} />
-            <Route path="/terms" component={TermsPage} />
-            <Route path="/privacy" component={PrivacyPage} />
           </Router>
           <Toaster />
         </AuthProvider>

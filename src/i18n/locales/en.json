@@ -686,28 +686,6 @@
       "body16": "If one day what you know about your city, your interests, and your experience can give you one more option when you need it, <strong>then Yaotu has done at least one thing right.</strong>"
     }
   },
-  "footer": {
-    "description": "Travel with a knowledgeable tour guide and explore the real world through academic perspectives and artistic feelings.",
-    "discover": "Discover",
-    "howItWorks": "How it Works",
-    "featuredGuides": "Featured Guides/Experiences",
-    "cities": "Cities",
-    "travelerCommunity": "Traveler Community",
-    "guides": "Guides",
-    "becomeAGuide": "Become a Guide",
-    "guideResources": "Guide Resources",
-    "guideCommunity": "Guide Community",
-    "support": "Support",
-    "helpCenter": "Help Center",
-    "safetyCenter": "Safety Center",
-    "cancellationPolicies": "Cancellation Policies",
-    "aboutUs": "About Us",
-    "contactUs": "Contact Us",
-    "allRightsReserved": "All rights reserved.",
-    "privacyPolicy": "Privacy Policy",
-    "termsOfService": "Terms of Service",
-    "cookiePolicy": "Cookie Policy"
-  },
   "viewApplicationStatus": {
     "verifyingIdentity": "Verifying identity...",
     "congratulations": "Congratulations!",
@@ -919,14 +897,6 @@
       "agreeToTermsDescription": "Please agree to the terms of service and privacy policy",
       "usernameUnavailable": "Username unavailable",
       "usernameUnavailableDescription": "Please choose an available username"
-    }
-  },
-  "privacy": {
-    "contact": {
-      "title": "Data Protection Contact",
-      "description": "If you have questions about this privacy policy or wish to exercise your rights, contact us:",
-      "email": "info@ahhh-yaotu.com",
-      "responseTime": "We will respond to your request within 30 days."
     }
   }
 }
