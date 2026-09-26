@@ -10,6 +10,7 @@
     "test:auth": "node --experimental-strip-types --test scripts/auth-session.test.mjs",
     "test:applicant-continuation": "node --experimental-strip-types --test scripts/applicant-continuation.test.mjs",
     "test:guide-i18n": "node scripts/check-guide-i18n.mjs",
+    "test:warm-api": "node --experimental-strip-types --test scripts/warm-api.test.mjs",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "start": "serve -s dist"
   },
@@ -27,7 +28,7 @@
     "@radix-ui/react-tooltip": "^1.2.8",
     "@replit/guide-form": "file:artifacts/npm/replit-guide-form-1.1.5.tgz",
     "@tanstack/react-query": "^5.90.2",
-    "@yaotu/auth": "file:artifacts/npm/yaotu-auth-0.2.0.tgz",
+    "@yaotu/auth": "file:artifacts/npm/yaotu-auth-0.2.1.tgz",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cors": "^2.8.5",

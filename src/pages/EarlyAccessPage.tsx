@@ -2,9 +2,11 @@ import { FormEvent, useState } from "react";
 
 import YaotuAppChrome from "@/components/YaotuAppChrome";
 import { useLanguage } from "@/i18n/LanguageProvider";
-import { api } from "@/lib/apiClient";
+import { API_BASE, api } from "@/lib/apiClient";
+import { useWarmApi } from "@/lib/warmApi";
 
 const EarlyAccessPage = () => {
+  useWarmApi(API_BASE);
   const { messages, locale } = useLanguage();
   const t = (key: string, fallback: string) => messages[key] || fallback;
 

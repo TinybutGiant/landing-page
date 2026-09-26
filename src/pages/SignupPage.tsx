@@ -11,7 +11,8 @@ import {
   getCanonicalVerifyEmailPath,
   useYaoTuAuthRuntime,
 } from '@/lib/yaotuAuthRuntime';
-import { resolveApiUrl } from '@/lib/apiClient';
+import { API_BASE, resolveApiUrl } from '@/lib/apiClient';
+import { useWarmApi } from '@/lib/warmApi';
 
 const DEFAULT_REDIRECT = '/become-guide';
 type IntentStatus = 'none' | 'checking' | 'valid' | 'invalid';
@@ -81,6 +82,7 @@ function PreLaunchSignupGate({ invalidIntent = false }: { invalidIntent?: boolea
 }
 
 const SignupPage = () => {
+  useWarmApi(API_BASE);
   const runtime = useYaoTuAuthRuntime();
   const { user } = useAuth();
   const [, setLocation] = useLocation();

@@ -53,9 +53,10 @@ import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { pathWithRedirect, rememberPostEmailVerificationRedirect } from "@/lib/authRedirects";
 import { apiRequest } from "@/lib/queryClient";
-import { resolveApiUrl } from "@/lib/apiClient";
+import { API_BASE, resolveApiUrl } from "@/lib/apiClient";
 import { resolveApplicantContinuation } from "@/lib/applicantContinuation";
 import { getCanonicalVerifyEmailPath } from "@/lib/yaotuAuthRuntime";
+import { useWarmApi } from "@/lib/warmApi";
 
 const RESUME_PATH = DEFAULT_RESUME_PATH;
 const DESTINATIONS_QUERY_KEY = ["/api/v2/destinations", "JP"] as const;
@@ -153,6 +154,7 @@ const QualificationUploader = (props: any) => (
 );
 
 const BecomeGuidePage = () => {
+  useWarmApi(API_BASE);
   const { user, loading, logout } = useAuth();
   const { toast } = useToast();
   const intl = useIntl();
