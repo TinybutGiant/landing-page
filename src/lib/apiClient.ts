@@ -91,7 +91,9 @@ export async function apiFetch(
 
   if (!res.ok) {
     console.error(`API Error: ${res.status} ${res.statusText}`, data);
-    throw new Error(data?.error || data?.message || `API ${res.status}`);
+    throw Object.assign(new Error(data?.error || data?.message || `API ${res.status}`), {
+      status: res.status,
+    });
   }
 
   console.log(`API Success: ${options.method || "GET"} ${url}`);

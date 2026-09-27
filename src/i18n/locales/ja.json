@@ -283,7 +283,8 @@
       "unsubscribeDoneTitle": "登録を解除しました",
       "unsubscribeDoneBody": "今後Yaotuの先行アクセス情報は送信されません。",
       "unsubscribeInvalidTitle": "登録解除リンクが無効です",
-      "unsubscribeInvalidBody": "リンクが不完全な可能性があります。このページは閉じて構いません。"
+      "unsubscribeInvalidBody": "リンクが不完全な可能性があります。このページは閉じて構いません。",
+      "busy": "ただいま登録が混み合っています。数分後にもう一度お試しください。"
     },
     "testimonials": {
       "title": "Travelerの声",

@@ -33,7 +33,16 @@ const EarlyAccessPage = () => {
         utmMedium: params.get("utm_medium"),
         utmCampaign: params.get("utm_campaign"),
       });
-    } catch {
+    } catch (submitError) {
+      if ((submitError as { status?: number }).status === 503) {
+        setError(
+          t(
+            "landing.waitlist.busy",
+            "Many people are signing up right now. Please try again in a few minutes."
+          )
+        );
+        return;
+      }
       setError(
         t(
           "landing.waitlist.error",

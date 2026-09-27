@@ -283,7 +283,8 @@
       "unsubscribeDoneTitle": "You're unsubscribed",
       "unsubscribeDoneBody": "You will no longer receive Yaotu early access updates.",
       "unsubscribeInvalidTitle": "This unsubscribe link is invalid",
-      "unsubscribeInvalidBody": "The link may be incomplete. You can ignore this page."
+      "unsubscribeInvalidBody": "The link may be incomplete. You can ignore this page.",
+      "busy": "Many people are signing up right now. Please try again in a few minutes."
     },
     "testimonials": {
       "title": "What Our Travelers Say",

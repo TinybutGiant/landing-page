@@ -283,7 +283,8 @@
       "unsubscribeDoneTitle": "已取消订阅",
       "unsubscribeDoneBody": "你将不再收到 Yaotu 首批体验相关邮件。",
       "unsubscribeInvalidTitle": "取消订阅链接无效",
-      "unsubscribeInvalidBody": "该链接可能不完整。你可以忽略此页面。"
+      "unsubscribeInvalidBody": "该链接可能不完整。你可以忽略此页面。",
+      "busy": "现在报名的人比较多，请过几分钟再试。"
     },
     "testimonials": {
       "title": "游客评价",
