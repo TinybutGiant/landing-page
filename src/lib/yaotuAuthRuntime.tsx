@@ -16,6 +16,7 @@ import { API_BASE } from '@/lib/apiClient';
 import {
   CANONICAL_PRODUCTION_WEB_ORIGIN,
   normalizeConfiguredOrigin,
+  trimTrailingSlash,
 } from '@/lib/publicOrigins';
 
 const DEFAULT_MARKETPLACE_ORIGIN = CANONICAL_PRODUCTION_WEB_ORIGIN;
@@ -85,9 +86,6 @@ function normalizeAuthLocale(locale: string): AuthLocale {
   return 'en';
 }
 
-function trimTrailingSlash(value: string): string {
-  return value.replace(/\/+$/, '');
-}
 
 export function getCanonicalAuthOrigin(): string {
   const candidate = trimTrailingSlash(

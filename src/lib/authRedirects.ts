@@ -1,8 +1,10 @@
+import { CANONICAL_GUIDE_ORIGIN } from "@/lib/publicOrigins";
+
 const POST_EMAIL_VERIFICATION_REDIRECT_KEY = "postEmailVerificationRedirect";
 
 function currentOrigin(): string {
   if (typeof window !== "undefined") return window.location.origin;
-  return "https://guide.ahhh-yaotu.com";
+  return CANONICAL_GUIDE_ORIGIN;
 }
 
 export function sanitizeSameOriginRedirect(
@@ -65,4 +67,19 @@ export function pathWithRedirect(path: string, redirectTo: string | null | undef
   const url = new URL(path, currentOrigin());
   url.searchParams.set("redirect", sanitized);
   return `${url.pathname}${url.search}${url.hash}`;
+}
+
+/**
+ * Absolute URL of this site's /login page that sends the user to `redirectTo`
+ * (or `fallback` when none is given) after signing in. Used as the
+ * continuation link when email verification happens on the main site.
+ */
+export function guideLoginContinuation(
+  redirectTo: string | null | undefined,
+  fallback: string
+): string {
+  return new URL(
+    pathWithRedirect("/login", redirectTo ?? fallback),
+    currentOrigin()
+  ).toString();
 }

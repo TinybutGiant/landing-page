@@ -1,5 +1,9 @@
 // Authentication persistence utilities for the landing-page project.
+const AUTH_TOKEN_KEY = "yaotu_token";
+const AUTH_USER_KEY = "yaotu_user";
+const AUTH_USER_ID_KEY = "yaotu_user_id";
 
+// Authentication persistence utilities for the landing-page project.
 export interface AuthUser {
   id: number;
   username: string;
@@ -19,28 +23,36 @@ export interface AuthUser {
  * Store authentication data consistently
  */
 export function storeAuthData(token: string, userData: AuthUser): void {
-  localStorage.setItem("yaotu_token", token);
+  localStorage.setItem(AUTH_TOKEN_KEY, token);
 
   const { token: _, ...userDataWithoutToken } = userData;
 
-  localStorage.setItem("yaotu_user", JSON.stringify(userDataWithoutToken));
-  localStorage.setItem("yaotu_user_id", userData.id.toString());
+  localStorage.setItem(AUTH_USER_KEY, JSON.stringify(userDataWithoutToken));
+  localStorage.setItem(AUTH_USER_ID_KEY, userData.id.toString());
 }
 
 /**
  * Clear all authentication data
  */
 export function clearAuthData(): void {
-  localStorage.removeItem("yaotu_token");
-  localStorage.removeItem("yaotu_user");
-  localStorage.removeItem("yaotu_user_id");
+  localStorage.removeItem(AUTH_TOKEN_KEY);
+  localStorage.removeItem(AUTH_USER_KEY);
+  localStorage.removeItem(AUTH_USER_ID_KEY);
 }
 
 /**
  * Get the stored authentication token
  */
 export function getAuthToken(): string | null {
-  return localStorage.getItem("yaotu_token");
+  return localStorage.getItem(AUTH_TOKEN_KEY);
+}
+
+/**
+ * Get the stored user id, or null when no user is stored.
+ */
+export function getStoredUserId(): number | null {
+  const storedUserId = localStorage.getItem(AUTH_USER_ID_KEY);
+  return storedUserId ? Number(storedUserId) : null;
 }
 
 /**
