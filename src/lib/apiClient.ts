@@ -1,16 +1,13 @@
 import {
   CANONICAL_PRODUCTION_API_ORIGIN,
   normalizeConfiguredOrigin,
+  trimTrailingSlash,
 } from '@/lib/publicOrigins';
 
 const isLocalHost =
   window.location.hostname === "localhost" ||
   window.location.hostname === "127.0.0.1" ||
   window.location.hostname === "::1";
-
-function trimTrailingSlash(value: string): string {
-  return value.replace(/\/+$/, "");
-}
 
 function normalizeApiBaseUrl(value: string | undefined): string | null {
   const trimmed = value?.trim();
