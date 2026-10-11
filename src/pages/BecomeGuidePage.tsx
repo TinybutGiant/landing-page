@@ -51,7 +51,7 @@ import {
 } from "@/components/ui/tooltip";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { pathWithRedirect, rememberPostEmailVerificationRedirect } from "@/lib/authRedirects";
+import { guideLoginContinuation, rememberPostEmailVerificationRedirect } from "@/lib/authRedirects";
 import { apiRequest } from "@/lib/queryClient";
 import { API_BASE, resolveApiUrl } from "@/lib/apiClient";
 import { resolveApplicantContinuation } from "@/lib/applicantContinuation";
@@ -140,14 +140,6 @@ const isTokenExpiredError = (error: unknown): boolean => {
 
   return code === "TOKEN_EXPIRED" || /token expired|expired token|log in again/i.test(message);
 };
-
-const guideUrl = (path: string): string => {
-  const origin = typeof window !== "undefined" ? window.location.origin : "https://guide.ahhh-yaotu.com";
-  return new URL(path, origin).toString();
-};
-
-const guideLoginContinuation = (redirectTo: string | null | undefined): string =>
-  guideUrl(pathWithRedirect("/login", redirectTo ?? RESUME_PATH));
 
 const QualificationUploader = (props: any) => (
   <ApplicationQualificationUploader {...props} deferUpload />
@@ -318,7 +310,7 @@ const BecomeGuidePage = () => {
       callbacks: {
         onVerificationRequired: (redirectTo) => {
           rememberPostEmailVerificationRedirect(redirectTo);
-          window.location.assign(getCanonicalVerifyEmailPath(guideLoginContinuation(redirectTo)));
+          window.location.assign(getCanonicalVerifyEmailPath(guideLoginContinuation(redirectTo, RESUME_PATH)));
         },
         onHandoffConflict: (conflict) => {
           if (
@@ -398,7 +390,7 @@ const BecomeGuidePage = () => {
       routes: {
         signup: "/signup",
         login: "/login",
-        verifyEmail: getCanonicalVerifyEmailPath(guideLoginContinuation(RESUME_PATH)),
+        verifyEmail: getCanonicalVerifyEmailPath(guideLoginContinuation(RESUME_PATH, RESUME_PATH)),
         resumePath: RESUME_PATH,
       },
     }),
