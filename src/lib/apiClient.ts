@@ -4,6 +4,8 @@ import {
   trimTrailingSlash,
 } from '@/lib/publicOrigins';
 
+import { getAuthToken } from '@/lib/auth';
+
 const isLocalHost =
   window.location.hostname === "localhost" ||
   window.location.hostname === "127.0.0.1" ||
@@ -130,7 +132,7 @@ export async function authenticatedApiFetch(
   path: string,
   options: RequestInit = {}
 ): Promise<any> {
-  const token = localStorage.getItem("yaotu_token");
+  const token = getAuthToken();
 
   return apiFetch(path, {
     ...options,
@@ -170,7 +172,7 @@ export const authApi = {
     }),
 
   upload: async (path: string, formData: FormData, options?: RequestInit) => {
-    const token = localStorage.getItem("yaotu_token");
+    const token = getAuthToken();
     const url = resolveApiUrl(path);
 
     console.log(`File Upload: POST ${url}`);

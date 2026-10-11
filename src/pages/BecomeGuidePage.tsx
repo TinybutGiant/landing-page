@@ -57,6 +57,7 @@ import { API_BASE, resolveApiUrl } from "@/lib/apiClient";
 import { resolveApplicantContinuation } from "@/lib/applicantContinuation";
 import { getCanonicalVerifyEmailPath } from "@/lib/yaotuAuthRuntime";
 import { useWarmApi } from "@/lib/warmApi";
+import { getAuthToken, getStoredUserId } from "@/lib/auth";
 
 const RESUME_PATH = DEFAULT_RESUME_PATH;
 const DESTINATIONS_QUERY_KEY = ["/api/v2/destinations", "JP"] as const;
@@ -226,7 +227,7 @@ const BecomeGuidePage = () => {
 
   const archiveApplicationPdf = useCallback(async (applicationId: string | number) => {
     const printRoot = document.getElementById("print-root");
-    const token = localStorage.getItem("yaotu_token");
+    const token = getAuthToken();
     if (!printRoot || !token) return;
 
     const pdfWorker = html2pdf()
@@ -285,11 +286,8 @@ const BecomeGuidePage = () => {
         qualificationUpload: "/api/v2/guide-applications/qualification-upload",
       },
       auth: {
-        getToken: () => localStorage.getItem("yaotu_token"),
-        getUserId: () => {
-          const storedUserId = localStorage.getItem("yaotu_user_id");
-          return user?.id ?? (storedUserId ? Number(storedUserId) : null);
-        },
+        getToken: getAuthToken,
+        getUserId: () => user?.id ?? getStoredUserId(),
         getUser: () =>
           user
             ? (user as unknown as {
