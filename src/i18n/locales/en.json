@@ -284,7 +284,9 @@
       "unsubscribeDoneBody": "You will no longer receive Yaotu early access updates.",
       "unsubscribeInvalidTitle": "This unsubscribe link is invalid",
       "unsubscribeInvalidBody": "The link may be incomplete. You can ignore this page.",
-      "busy": "Many people are signing up right now. Please try again in a few minutes."
+      "busy": "Many people are signing up right now. Please try again in a few minutes.",
+      "consentTransfer": "I agree to my information being transferred to the United States for processing.",
+      "consentAdult": "I am 18 or older."
     },
     "testimonials": {
       "title": "What Our Travelers Say",

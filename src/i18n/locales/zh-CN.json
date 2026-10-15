@@ -284,7 +284,9 @@
       "unsubscribeDoneBody": "你将不再收到 Yaotu 首批体验相关邮件。",
       "unsubscribeInvalidTitle": "取消订阅链接无效",
       "unsubscribeInvalidBody": "该链接可能不完整。你可以忽略此页面。",
-      "busy": "现在报名的人比较多，请过几分钟再试。"
+      "busy": "现在报名的人比较多，请过几分钟再试。",
+      "consentTransfer": "我同意将我的信息传输到美国处理",
+      "consentAdult": "我已年满 18 岁"
     },
     "testimonials": {
       "title": "游客评价",

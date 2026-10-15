@@ -15,10 +15,14 @@ const EarlyAccessPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  // Both ticks are required by the API (YaoTu privacy policy sections 7 and 11).
+  const [consentTransfer, setConsentTransfer] = useState(false);
+  const [consentAdult, setConsentAdult] = useState(false);
+  const consented = consentTransfer && consentAdult;
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!name.trim() || !email.trim() || submitting) return;
+    if (!name.trim() || !email.trim() || !consented || submitting) return;
 
     setError(null);
     setSubmitting(true);
@@ -32,6 +36,7 @@ const EarlyAccessPage = () => {
         utmSource: params.get("utm_source"),
         utmMedium: params.get("utm_medium"),
         utmCampaign: params.get("utm_campaign"),
+        consents: { crossBorderTransfer: true, adult: true },
       });
     } catch (submitError) {
       if ((submitError as { status?: number }).status === 503) {
@@ -134,6 +139,26 @@ const EarlyAccessPage = () => {
                       required
                     />
                   </label>
+                  <label className="flex items-start gap-2 text-left text-sm text-[#3b3a33]" htmlFor="waitlist-consent-transfer">
+                    <input
+                      id="waitlist-consent-transfer"
+                      type="checkbox"
+                      checked={consentTransfer}
+                      onChange={(event) => setConsentTransfer(event.target.checked)}
+                      className="mt-1 h-4 w-4 shrink-0"
+                    />
+                    <span>{t("landing.waitlist.consentTransfer", "I agree to my information being transferred to the United States for processing.")}</span>
+                  </label>
+                  <label className="flex items-start gap-2 text-left text-sm text-[#3b3a33]" htmlFor="waitlist-consent-adult">
+                    <input
+                      id="waitlist-consent-adult"
+                      type="checkbox"
+                      checked={consentAdult}
+                      onChange={(event) => setConsentAdult(event.target.checked)}
+                      className="mt-1 h-4 w-4 shrink-0"
+                    />
+                    <span>{t("landing.waitlist.consentAdult", "I am 18 or older.")}</span>
+                  </label>
                   {error ? (
                     <p className="early-access-notice mt-0" role="alert">
                       {error}
@@ -142,7 +167,7 @@ const EarlyAccessPage = () => {
                   <button
                     type="submit"
                     className="yaotu-button min-h-12 w-full px-6"
-                    disabled={submitting}
+                    disabled={submitting || !consented}
                   >
                     {submitting
                       ? t("landing.waitlist.submitting", "Submitting...")
