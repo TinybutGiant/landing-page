@@ -1,4 +1,5 @@
-import { CANONICAL_GUIDE_ORIGIN } from "@/lib/publicOrigins";
+// Relative .ts import (not "@/lib/...") so Node tests can load this file directly.
+import { CANONICAL_GUIDE_ORIGIN } from "./publicOrigins.ts";
 
 const POST_EMAIL_VERIFICATION_REDIRECT_KEY = "postEmailVerificationRedirect";
 
