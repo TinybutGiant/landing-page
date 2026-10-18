@@ -3,7 +3,6 @@ const AUTH_TOKEN_KEY = "yaotu_token";
 const AUTH_USER_KEY = "yaotu_user";
 const AUTH_USER_ID_KEY = "yaotu_user_id";
 
-// Authentication persistence utilities for the landing-page project.
 export interface AuthUser {
   id: number;
   username: string;

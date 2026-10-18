@@ -4,6 +4,6 @@
  * server access logs.
  */
 export function readFragmentToken(): string | null {
-    const params = new URLSearchParams(window.location.hash.replace(/^#/, ""));
-    return params.get("token")?.trim() || null;
-  }
+  const params = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+  return params.get("token")?.trim() || null;
+}

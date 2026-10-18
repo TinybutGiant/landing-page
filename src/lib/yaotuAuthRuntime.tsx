@@ -86,7 +86,6 @@ function normalizeAuthLocale(locale: string): AuthLocale {
   return 'en';
 }
 
-
 export function getCanonicalAuthOrigin(): string {
   const candidate = trimTrailingSlash(
     import.meta.env.VITE_AUTH_ORIGIN ||
