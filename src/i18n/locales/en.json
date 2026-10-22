@@ -285,7 +285,10 @@
       "unsubscribeInvalidTitle": "This unsubscribe link is invalid",
       "unsubscribeInvalidBody": "The link may be incomplete. You can ignore this page.",
       "busy": "Many people are signing up right now. Please try again in a few minutes.",
-      "consentTransfer": "I agree to my information being transferred to the United States for processing.",
+      "consentTransfer": "I agree to my information being transferred to the United States for processing",
+      "consentPolicyBefore": "; see the ",
+      "consentPolicyLink": "Privacy Policy",
+      "consentPolicyAfter": ".",
       "consentAdult": "I am 18 or older."
     },
     "testimonials": {

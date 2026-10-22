@@ -4,6 +4,7 @@ import YaotuAppChrome from "@/components/YaotuAppChrome";
 import { useLanguage } from "@/i18n/LanguageProvider";
 import { API_BASE, api } from "@/lib/apiClient";
 import { useWarmApi } from "@/lib/warmApi";
+import { CANONICAL_PRODUCTION_WEB_ORIGIN } from "@/lib/publicOrigins";
 
 const EarlyAccessPage = () => {
   useWarmApi(API_BASE);
@@ -147,7 +148,21 @@ const EarlyAccessPage = () => {
                       onChange={(event) => setConsentTransfer(event.target.checked)}
                       className="mt-1 h-4 w-4 shrink-0"
                     />
-                    <span>{t("landing.waitlist.consentTransfer", "I agree to my information being transferred to the United States for processing.")}</span>
+                    <span>
+                      {t("landing.waitlist.consentTransfer", "I agree to my information being transferred to the United States for processing")}
+                      {t("landing.waitlist.consentPolicyBefore", "; see the ")}
+                      {/* A new tab, so the form keeps what was already filled in. */}
+                      <a
+                        href={`${CANONICAL_PRODUCTION_WEB_ORIGIN}/privacy`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="underline underline-offset-2"
+                      >
+                        {t("landing.waitlist.consentPolicyLink", "Privacy Policy")}
+                      </a>
+                      {/* Empty in Chinese, so not through t(), which treats "" as missing. */}
+                      {messages["landing.waitlist.consentPolicyAfter"] ?? "."}
+                    </span>
                   </label>
                   <label className="flex items-start gap-2 text-left text-sm text-[#3b3a33]" htmlFor="waitlist-consent-adult">
                     <input

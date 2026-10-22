@@ -42,34 +42,13 @@ export class ImagePreloader {
       // 合并并去重
       const merged = Array.from(new Set([...(localImages || []), ...(publicImages || [])]));
       
-      if (merged.length > 0) {
-        this.preloadedImages = merged;
-        this.isPreloaded = true;
-        console.log(`预加载图片合计 ${merged.length} 张（src + public）`);
-        return merged;
-      }
-
-      // 如果没有找到本地图片，使用默认图片
-      const defaultImages = [
-        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
-        'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face',
-        'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
-        'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face',
-        'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face'
-      ];
-
-      this.preloadedImages = defaultImages;
-      this.isPreloaded = true;
-      console.log('使用默认图片');
-      return defaultImages;
-
+      // 只用本站的图片；一张都没有时返回空列表，不再用第三方图床兜底（隐私政策第 14 节）。
+      this.preloadedImages = merged;
+      this.isPreloaded = merged.length > 0;
+      return merged;
     } catch (error) {
       console.error('预加载图片时出错:', error);
-      // 返回最基本的默认图片
-      return [
-        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
-        'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face'
-      ];
+      return [];
     }
   }
 

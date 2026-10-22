@@ -7,8 +7,7 @@
   font-style: normal;
   font-display: swap;
   font-weight: 400;
-  src: url("https://cdn.jsdelivr.net/fontsource/fonts/open-runde@5.2.1/latin-400-normal.woff2") format("woff2"),
-    url("https://cdn.jsdelivr.net/fontsource/fonts/open-runde@5.2.1/latin-400-normal.woff") format("woff");
+  src: url("/fonts/open-runde/open-runde-latin-400.woff2") format("woff2");
 }
 
 @font-face {
@@ -16,8 +15,7 @@
   font-style: normal;
   font-display: swap;
   font-weight: 600;
-  src: url("https://cdn.jsdelivr.net/fontsource/fonts/open-runde@5.2.1/latin-600-normal.woff2") format("woff2"),
-    url("https://cdn.jsdelivr.net/fontsource/fonts/open-runde@5.2.1/latin-600-normal.woff") format("woff");
+  src: url("/fonts/open-runde/open-runde-latin-600.woff2") format("woff2");
 }
 
 @font-face {
@@ -25,8 +23,7 @@
   font-style: normal;
   font-display: swap;
   font-weight: 700;
-  src: url("https://cdn.jsdelivr.net/fontsource/fonts/open-runde@5.2.1/latin-700-normal.woff2") format("woff2"),
-    url("https://cdn.jsdelivr.net/fontsource/fonts/open-runde@5.2.1/latin-700-normal.woff") format("woff");
+  src: url("/fonts/open-runde/open-runde-latin-700.woff2") format("woff2");
 }
 
 @layer base {

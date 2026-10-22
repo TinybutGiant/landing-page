@@ -286,6 +286,9 @@
       "unsubscribeInvalidBody": "リンクが不完全な可能性があります。このページは閉じて構いません。",
       "busy": "ただいま登録が混み合っています。数分後にもう一度お試しください。",
       "consentTransfer": "私の情報が米国に移転され処理されることに同意します",
+      "consentPolicyBefore": "（詳しくは",
+      "consentPolicyLink": "プライバシーポリシー",
+      "consentPolicyAfter": "）",
       "consentAdult": "18歳以上です"
     },
     "testimonials": {

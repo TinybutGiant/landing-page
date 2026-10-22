@@ -286,6 +286,9 @@
       "unsubscribeInvalidBody": "该链接可能不完整。你可以忽略此页面。",
       "busy": "现在报名的人比较多，请过几分钟再试。",
       "consentTransfer": "我同意将我的信息传输到美国处理",
+      "consentPolicyBefore": "，详见",
+      "consentPolicyLink": "《隐私政策》",
+      "consentPolicyAfter": "",
       "consentAdult": "我已年满 18 岁"
     },
     "testimonials": {
