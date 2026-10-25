@@ -11,6 +11,7 @@
     "test:auth-redirects": "node --experimental-strip-types --test scripts/auth-redirects.test.mjs",
     "test:applicant-continuation": "node --experimental-strip-types --test scripts/applicant-continuation.test.mjs",
     "test:guide-i18n": "node scripts/check-guide-i18n.mjs",
+    "test:become-guide-gate": "node --experimental-strip-types --test scripts/become-guide-gate.test.mjs",
     "test:warm-api": "node --experimental-strip-types --test scripts/warm-api.test.mjs",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "start": "serve -s dist"

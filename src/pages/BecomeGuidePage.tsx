@@ -58,6 +58,7 @@ import { resolveApplicantContinuation } from "@/lib/applicantContinuation";
 import { getCanonicalVerifyEmailPath } from "@/lib/yaotuAuthRuntime";
 import { useWarmApi } from "@/lib/warmApi";
 import { getAuthToken, getStoredUserId } from "@/lib/auth";
+import { shouldHoldGuideForm } from "@/lib/becomeGuideGate";
 
 const RESUME_PATH = DEFAULT_RESUME_PATH;
 const DESTINATIONS_QUERY_KEY = ["/api/v2/destinations", "JP"] as const;
@@ -464,15 +465,22 @@ const BecomeGuidePage = () => {
     []
   );
 
-  const isResolvingCanonicalState =
-    loading ||
-    (Boolean(user) && (applicationStateQuery.isPending || applicationStateQuery.isFetching));
   const isLeavingGuideForm =
     Boolean(user) &&
     applicationStateQuery.isSuccess &&
     continuationIntent === "view_status";
 
-  if (isResolvingCanonicalState || isLeavingGuideForm) return null;
+  if (
+    shouldHoldGuideForm({
+      authLoading: loading,
+      hasUser: Boolean(user),
+      isStatePending: applicationStateQuery.isPending,
+      isStateFetching: applicationStateQuery.isFetching,
+      isLeavingGuideForm,
+    })
+  ) {
+    return null;
+  }
 
   if (user && applicationStateQuery.isError) {
     return (
