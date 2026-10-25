@@ -51,12 +51,14 @@ import {
 } from "@/components/ui/tooltip";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { pathWithRedirect, rememberPostEmailVerificationRedirect } from "@/lib/authRedirects";
+import { guideLoginContinuation, rememberPostEmailVerificationRedirect } from "@/lib/authRedirects";
 import { apiRequest } from "@/lib/queryClient";
 import { API_BASE, resolveApiUrl } from "@/lib/apiClient";
 import { resolveApplicantContinuation } from "@/lib/applicantContinuation";
 import { getCanonicalVerifyEmailPath } from "@/lib/yaotuAuthRuntime";
 import { useWarmApi } from "@/lib/warmApi";
+import { getAuthToken, getStoredUserId } from "@/lib/auth";
+import { shouldHoldGuideForm } from "@/lib/becomeGuideGate";
 
 const RESUME_PATH = DEFAULT_RESUME_PATH;
 const DESTINATIONS_QUERY_KEY = ["/api/v2/destinations", "JP"] as const;
@@ -140,14 +142,6 @@ const isTokenExpiredError = (error: unknown): boolean => {
 
   return code === "TOKEN_EXPIRED" || /token expired|expired token|log in again/i.test(message);
 };
-
-const guideUrl = (path: string): string => {
-  const origin = typeof window !== "undefined" ? window.location.origin : "https://guide.ahhh-yaotu.com";
-  return new URL(path, origin).toString();
-};
-
-const guideLoginContinuation = (redirectTo: string | null | undefined): string =>
-  guideUrl(pathWithRedirect("/login", redirectTo ?? RESUME_PATH));
 
 const QualificationUploader = (props: any) => (
   <ApplicationQualificationUploader {...props} deferUpload />
@@ -234,7 +228,7 @@ const BecomeGuidePage = () => {
 
   const archiveApplicationPdf = useCallback(async (applicationId: string | number) => {
     const printRoot = document.getElementById("print-root");
-    const token = localStorage.getItem("yaotu_token");
+    const token = getAuthToken();
     if (!printRoot || !token) return;
 
     const pdfWorker = html2pdf()
@@ -293,11 +287,8 @@ const BecomeGuidePage = () => {
         qualificationUpload: "/api/v2/guide-applications/qualification-upload",
       },
       auth: {
-        getToken: () => localStorage.getItem("yaotu_token"),
-        getUserId: () => {
-          const storedUserId = localStorage.getItem("yaotu_user_id");
-          return user?.id ?? (storedUserId ? Number(storedUserId) : null);
-        },
+        getToken: getAuthToken,
+        getUserId: () => user?.id ?? getStoredUserId(),
         getUser: () =>
           user
             ? (user as unknown as {
@@ -318,7 +309,7 @@ const BecomeGuidePage = () => {
       callbacks: {
         onVerificationRequired: (redirectTo) => {
           rememberPostEmailVerificationRedirect(redirectTo);
-          window.location.assign(getCanonicalVerifyEmailPath(guideLoginContinuation(redirectTo)));
+          window.location.assign(getCanonicalVerifyEmailPath(guideLoginContinuation(redirectTo, RESUME_PATH)));
         },
         onHandoffConflict: (conflict) => {
           if (
@@ -398,7 +389,7 @@ const BecomeGuidePage = () => {
       routes: {
         signup: "/signup",
         login: "/login",
-        verifyEmail: getCanonicalVerifyEmailPath(guideLoginContinuation(RESUME_PATH)),
+        verifyEmail: getCanonicalVerifyEmailPath(guideLoginContinuation(RESUME_PATH, RESUME_PATH)),
         resumePath: RESUME_PATH,
       },
     }),
@@ -474,15 +465,22 @@ const BecomeGuidePage = () => {
     []
   );
 
-  const isResolvingCanonicalState =
-    loading ||
-    (Boolean(user) && (applicationStateQuery.isPending || applicationStateQuery.isFetching));
   const isLeavingGuideForm =
     Boolean(user) &&
     applicationStateQuery.isSuccess &&
     continuationIntent === "view_status";
 
-  if (isResolvingCanonicalState || isLeavingGuideForm) return null;
+  if (
+    shouldHoldGuideForm({
+      authLoading: loading,
+      hasUser: Boolean(user),
+      isStatePending: applicationStateQuery.isPending,
+      isStateFetching: applicationStateQuery.isFetching,
+      isLeavingGuideForm,
+    })
+  ) {
+    return null;
+  }
 
   if (user && applicationStateQuery.isError) {
     return (
