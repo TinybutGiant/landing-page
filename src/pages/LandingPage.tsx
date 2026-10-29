@@ -14,9 +14,9 @@ import LanguageSwitcher from "@/components/LanguageSwitcher";
 import ScrollToTopButton from "@/components/ScrollToTopButton";
 import TeamMemberMarquee from "@/components/TeamMemberMarquee";
 import { FlowStoryRow } from "@/components/HowYaotuWorks";
+import { HeadingScribble } from "@/components/HeadingScribble";
 import { localizeTeamMembers } from "@/data/teamMembers";
 import { useAuth } from "@/context/AuthContext";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -225,15 +225,18 @@ const LandingPage = () => {
 
   return (
     <div className="yaotu-landing min-h-screen overflow-x-clip bg-white text-[#020817]">
-      <div className="hero-fixed-orb" aria-hidden />
       <ScrollToTopButton />
 
-      <section id="hero-section" className="relative isolate flex h-screen h-[100svh] flex-col overflow-hidden px-5 pb-16 pt-6 sm:px-8 lg:px-12">
-        <div className="relative z-20 mx-auto flex w-full max-w-[94rem] items-center justify-between">
+      <section id="hero-section" className="hero-field relative isolate flex h-screen h-[100svh] flex-col overflow-hidden px-5 pb-16 pt-6 sm:px-8 lg:px-12">
+        <div className="hero-fixed-orb" aria-hidden />
+        <div className="hero-orb-accent" aria-hidden />
+        <div className="relative mx-auto flex w-full max-w-[94rem] items-center justify-between">
           <h1 className="yaotu-wordmark" aria-label="YaoTu">
             <img src="/yaotu-logo.png" alt="YaoTu" className="yaotu-logo-image" />
           </h1>
-          <LanguageSwitcher />
+          <div className="relative z-20">
+            <LanguageSwitcher />
+          </div>
         </div>
 
         <div className="absolute inset-0 z-[1] hidden md:block" aria-hidden>
@@ -249,12 +252,6 @@ const LandingPage = () => {
           <div className="hero-orbit" aria-hidden>
             <span className="hero-satellite hero-satellite-a" />
             <span className="hero-satellite hero-satellite-b" />
-          </div>
-          <div className="hero-static-gallery" aria-hidden>
-            <figure className="hero-photo hero-photo-a"><img src="/hero-scene-bamboo.png" alt="" /></figure>
-            <figure className="hero-photo hero-photo-b"><img src="/hero-scene-torii.png" alt="" /></figure>
-            <figure className="hero-photo hero-photo-c"><img src="/hero-scene-kyoto.png" alt="" /></figure>
-            <figure className="hero-photo hero-photo-d"><img src="/hero-scene-coast.png" alt="" /></figure>
           </div>
           <div className="relative z-20 max-w-4xl" data-hero-copy>
             <p className="hero-display">
@@ -273,35 +270,40 @@ const LandingPage = () => {
             <div className="pointer-events-auto mt-6 flex w-full flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
               <button
                 type="button"
-                className="yaotu-button min-h-12 w-full px-6 sm:w-auto"
+                className="yaotu-cta yaotu-cta--primary w-full sm:w-auto"
                 onClick={handleBecomeGuide}
               >
                 {t("landing.hero.guideCta", "Become a Local Guide")}
+                <ArrowRight aria-hidden />
               </button>
               <button
                 type="button"
-                className="yaotu-secondary-button min-h-12 w-full px-6 sm:w-auto"
+                className="yaotu-cta yaotu-cta--secondary w-full sm:w-auto"
                 onClick={handleTravelerWaitlist}
               >
                 {t("landing.hero.waitlistCta", "Get Traveler Early Access")}
+                <ArrowRight aria-hidden />
               </button>
             </div>
           </div>
-          <p className="hero-explore-cue absolute bottom-3 left-1/2 hidden -translate-x-1/2 text-xs font-semibold uppercase tracking-[0.14em] text-[#7a725f] md:block">Scroll to explore</p>
+          <p className="hero-explore-cue absolute bottom-3 left-1/2 hidden -translate-x-1/2 md:block">Scroll to explore</p>
         </div>
       </section>
 
       <main className="relative z-10 bg-white">
-        <section className="section-shell bg-white" aria-labelledby="why-title">
+        <section className="section-shell section-band-warm" aria-labelledby="why-title">
           <div className="section-heading-row">
-            <h2 id="why-title">{t("landing.features.title", "Why Choose YaoTu?")}</h2>
+            <h2 id="why-title">
+              <span>{t("landing.features.title", "Why Choose YaoTu?")}</span>
+              <HeadingScribble />
+            </h2>
             <p>{t("landing.features.subtitle", "Explore the city with locals who know it best.")}</p>
           </div>
           <div className="feature-grid mt-12">
             {features.map((feature, index) => (
               <motion.article
                 key={feature.title}
-                className="feature-card"
+                className="feature-card-motion"
                 initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "0px 0px -80px 0px" }}
@@ -311,9 +313,11 @@ const LandingPage = () => {
                   ease: [0.16, 1, 0.3, 1],
                 }}
               >
-                <div className="feature-icon">{featureIcons[index]}</div>
-                <h3>{feature.title}</h3>
-                <p>{feature.description}</p>
+                <div className="feature-card">
+                  <div className="feature-icon">{featureIcons[index]}</div>
+                  <h3>{feature.title}</h3>
+                  <p>{feature.description}</p>
+                </div>
               </motion.article>
             ))}
           </div>
@@ -322,7 +326,10 @@ const LandingPage = () => {
         <section className="relative overflow-x-clip bg-white" aria-labelledby="how-title">
           <div className="section-shell pb-4 pt-6 sm:pb-6">
             <div className="section-heading-row">
-              <h2 id="how-title">{t("landing.howTraveler.sectionTitle", "How Yaotu works")}</h2>
+              <h2 id="how-title">
+                <span>{t("landing.howTraveler.sectionTitle", "How Yaotu works")}</span>
+                <HeadingScribble />
+              </h2>
             </div>
           </div>
           <div className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8 lg:pb-20">
@@ -374,9 +381,12 @@ const LandingPage = () => {
           </div>
         </section>
 
-        <section className="section-shell team-intro-section bg-white" aria-labelledby="team-title">
+        <section className="section-shell team-intro-section section-band-warm" aria-labelledby="team-title">
           <div className="section-heading-row">
-            <h2 id="team-title">{t("landing.team.title", "From Our Team")}</h2>
+            <h2 id="team-title">
+              <span>{t("landing.team.title", "From Our Team")}</span>
+              <HeadingScribble />
+            </h2>
             <p>{t("landing.team.subtitle", "Built by people who care about better travel experiences.")}</p>
           </div>
           <div className="team-grid mt-12">
@@ -414,7 +424,10 @@ const LandingPage = () => {
         <section className="section-shell" aria-labelledby="faq-title">
           <div className="faq-layout">
             <div>
-              <h2 id="faq-title">FAQ</h2>
+              <h2 id="faq-title">
+                <span>FAQ</span>
+                <HeadingScribble />
+              </h2>
               <p className="mt-4 leading-7 text-[#625f55]">Everything you need to know.</p>
             </div>
             <div className="faq-list">
@@ -440,7 +453,7 @@ const LandingPage = () => {
 
         <section id="become-guide-cta" className="final-cta" aria-labelledby="final-cta-title">
           <div className="relative z-10 mx-auto flex max-w-[82rem] flex-col items-start px-5 py-20 text-left sm:px-8 sm:py-24 lg:px-12">
-            <Globe2 className="h-8 w-8 text-white" aria-hidden />
+            <Globe2 className="h-8 w-8 text-[#171714]" aria-hidden />
             <h2 id="final-cta-title" className="mt-8">
               {t("landing.cta.title", "Ready to help shape travel in Japan?")}
             </h2>
@@ -450,15 +463,15 @@ const LandingPage = () => {
                 "Apply as a local Guide and help build Yaotu's first Japan experience network."
               )}
             </p>
-            <Button className="final-cta-button mt-9 min-h-12 px-6" onClick={handleBecomeGuide}>
-              {t("landing.cta.becomeGuide", "Apply to Become a Local Guide")}{" "}
-              <ArrowRight className="ml-2 h-4 w-4" aria-hidden />
-            </Button>
+            <button type="button" className="yaotu-cta yaotu-cta--inverse mt-9" onClick={handleBecomeGuide}>
+              {t("landing.cta.becomeGuide", "Apply to Become a Local Guide")}
+              <ArrowRight aria-hidden />
+            </button>
             <p className="final-cta-status mt-6">
               <span>{t("landing.cta.viewApplicationStatusPrefix", "Already Applied?")}</span>{" "}
               <button
                 type="button"
-                className="underline decoration-white/40 underline-offset-4 transition-colors hover:text-white"
+                className="final-cta-status-link"
                 onClick={handleViewApplicationStatus}
                 disabled={authLoading}
               >
