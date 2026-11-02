@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { beforeEach, test } from 'node:test';
 
-import { logout, restoreAuthSession } from '../src/lib/auth.ts';
+import { getStoredUserId, logout, restoreAuthSession } from '../src/lib/auth.ts';
 
 const AUTH_KEYS = ['yaotu_token', 'yaotu_user', 'yaotu_user_id'];
 const DRAFT_KEY = 'yaotu_guide_application_anonymous_draft_v1';
@@ -167,4 +167,13 @@ test('auth cleanup never deletes the anonymous guide draft', async () => {
   logout();
 
   assert.equal(localStorage.getItem(DRAFT_KEY), 'preserve-me');
+});
+
+test('getStoredUserId reads the stored numeric id', () => {
+  seedIdentity();
+  assert.equal(getStoredUserId(), cachedUser.id);
+});
+
+test('getStoredUserId returns null when no user is stored', () => {
+  assert.equal(getStoredUserId(), null);
 });

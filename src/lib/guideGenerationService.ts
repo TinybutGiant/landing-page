@@ -1,4 +1,5 @@
 import { resolveApiUrl } from "@/lib/apiClient";
+import { getAuthToken } from "@/lib/auth";
 
 /**
  * Guide Generation Service for Landing Page
@@ -21,7 +22,7 @@ export interface UserGuideStatus {
 }
 
 function authHeaders(): HeadersInit {
-  const token = localStorage.getItem("yaotu_token");
+  const token = getAuthToken();
 
   return {
     "Content-Type": "application/json",

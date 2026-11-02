@@ -4,14 +4,9 @@ import YaotuAppChrome from "@/components/YaotuAppChrome";
 import { useLanguage } from "@/i18n/LanguageProvider";
 import { api } from "@/lib/apiClient";
 
-type UnsubscribeState = "ready" | "submitting" | "done" | "invalid";
+import { readFragmentToken } from "@/lib/urlFragment";
 
-function readFragmentToken(): string | null {
-  const hash = window.location.hash.replace(/^#/, "");
-  const params = new URLSearchParams(hash);
-  const token = params.get("token")?.trim();
-  return token || null;
-}
+type UnsubscribeState = "ready" | "submitting" | "done" | "invalid";
 
 export default function WaitlistUnsubscribePage() {
   const { messages } = useLanguage();

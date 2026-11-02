@@ -1,7 +1,8 @@
 import { resolveApiUrl } from "./apiClient";
+import { getAuthToken } from "./auth";
 
 export async function apiRequest(method: string, url: string, data?: any) {
-  const yaotuToken = localStorage.getItem("yaotu_token");
+  const yaotuToken = getAuthToken();
   const fullUrl = resolveApiUrl(url);
 
   const config: RequestInit = {

@@ -5,7 +5,11 @@ import { useLocation } from 'wouter';
 
 import YaotuAppChrome from '@/components/YaotuAppChrome';
 import { useAuth } from '@/context/AuthContext';
-import { readRedirectParam, rememberPostEmailVerificationRedirect } from '@/lib/authRedirects';
+import {
+  guideLoginContinuation,
+  readRedirectParam,
+  rememberPostEmailVerificationRedirect,
+} from '@/lib/authRedirects';
 import {
   addSignupEmailPrefillFragment,
   getCanonicalVerifyEmailPath,
@@ -16,17 +20,6 @@ import { useWarmApi } from '@/lib/warmApi';
 
 const DEFAULT_REDIRECT = '/become-guide';
 type IntentStatus = 'none' | 'checking' | 'valid' | 'invalid';
-
-const guideUrl = (path: string): string => {
-  const origin = typeof window !== 'undefined' ? window.location.origin : 'https://guide.ahhh-yaotu.com';
-  return new URL(path, origin).toString();
-};
-
-const guideLoginContinuation = (redirectTo: string | null): string => {
-  const loginUrl = new URL('/login', guideUrl('/'));
-  loginUrl.searchParams.set('redirect', redirectTo ?? DEFAULT_REDIRECT);
-  return loginUrl.toString();
-};
 
 function readSignupIntentParam(): string | null {
   if (typeof window === 'undefined') return null;
@@ -160,7 +153,7 @@ const SignupPage = () => {
       signupIntentToken={signupIntentToken}
       signupConsumer="guide"
       loginPath="/login"
-      verifyEmailPath={getCanonicalVerifyEmailPath(guideLoginContinuation(redirectTo))}
+      verifyEmailPath={getCanonicalVerifyEmailPath(guideLoginContinuation(redirectTo, DEFAULT_REDIRECT))}
       resolveVerifyEmailPath={addSignupEmailPrefillFragment}
       onSignupVerificationRequired={(_result, context) => {
         // Verification continues on the main origin, whose sessionStorage is
