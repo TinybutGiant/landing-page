@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowUpRight, Globe, Linkedin, Mail, User, X } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { HeadingScribble } from "@/components/HeadingScribble";
 
 export type TeamMemberLinkType = "linkedin" | "portfolio" | "contact";
 
@@ -416,7 +417,10 @@ export default function TeamMemberMarquee({
       <section className="relative overflow-hidden bg-[#fffaf0] pb-[clamp(5rem,9vw,8rem)]">
         <div className="section-shell team-roster-shell">
           <div className="section-heading-row mb-10 sm:mb-12">
-            <h2>{title}</h2>
+            <h2>
+              <span>{title}</span>
+              <HeadingScribble />
+            </h2>
             {featuredSubtitle ? <p>{featuredSubtitle}</p> : null}
           </div>
 
