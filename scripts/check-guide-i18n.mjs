@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
-const localeFiles = ["en", "zh-CN", "ja"];
+const localeFiles = ["en", "zh-CN"];
 const expectedKeys = [
   "submitSuccessTitle",
   "submitSuccessDesc",
@@ -25,4 +25,4 @@ for (const locale of localeFiles) {
   }
 }
 
-console.log("Guide submission toast translations are valid for en, zh-CN, and ja.");
+console.log("Guide submission toast translations are valid for en and zh-CN.");

@@ -82,7 +82,6 @@ function useDocumentDarkMode(): boolean {
 
 function normalizeAuthLocale(locale: string): AuthLocale {
   if (locale === 'zh-CN' || locale.toLowerCase().startsWith('zh')) return 'zh-CN';
-  if (locale.toLowerCase().startsWith('ja')) return 'ja';
   return 'en';
 }
 

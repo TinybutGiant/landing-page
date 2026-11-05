@@ -5,13 +5,11 @@ import { createIntl } from '@formatjs/intl';
 // Import language files
 import enMessages from './locales/en.json';
 import zhCNMessages from './locales/zh-CN.json';
-import jaMessages from './locales/ja.json';
 
 // Define supported locales
 export const SUPPORTED_LOCALES = {
   'en': 'English',
-  'zh-CN': '中文',
-  'ja': '日本語'
+  'zh-CN': '中文'
 } as const;
 
 export type SupportedLocale = keyof typeof SUPPORTED_LOCALES;
@@ -23,8 +21,8 @@ const normalizeLocale = (locale: string | null | undefined): SupportedLocale | n
   const normalized = locale.trim();
   if (normalized in SUPPORTED_LOCALES) return normalized as SupportedLocale;
   const lower = normalized.toLowerCase();
-  if (lower.startsWith('zh')) return 'zh-CN';
-  if (lower.startsWith('ja')) return 'ja';
+  // Japanese reads as Chinese: a Japanese device is most often a Chinese-speaking guide in Japan.
+  if (lower.startsWith('zh') || lower.startsWith('ja')) return 'zh-CN';
   if (lower.startsWith('en')) return 'en';
   return null;
 };
@@ -80,7 +78,6 @@ const flattenMessages = (nestedMessages: any, prefix = ''): Record<string, strin
 const messages: Record<SupportedLocale, Record<string, string>> = {
   'en': flattenMessages(enMessages),
   'zh-CN': flattenMessages(zhCNMessages),
-  'ja': flattenMessages(jaMessages),
 };
 
 // Hook to use language context
@@ -116,11 +113,8 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
     
     // Try to detect browser language
     const browserLang = window.navigator.language;
-    if (browserLang.toLowerCase().startsWith('zh')) {
+    if (/^(zh|ja)/i.test(browserLang)) {
       return 'zh-CN';
-    }
-    if (browserLang.toLowerCase().startsWith('ja')) {
-      return 'ja';
     }
     
     return 'en';
