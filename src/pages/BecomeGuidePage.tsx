@@ -54,6 +54,7 @@ import { useToast } from "@/hooks/use-toast";
 import { guideLoginContinuation, rememberPostEmailVerificationRedirect } from "@/lib/authRedirects";
 import { apiRequest } from "@/lib/queryClient";
 import { API_BASE, resolveApiUrl } from "@/lib/apiClient";
+import { CANONICAL_PRODUCTION_WEB_ORIGIN } from "@/lib/publicOrigins";
 import { resolveApplicantContinuation } from "@/lib/applicantContinuation";
 import { getCanonicalVerifyEmailPath } from "@/lib/yaotuAuthRuntime";
 import { useWarmApi } from "@/lib/warmApi";
@@ -277,6 +278,8 @@ const BecomeGuidePage = () => {
       // Source attribution only; @replit/guide-form owns the Guide Application state machine.
       applicationSource,
       applicationContinuation: continuationIntent,
+      // The policy lives on the main site; this site has no /privacy page.
+      privacyPolicyUrl: `${CANONICAL_PRODUCTION_WEB_ORIGIN}/privacy`,
       apiEndpoints: {
         loadDraft: "/api/v2/guide-applications/draft",
         saveDraft: "/api/v2/guide-applications/draft",

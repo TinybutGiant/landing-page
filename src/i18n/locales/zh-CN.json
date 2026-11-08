@@ -285,7 +285,7 @@
       "unsubscribeInvalidTitle": "取消订阅链接无效",
       "unsubscribeInvalidBody": "该链接可能不完整。你可以忽略此页面。",
       "busy": "现在报名的人比较多，请过几分钟再试。",
-      "consentTransfer": "我同意将我的信息传输到美国处理",
+      "consentTransfer": "我同意将我的信息传输到日本和美国处理",
       "consentPolicyBefore": "，详见",
       "consentPolicyLink": "《隐私政策》",
       "consentPolicyAfter": "",
@@ -650,7 +650,9 @@
         "step3Q8Example": "第 3 页 Q6 示例",
         "step3Q9Description": "第 3 页 Q7 动机",
         "requiredInformation": "必填信息"
-      }
+      },
+      "privacyNotice": "我们如何处理你的申请：",
+      "privacyPolicyLink": "隐私政策"
     },
     "applicationStateUnavailableTitle": "暂时无法获取申请状态",
     "applicationStateUnavailableDesc": "我们暂时无法安全确认这份申请是否仍可编辑。请重试或查看申请状态。",

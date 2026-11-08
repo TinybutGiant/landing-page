@@ -149,7 +149,7 @@ const EarlyAccessPage = () => {
                       className="mt-1 h-4 w-4 shrink-0"
                     />
                     <span>
-                      {t("landing.waitlist.consentTransfer", "I agree to my information being transferred to the United States for processing")}
+                      {t("landing.waitlist.consentTransfer", "I agree to my information being transferred to Japan and the United States for processing")}
                       {t("landing.waitlist.consentPolicyBefore", "; see the ")}
                       {/* A new tab, so the form keeps what was already filled in. */}
                       <a

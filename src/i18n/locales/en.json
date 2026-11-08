@@ -285,7 +285,7 @@
       "unsubscribeInvalidTitle": "This unsubscribe link is invalid",
       "unsubscribeInvalidBody": "The link may be incomplete. You can ignore this page.",
       "busy": "Many people are signing up right now. Please try again in a few minutes.",
-      "consentTransfer": "I agree to my information being transferred to the United States for processing",
+      "consentTransfer": "I agree to my information being transferred to Japan and the United States for processing",
       "consentPolicyBefore": "; see the ",
       "consentPolicyLink": "Privacy Policy",
       "consentPolicyAfter": ".",
@@ -650,7 +650,9 @@
         "step3Q8Example": "Step 3 Q6 example",
         "step3Q9Description": "Step 3 Q7 motivation",
         "requiredInformation": "Required information"
-      }
+      },
+      "privacyNotice": "How we handle your application:",
+      "privacyPolicyLink": "Privacy Policy"
     },
     "applicationStateUnavailableTitle": "Application status is temporarily unavailable",
     "applicationStateUnavailableDesc": "We could not safely determine whether this application is editable. Try again or view your application status.",
