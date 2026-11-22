@@ -371,7 +371,8 @@
       "saving": "Saving...",
       "previous": "Previous",
       "next": "Next",
-      "preview": "Preview Application"
+      "preview": "Preview Application",
+      "draftSaved": "Draft saved"
     },
     "step1": {
       "step1PageTitle": "Basic Information & Service Info",

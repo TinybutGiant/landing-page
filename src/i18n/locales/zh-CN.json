@@ -371,7 +371,8 @@
       "saving": "保存中...",
       "previous": "上一步",
       "next": "下一步",
-      "preview": "预览申请"
+      "preview": "预览申请",
+      "draftSaved": "草稿已保存"
     },
     "step1": {
       "step1PageTitle": "基本信息 & 服务信息",
